@@ -4,8 +4,8 @@ import { FireComponent } from './fire/fire.component';
 import { MetaComponent } from './meta/meta.component';
 
 const routes: Routes = [
-  { path: 'fire', component: FireComponent },
-  { path: 'meta', component: MetaComponent },
+  { path: 'fire', component: FireComponent, pathMatch: 'full' },
+  { path: 'meta', component: MetaComponent, pathMatch: 'full' },
   { path: '', redirectTo: 'meta', pathMatch: 'full' },
 ];
 

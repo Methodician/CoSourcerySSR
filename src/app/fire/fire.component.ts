@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/firestore';
-// import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-fire',
@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./fire.component.scss'],
 })
 export class FireComponent implements OnInit {
+  items: Observable<any[]>;
   constructor(
     private afs: AngularFirestore,
     private meta: Meta,
@@ -18,6 +19,18 @@ export class FireComponent implements OnInit {
 
   ngOnInit() {
     this.updateMetaData();
+    this.items = this.afs
+      .collection('items')
+      .snapshotChanges()
+      .pipe(
+        map(items =>
+          items.map(i => {
+            const data = i.payload.doc.data();
+            const id = i.payload.doc.id;
+            return { id, ...data };
+          }),
+        ),
+      );
   }
 
   updateMetaData = async () => {

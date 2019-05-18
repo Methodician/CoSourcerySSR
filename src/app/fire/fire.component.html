@@ -1,3 +1,10 @@
 <p>
   fire works!
 </p>
+<ul>
+  <li *ngFor="let item of items | async">
+    <p><b>name:</b> {{ item.name }}</p>
+    <p><b>other:</b> {{ item.other }}</p>
+    <a [routerLink]="item.id"><b>id:</b> {{ item.id }}</a>
+  </li>
+</ul>

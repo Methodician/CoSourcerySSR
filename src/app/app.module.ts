@@ -10,9 +10,15 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 import { environment } from '../environments/environment';
+import { FireDetailComponent } from './fire-detail/fire-detail.component';
 
 @NgModule({
-  declarations: [AppComponent, MetaComponent, FireComponent],
+  declarations: [
+    AppComponent,
+    MetaComponent,
+    FireComponent,
+    FireDetailComponent,
+  ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,

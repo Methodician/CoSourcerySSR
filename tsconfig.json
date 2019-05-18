@@ -14,15 +14,15 @@
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2018", "dom"],
     "paths": {
-      "@modals/*": ["src/app/components/modals/*"],
-      "@directives/*": ["src/app/directives/*"],
-      "@components/*": ["src/app/components/*"],
-      "@admin/*": ["src/app/admin/*"],
-      "@services/*": ["src/app/services/*"],
-      "@class/*": ["models/class/*"],
-      "@guards/*": ["src/app/shared/guards/*"],
-      "@pipes/*": ["src/app/shared/pipes/*"],
-      "@env/*": ["environments/*"]
+      "@modals/*": ["src/app/components/modals/*", "app/components/modals/*"],
+      "@directives/*": ["src/app/directives/*", "app/directives/*"],
+      "@components/*": ["src/app/components/*", "app/components/*"],
+      "@admin/*": ["src/app/admin/*", "app/admin/*"],
+      "@services/*": ["src/app/services/*", "app/services/*"],
+      "@class/*": ["models/class/*", "../models/class/*"],
+      "@guards/*": ["src/app/shared/guards/*", "app/shared/guards/*"],
+      "@pipes/*": ["src/app/shared/pipes/*", "app/shared/pipes/*"],
+      "@env/*": ["src/environments/*", "../environments/*"]
     }
   }
 }

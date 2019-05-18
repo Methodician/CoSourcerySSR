@@ -11,6 +11,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 import { environment } from '../environments/environment';
 import { FireDetailComponent } from './fire-detail/fire-detail.component';
+import { HomeComponent } from './components/home/home.component';
+import { ArticlePreviewCardComponent } from './components/articles/article-preview-card/article-preview-card.component';
+import { TruncateStringPipe } from './shared/pipes/truncate-string.pipe';
+import { MatIconModule, MatDialogModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -18,12 +22,17 @@ import { FireDetailComponent } from './fire-detail/fire-detail.component';
     MetaComponent,
     FireComponent,
     FireDetailComponent,
+    HomeComponent,
+    ArticlePreviewCardComponent,
+    TruncateStringPipe,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
+    MatIconModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

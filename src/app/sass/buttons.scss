@@ -1,0 +1,124 @@
+@import './vars.scss';
+
+button {
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+
+  &:disabled,
+  &:disabled:hover {
+    background-color: $light-gray;
+    cursor: default;
+  }
+}
+
+.cos-btn {
+  margin: 5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px $medium-gray;
+  background-color: $accent-color-1;
+  color: #fff;
+  font-size: 1rem;
+
+  &:hover {
+    background-color: darken($accent-color-2, 10%);
+  }
+
+  &_color_primary {
+    background-color: $primary-color;
+  }
+}
+
+.mat-icon-btn {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 5px;
+  border-radius: 100%;
+  box-shadow: 0 2px 2px $medium-gray;
+  background-color: $accent-color-1;
+  color: #fff;
+  outline: none;
+
+  @media screen and (min-width: 500px) {
+    &:hover {
+      background-color: darken($accent-color-2, 10%);
+    }
+
+    &:hover &__tooltip {
+      visibility: visible;
+    }
+  }
+
+  &_small {
+    height: 30px;
+    width: 30px;
+    box-shadow: none;
+    background-color: #fff;
+    color: lighten($accent-color-1-dark, 30%);
+
+    @media screen and (min-width: 500px) {
+      box-shadow: 0 2px 2px $medium-gray;
+      background-color: $accent-color-1;
+      color: #fff;
+
+      &:hover {
+        background-color: darken($accent-color-2, 10%);
+      }
+    }
+  }
+
+  &_no-shadow {
+    box-shadow: none;
+  }
+
+  &_transparent,
+  &_transparent:hover {
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  &__tooltip {
+    visibility: hidden;
+    position: absolute;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: $dark-gray;
+    color: #fff;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    z-index: 10;
+
+    &_above {
+      top: -10px;
+      transform: translateY(-100%);
+    }
+
+    &_below {
+      bottom: -10px;
+      transform: translateY(100%);
+    }
+
+    &_left {
+      left: -10px;
+      transform: translateX(-100%);
+    }
+
+    &_right {
+      right: -10px;
+      transform: translateX(100%);
+    }
+  }
+}
+
+.mat-icon.mat-icon {
+  &_small {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+  }
+}

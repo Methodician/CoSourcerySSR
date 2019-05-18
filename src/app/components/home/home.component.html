@@ -1,0 +1,81 @@
+<section class="banner">
+  <div class="text center">
+    <h2 class="banner__title">Empowering Makers &amp; Hackers of the World</h2>
+    <p class="text italic">
+      network, collaborate, and share knowledge with the community you love
+    </p>
+  </div>
+</section>
+
+<!-- ARTICLE FILTERS -->
+<!-- <cos-filter-menu
+  #filterMenu
+  [tabList]="filterTabs"
+  (tabAdded)="onFilterTabAdded($event)"
+  (tabSelected)="onFilterTabSelected($event)"
+>
+</cos-filter-menu> -->
+
+<!-- ARTICLE COLLECTIONS -->
+<!-- <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
+  <div class="article-grid">
+    <cos-article-preview-card
+      [userId]="userId"
+      [articleData]="article"
+      *ngFor="let article of latestArticles | async"
+    >
+    </cos-article-preview-card>
+  </div>
+</section> -->
+
+<section id="all-articles">
+  <!-- <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')"> -->
+  <div class="article-grid">
+    <cos-article-preview-card
+      [userId]="userId"
+      [articleData]="article"
+      *ngFor="let article of allArticles | async"
+    >
+    </cos-article-preview-card>
+  </div>
+</section>
+
+<!-- <section
+  id="bookmarked-articles"
+  *ngIf="filterMenu.isTabSelected('Bookmarked')"
+>
+  <h3 class="collection-text">
+    You have
+    <span class="collection-text_accent">{{ bookmarkedArticles.length }}</span>
+    {{ bookmarkedArticles.length === 1 ? 'bookmark' : 'bookmarks' }}.
+  </h3>
+  <div class="article-grid">
+    <cos-article-preview-card
+      [userId]="userId"
+      [articleData]="article"
+      *ngFor="let article of bookmarkedArticles | reverseArray"
+    >
+    </cos-article-preview-card>
+  </div>
+</section> -->
+
+<!-- <section
+  id="searched-articles"
+  *ngIf="filterMenu.isTabSelected('Search Results')"
+>
+  <h3 class="collection-text">
+    Found
+    <span class="collection-text_accent">{{ searchedArticles.length }}</span>
+    {{ searchedArticles.length === 1 ? 'result' : 'results' }} for
+    <span class="collection-text_underline">{{ query }}</span
+    >.
+  </h3>
+  <div class="article-grid">
+    <cos-article-preview-card
+      [userId]="userId"
+      [articleData]="article"
+      *ngFor="let article of searchedArticles"
+    >
+    </cos-article-preview-card>
+  </div>
+</section> -->

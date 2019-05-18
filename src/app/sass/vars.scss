@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:700');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,400i,700');
+
+// Theme Colors
+$primary-color: #e91e63;
+$primary-color-dark: #c2185b;
+$primary-color-light: #f8bbd0;
+$accent-color-1: #7c4dff;
+$accent-color-1-dark: #3e267f;
+$accent-color-2: #1ee9a4;
+$accent-color-2-dark: #23a277;
+$dark-gray: #212121;
+$medium-gray: #757575;
+$light-gray: #bdbdbd;
+$dark-gray-50: rgba(33, 33, 33, 0.5);
+$medium-gray-50: rgba(117, 117, 117, 0.5);
+$light-gray-50: rgba(189, 189, 189, 0.5);
+
+// Old Theme Colors to Phase Out
+$warn-color: #c2185b;
+$dark-gray-20: rgba(62, 72, 73, 0.2);
+$light-grey: #eeeeee;
+$dark-grey: #757575;
+$accent-color: rgb(0, 191, 165);
+$accent-color-70: rgba(0, 191, 165, 0.7);
+$accent-color-50: rgba(0, 191, 165, 0.5);
+$accent-color-20: rgba(0, 191, 165, 0.2);
+
+// Typography
+$logo-typeface: 'IBM Plex Sans', sans-serif;
+$primary-typeface: 'Montserrat', sans-serif;
+$letter-spacing: 0.5px;
+
+// Testing Borders
+$tb-red: 2px solid red;
+$tb-blue: 2px solid blue;
+$tb-lime: 2px solid lime;
+$tb-orange: 2px solid orange;
+$tb-yellow: 2px solid yellow;
+$tb-black: 2px solid black;
+$tb-cyan: 2px solid cyan;
+
+// Button Styles
+$btn-font-family: $primary-typeface;
+$btn-border-radius: 5px;
+$btn-letter-spacing: 0.5px;
+$btn-color: white;
+
+// Small Button Styles "sm" being the key selector
+$sm-height: 40px;
+$sm-width: 40px;
+$sm-font-size: 12px;
+
+// Medium Button Styles "md" being the key selector
+$mat-height: 40px;
+$mat-width: 95px;
+$mat-font-size: 14px;
+
+// Large Button styles "lg" being the key selector
+$lg-height: 50px;
+$lg-width: 145px;
+$lg-font-size: 22px;
+
+// Variables for media query
+$tablet-portrait-up: 600;
+$tablet-landscape-up: 900;
+$desktop-up: 1200;
+$large-desktop-up: 1800;
+
+//Average screen widths
+$phone-lg: 414;
+$phone-md: 375;
+$phone-sm: 320;
+
+//iPhone
+$iphone-lg: 414;
+$iphone-md: 375;
+$iphone-sm: 320;
+
+//Android
+$android-lg: 480;
+$android-md: 411;
+$android-sm: 360;
+
+//General viewport widths
+$tablet-sm: 576;
+$tablet-md: 780;
+$tablet-lg: 992;
+$desktop-sm: 1200;
+$desktop-md: 1440;
+$desktop-lg: 1650;

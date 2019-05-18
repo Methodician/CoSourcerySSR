@@ -1,0 +1,68 @@
+// This is a style sheet that contains all of the mixiins for the sight. It should contain mixins for highly reusable styles across the site.
+
+// Mixin and function for accurate and responsive fontsize
+
+// Define default font size
+@function calculateRem($size) {
+  $remSize: $size / 16px;
+  @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+  font-size: calculateRem($size);
+}
+
+// Mixin for height and width of containers
+@mixin size($width, $height) {
+  width: $width;
+  height: $height;
+}
+
+// Mixin for typography styles
+
+@mixin font-styles() {
+  font-family: $primary-typeface;
+  letter-spacing: $letter-spacing;
+}
+
+// Mixins for Buttons
+
+// Small Button Mixin
+@mixin small-button() {
+  height: $sm-height;
+  min-width: $sm-width;
+  color: $btn-color;
+  font-family: $btn-font-family;
+  font-size: font-size($sm-font-size);
+  letter-spacing: $btn-letter-spacing;
+  border-radius: $btn-border-radius;
+}
+
+// Medium Button Mixin
+@mixin medium-button() {
+  height: $mat-height;
+  min-width: $mat-width;
+  color: $btn-color;
+  font-family: $btn-font-family;
+  font-size: font-size($mat-font-size);
+  letter-spacing: $btn-letter-spacing;
+  border-radius: $btn-border-radius;
+}
+
+// Large Buttong Mixin
+@mixin large-button() {
+  height: $lg-height;
+  min-width: $lg-width;
+  color: $btn-color;
+  font-family: $btn-font-family;
+  font-size: font-size($lg-font-size);
+  letter-spacing: $btn-letter-spacing;
+  border-radius: $btn-border-radius;
+}
+
+// media queries
+@mixin respond-to($breakpoint) {
+  @media only screen and (min-width: $breakpoint + px) {
+    @content;
+  }
+}

@@ -1,0 +1,80 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../../sass/vars.scss';
+
+.preview-card {
+  background: #fff;
+  box-shadow: 0 2px 5px $light-gray-50;
+  transition: box-shadow 0.25s;
+
+  &:hover {
+    box-shadow: 0 4px 10px $dark-gray-50;
+
+    .card-icons {
+      background-color: $primary-color;
+    }
+  }
+}
+
+.card-content {
+  height: 400px;
+  padding: 20px 20px 0;
+
+  &__image {
+    height: 175px;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__title {
+    margin-bottom: 0;
+    color: $primary-color;
+    font-size: 1.375rem;
+  }
+
+  &__date {
+    margin-top: 5px;
+    color: $medium-gray;
+    font-size: 0.875rem;
+  }
+}
+
+.card-icons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background-color: $accent-color-1-dark;
+  color: #fff;
+}
+
+.counter-icons {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: default;
+
+    &:not(:first-child) {
+      margin-left: 20px;
+    }
+
+    &:hover .mat-icon-btn__tooltip {
+      visibility: visible;
+    }
+  }
+
+  &__stat {
+    display: block;
+    margin-left: 15px;
+  }
+}
+
+.bookmark-icon {
+  cursor: pointer;
+}

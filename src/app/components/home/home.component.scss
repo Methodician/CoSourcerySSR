@@ -1,0 +1,56 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../sass/vars.scss';
+
+.banner {
+  display: none;
+
+  &__title {
+    color: $accent-color-1-dark;
+    line-height: 1.5;
+  }
+
+  @media screen and (min-width: 500px) {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background-color: $light-gray-50;
+  }
+}
+
+.collection-text {
+  margin: 24px 0 0;
+  text-align: center;
+
+  &_accent {
+    color: $accent-color-1;
+  }
+
+  &_underline {
+    color: $accent-color-1;
+    text-decoration: underline;
+  }
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px);
+  grid-template-rows: auto;
+  grid-gap: 24px;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 24px 0;
+
+  @media screen and (min-width: 768px) {
+    grid-template-columns: repeat(2, 300px);
+  }
+
+  @media screen and (min-width: 1024px) {
+    grid-template-columns: repeat(3, 300px);
+  }
+
+  @media screen and (min-width: 1350px) {
+    grid-template-columns: repeat(4, 300px);
+  }
+}

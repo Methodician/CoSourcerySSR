@@ -35,7 +35,6 @@ export class FireDetailComponent implements OnInit {
 
   updateMetaData = () => {
     this.item.subscribe(item => {
-      console.log(item);
       this.title.setTitle(item.name);
       this.meta.updateTag({
         name: 'description',

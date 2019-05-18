@@ -47,10 +47,11 @@
         <span class="counter-icons__stat">{{ articleData.tags.length }}</span>
       </div>
     </div>
-    <div
+    <!-- <div
       class="counter-icons__item bookmark-icon"
       (click)="authCheck() ? bookmarkToggle() : null"
-    >
+    > -->
+    <div class="counter-icons__item bookmark-icon">
       <mat-icon>{{
         isArticleBookmarked && userId ? 'bookmark' : 'bookmark_border'
       }}</mat-icon>

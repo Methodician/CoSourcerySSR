@@ -31,8 +31,8 @@
         </form>
       </li>
 
-      <li *ngIf="false" class="menu__item menu__item_collapse">
-        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
+      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
         <button class="mat-icon-btn" routerLink="createarticle">
           <mat-icon>edit</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
@@ -41,10 +41,10 @@
         </button>
       </li>
 
-      <li *ngIf="false" class="menu__item menu__item_collapse">
-        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
-        <button class="mat-icon-btn" [routerLink]="['/profile', 'uid123']">
-          <!-- <button class="mat-icon-btn" [routerLink]="['/profile', authInfo.uid]"> -->
+      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
+      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
+        <!-- <button class="mat-icon-btn" [routerLink]="['/profile', 'uid123']"> -->
+        <button class="mat-icon-btn" [routerLink]="['/profile', authInfo.uid]">
           <mat-icon>person</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
             >Profile</span
@@ -52,22 +52,22 @@
         </button>
       </li>
 
-      <li *ngIf="false" class="menu__item menu__item_collapse">
-        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
+      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
         <button class="cos-btn navbar__cos-btn" (click)="onLogout()">
           Logout
         </button>
       </li>
 
-      <li *ngIf="true" class="menu__item menu__item_collapse">
-        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
+      <!-- <li *ngIf="true" class="menu__item menu__item_collapse"> -->
+      <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse">
         <button class="cos-btn navbar__cos-btn" (click)="onLogin()">
           Login
         </button>
       </li>
 
-      <li *ngIf="true" class="menu__item menu__item_collapse">
-        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
+      <!-- <li *ngIf="true" class="menu__item menu__item_collapse"> -->
+      <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse">
         <button
           class="cos-btn cos-btn_color_primary navbar__cos-btn"
           routerLink="register"
@@ -89,8 +89,8 @@
         </button>
 
         <!-- Authenticated Mobile Menu -->
-        <ul *ngIf="showMobileMenu && false" class="mobile-menu">
-          <!-- <ul *ngIf="showMobileMenu && authInfo.uid" class="mobile-menu"> -->
+        <!-- <ul *ngIf="showMobileMenu && false" class="mobile-menu"> -->
+        <ul *ngIf="showMobileMenu && authInfo.uid" class="mobile-menu">
           <li class="mobile-menu__item">
             <a
               routerLink="createarticle"
@@ -101,16 +101,16 @@
             </a>
           </li>
           <li class="mobile-menu__item">
-            <a
+            <!-- <a
               [routerLink]="['/profile', 'uid123']"
               class="mobile-menu__link"
               (click)="showMobileMenu = false"
-            >
-              <!-- <a
+            > -->
+            <a
               [routerLink]="['/profile', authInfo.uid]"
               class="mobile-menu__link"
               (click)="showMobileMenu = false"
-            > -->
+            >
               Profile
             </a>
           </li>
@@ -125,8 +125,8 @@
         </ul>
 
         <!-- Un-Authenticated Mobile Menu -->
-        <ul *ngIf="showMobileMenu && true" class="mobile-menu">
-          <!-- <ul *ngIf="showMobileMenu && !authInfo.uid" class="mobile-menu"> -->
+        <!-- <ul *ngIf="showMobileMenu && true" class="mobile-menu"> -->
+        <ul *ngIf="showMobileMenu && !authInfo.uid" class="mobile-menu">
           <li class="mobile-menu__item">
             <a
               class="mobile-menu__link"

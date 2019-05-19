@@ -20,9 +20,10 @@ export class TopNavComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.authSvc.authInfo$.subscribe(authInfo => {
-    //   this.authInfo = authInfo;
-    // });
+    this.authSvc.authInfo$.subscribe(authInfo => {
+      console.log(authInfo);
+      this.authInfo = authInfo;
+    });
   }
 
   onSearch(input) {
@@ -30,10 +31,10 @@ export class TopNavComponent implements OnInit {
   }
 
   onLogin() {
-    // this.dialog.open(LoginDialogComponent);
+    this.dialog.open(LoginDialogComponent);
   }
 
   onLogout() {
-    // this.authSvc.logout();
+    this.authSvc.logout();
   }
 }

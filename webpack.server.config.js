@@ -1,5 +1,8 @@
 // Work around for https://github.com/angular/angular-cli/issues/7200
 
+// SEEMS TO NO LONGER BE USED THANKS TO server.tsconfig.json build step
+// May delete soon... leaving for reference for now.
+
 const path = require('path');
 const webpack = require('webpack');
 

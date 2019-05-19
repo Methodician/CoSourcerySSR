@@ -1,0 +1,151 @@
+<section class="navbar-wrapper">
+  <nav class="navbar">
+    <a class="logo" routerLink="">
+      <img
+        class="logo__image"
+        src="../../assets/images/logo.svg"
+        alt="CoSourcery Logo"
+      />
+      <h1 class="logo__text">CoSourcery</h1>
+    </a>
+
+    <ul class="menu">
+      <li class="menu__item">
+        <form class="search-bar">
+          <input
+            #searchInput
+            class="search-bar__input"
+            type="text"
+            placeholder="Search Articles"
+            (keyup.enter)="onSearch(searchInput.value); searchInput.value = ''"
+          />
+          <button
+            class="mat-icon-btn"
+            (click)="onSearch(searchInput.value); searchInput.value = ''"
+          >
+            <mat-icon>search</mat-icon>
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
+              >Search</span
+            >
+          </button>
+        </form>
+      </li>
+
+      <li *ngIf="false" class="menu__item menu__item_collapse">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button class="mat-icon-btn" routerLink="createarticle">
+          <mat-icon>edit</mat-icon>
+          <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
+            >Post Article</span
+          >
+        </button>
+      </li>
+
+      <li *ngIf="false" class="menu__item menu__item_collapse">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button class="mat-icon-btn" [routerLink]="['/profile', 'uid123']">
+          <!-- <button class="mat-icon-btn" [routerLink]="['/profile', authInfo.uid]"> -->
+          <mat-icon>person</mat-icon>
+          <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
+            >Profile</span
+          >
+        </button>
+      </li>
+
+      <li *ngIf="false" class="menu__item menu__item_collapse">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button class="cos-btn navbar__cos-btn" (click)="onLogout()">
+          Logout
+        </button>
+      </li>
+
+      <li *ngIf="true" class="menu__item menu__item_collapse">
+        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button class="cos-btn navbar__cos-btn" (click)="onLogin()">
+          Login
+        </button>
+      </li>
+
+      <li *ngIf="true" class="menu__item menu__item_collapse">
+        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button
+          class="cos-btn cos-btn_color_primary navbar__cos-btn"
+          routerLink="register"
+        >
+          Register
+        </button>
+      </li>
+
+      <!-- Mobile Menus  -->
+      <li
+        class="menu__item menu__item_mobile"
+        (cosClickOut)="showMobileMenu = false"
+      >
+        <button class="mat-icon-btn" (click)="showMobileMenu = !showMobileMenu">
+          <mat-icon>menu</mat-icon>
+          <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
+            >Menu</span
+          >
+        </button>
+
+        <!-- Authenticated Mobile Menu -->
+        <ul *ngIf="showMobileMenu && false" class="mobile-menu">
+          <!-- <ul *ngIf="showMobileMenu && authInfo.uid" class="mobile-menu"> -->
+          <li class="mobile-menu__item">
+            <a
+              routerLink="createarticle"
+              class="mobile-menu__link"
+              (click)="showMobileMenu = false"
+            >
+              Post Article
+            </a>
+          </li>
+          <li class="mobile-menu__item">
+            <a
+              [routerLink]="['/profile', 'uid123']"
+              class="mobile-menu__link"
+              (click)="showMobileMenu = false"
+            >
+              <!-- <a
+              [routerLink]="['/profile', authInfo.uid]"
+              class="mobile-menu__link"
+              (click)="showMobileMenu = false"
+            > -->
+              Profile
+            </a>
+          </li>
+          <li class="mobile-menu__item">
+            <a
+              (click)="onLogout(); showMobileMenu = false"
+              class="mobile-menu__link"
+            >
+              Logout
+            </a>
+          </li>
+        </ul>
+
+        <!-- Un-Authenticated Mobile Menu -->
+        <ul *ngIf="showMobileMenu && true" class="mobile-menu">
+          <!-- <ul *ngIf="showMobileMenu && !authInfo.uid" class="mobile-menu"> -->
+          <li class="mobile-menu__item">
+            <a
+              class="mobile-menu__link"
+              (click)="onLogin(); showMobileMenu = false"
+            >
+              Login
+            </a>
+          </li>
+          <li class="mobile-menu__item">
+            <a
+              routerLink="register"
+              class="mobile-menu__link"
+              (click)="showMobileMenu = false"
+            >
+              Register
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</section>

@@ -15,6 +15,7 @@ import { TruncateStringPipe } from './shared/pipes/truncate-string.pipe';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { ArticlePreviewCardComponent } from './components/articles/article-preview-card/article-preview-card.component';
+import { TopNavComponent } from './components/top-nav/top-nav.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ArticlePreviewCardComponent } from './components/articles/article-previ
     HomeComponent,
     ArticlePreviewCardComponent,
     TruncateStringPipe,
+    TopNavComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

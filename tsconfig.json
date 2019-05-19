@@ -19,7 +19,7 @@
       "@components/*": ["src/app/components/*", "app/components/*"],
       "@admin/*": ["src/app/admin/*", "app/admin/*"],
       "@services/*": ["src/app/services/*", "app/services/*"],
-      "@class/*": ["models/class/*", "../models/class/*"],
+      "@models/*": ["src/app/models/*", "app/models/*"],
       "@guards/*": ["src/app/shared/guards/*", "app/shared/guards/*"],
       "@pipes/*": ["src/app/shared/pipes/*", "app/shared/pipes/*"],
       "@env/*": ["src/environments/*", "../environments/*"]

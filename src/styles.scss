@@ -1,1 +1,166 @@
-/* You can add global styles to this file, and also import other style files */
+/* GLOBAL DEFAULT STYLES */
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import './app/sass/vars.scss';
+@import './app/sass/mixins.scss';
+@import './app/sass/buttons.scss';
+
+*,
+html,
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+/* Typography */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+input,
+button {
+  font-family: $primary-typeface;
+  word-wrap: break-word;
+}
+
+body {
+  font-size: 16px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 15px 0;
+  line-height: 1.2;
+}
+
+h1 {
+  color: $medium-gray;
+  font-family: $logo-typeface;
+  font-size: 1.5rem;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $dark-gray;
+}
+
+h2 {
+  font-size: 1.375rem;
+}
+
+h3 {
+  font-size: 1.3125rem;
+}
+
+h4 {
+  font-size: 1.1875rem;
+}
+
+h5 {
+  font-size: 1.125rem;
+}
+
+p {
+  margin: 10px 0;
+  color: $dark-gray;
+  line-height: 1.5;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.8125rem;
+  }
+
+  h3 {
+    font-size: 1.625rem;
+  }
+
+  h4 {
+    font-size: 1.375rem;
+  }
+
+  h5 {
+    font-size: 1.1875rem;
+  }
+}
+
+/* Text Formatting */
+.text {
+  &.left {
+    text-align: left;
+  }
+
+  &.center {
+    text-align: center;
+  }
+
+  &.right {
+    text-align: right;
+  }
+
+  &.normal {
+    font-weight: normal;
+  }
+
+  &.strong {
+    font-weight: bold;
+  }
+
+  &.italic {
+    font-style: italic;
+  }
+}
+
+/* Flex Presets */
+.flex,
+.flex-column,
+.flex-center,
+.flex-center-align,
+.flex-center-justify {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-center-align {
+  align-items: center;
+}
+
+.flex-center-justify {
+  justify-content: center;
+}

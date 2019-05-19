@@ -6,7 +6,7 @@ import {
   AngularFirestoreDocument,
   AngularFirestoreCollection,
 } from '@angular/fire/firestore';
-import { ArticlePreview } from '@class/article-info';
+import { ArticlePreview } from '@models/interfaces/article-info';
 
 @Injectable({
   providedIn: 'root',

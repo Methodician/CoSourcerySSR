@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 import { MatIconModule, MatDialogModule } from '@angular/material';
@@ -27,6 +28,7 @@ import { TopNavComponent } from './components/top-nav/top-nav.component';
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     AngularFirestoreModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthInfo } from '@models/classes/auth-info';
 import { AuthService } from '@services/auth.service';
-// import { MatDialog } from '@angular/material';
-// import { LoginDialogComponent } from '@modals/login-dialog/login-dialog.component';
+import { MatDialog } from '@angular/material';
+import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'cos-top-nav',
@@ -16,7 +16,8 @@ export class TopNavComponent implements OnInit {
 
   constructor(
     private authSvc: AuthService,
-    private router: Router, // private dialog: MatDialog,
+    private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {

@@ -14,7 +14,8 @@
         {{ articleData.title | truncateString: 20 }}
       </h2>
       <p class="card-content__date">
-        Last Updated: {{ articleData?.lastUpdated?.toDate() | date }}
+        <!-- Nanoseconds doesn't work but toDate breaks on SSR -->
+        Last Updated: {{ articleData?.lastUpdated?.nanoseconds | date }}
       </p>
       <p>{{ articleData.introduction | truncateString: 100 }}</p>
     </section>

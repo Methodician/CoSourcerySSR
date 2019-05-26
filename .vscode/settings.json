@@ -3,5 +3,6 @@
     "editor.formatOnSave": true,
     "prettier.singleQuote": true,
     "javascript.preferences.quoteStyle": "single",
-    "typescript.preferences.quoteStyle": "single"
+    "typescript.preferences.quoteStyle": "single",
+    "prettier.trailingComma": "es5"
 }

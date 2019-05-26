@@ -13,14 +13,14 @@ const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
 @Component({
   selector: 'cos-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
   @ViewChild('filterMenu') filterMenu;
 
   filterTabs = [
     { name: 'Latest', selected: true },
-    { name: 'All', selected: false }
+    { name: 'All', selected: false },
   ];
 
   allArticles: ArticlePreview[];

@@ -17,11 +17,11 @@
 
 <!-- ARTICLE COLLECTIONS -->
 <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
-  <div class="article-grid">
+  <div class="article-grid" *ngIf="latestArticles">
     <cos-article-preview-card
+      *ngFor="let article of latestArticles"
       [userId]="userId"
       [articleData]="article"
-      *ngFor="let article of latestArticles | async"
     >
     </cos-article-preview-card>
   </div>

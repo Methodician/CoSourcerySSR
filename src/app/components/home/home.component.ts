@@ -1,11 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import {
+  TransferState,
+  makeStateKey,
+  StateKey,
+} from '@angular/platform-browser';
 
 import { ArticlePreview } from '@models/interfaces/article-info';
 import { ArticleService } from '@services/article.service';
 import { TabItem, TabList } from './filter-menu/filter-menu.component';
 
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, tap, startWith } from 'rxjs/operators';
+import { AngularFirestoreCollection } from '@angular/fire/firestore';
 
 const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
 const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
@@ -23,8 +29,8 @@ export class HomeComponent implements OnInit {
     { name: 'All', selected: false },
   ];
 
-  allArticles: ArticlePreview[];
-  latestArticles: ArticlePreview[];
+  allArticles$: Observable<ArticlePreview[]>;
+  latestArticles$: Observable<ArticlePreview[]>;
 
   userId;
 
@@ -38,46 +44,33 @@ export class HomeComponent implements OnInit {
   }
 
   initializeArticles = () => {
-    this.latestArticles = this.state.get(LATEST_ARTICLES_KEY, null as any);
-    this.allArticles = this.state.get(ALL_ARTICLES_KEY, null as any);
+    this.latestArticles$ = this.ssrArticleCollection(
+      this.articleSvc.latestArticlesRef(),
+      LATEST_ARTICLES_KEY
+    );
 
-    if (!this.latestArticles) {
-      this.articleSvc
-        .latestArticlesRef()
-        .valueChanges()
-        .pipe(
-          map(articles => {
-            return articles.map(art => {
-              if (art.timestamp) art.timestamp = art.timestamp.toDate();
-              if (art.lastUpdated) art.lastUpdated = art.lastUpdated.toDate();
-              return art;
-            });
-          })
-        )
-        .subscribe(articles => {
-          this.latestArticles = articles;
-          this.state.set(LATEST_ARTICLES_KEY, articles);
-        });
-    }
+    this.allArticles$ = this.ssrArticleCollection(
+      this.articleSvc.allArticlesRef(),
+      ALL_ARTICLES_KEY
+    );
+  };
 
-    if (!this.allArticles) {
-      this.articleSvc
-        .allArticlesRef()
-        .valueChanges()
-        .pipe(
-          map(articles => {
-            return articles.map(art => {
-              if (art.timestamp) art.timestamp = art.timestamp.toDate();
-              if (art.lastUpdated) art.lastUpdated = art.lastUpdated.toDate();
-              return art;
-            });
-          })
-        )
-        .subscribe(articles => {
-          this.allArticles = articles;
-          this.state.set(ALL_ARTICLES_KEY, articles);
+  ssrArticleCollection = (
+    fsRef: AngularFirestoreCollection,
+    stateKey: StateKey<ArticlePreview[]>
+  ) => {
+    const preExisting$ = this.state.get(stateKey, null as any);
+    return fsRef.valueChanges().pipe(
+      map(articles => {
+        return articles.map(art => {
+          if (art.timestamp) art.timestamp = art.timestamp.toDate();
+          if (art.lastUpdated) art.lastUpdated = art.lastUpdated.toDate();
+          return art;
         });
-    }
+      }),
+      tap(articles => this.state.set(stateKey, articles)),
+      startWith(preExisting$)
+    );
   };
 
   // HOME FILTER FUNCTIONALITY

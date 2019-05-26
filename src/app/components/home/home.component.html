@@ -17,9 +17,9 @@
 
 <!-- ARTICLE COLLECTIONS -->
 <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
-  <div class="article-grid" *ngIf="latestArticles">
+  <div class="article-grid">
     <cos-article-preview-card
-      *ngFor="let article of latestArticles"
+      *ngFor="let article of latestArticles$ | async"
       [userId]="userId"
       [articleData]="article"
     >
@@ -28,9 +28,9 @@
 </section>
 
 <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
-  <div class="article-grid" *ngIf="allArticles">
+  <div class="article-grid">
     <cos-article-preview-card
-      *ngFor="let article of allArticles"
+      *ngFor="let article of allArticles$ | async"
       [userId]="userId"
       [articleData]="article"
     >

@@ -30,11 +30,11 @@
 
 <section id="all-articles">
   <!-- <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')"> -->
-  <div class="article-grid">
+  <div class="article-grid" *ngIf="allArticles">
     <cos-article-preview-card
       [userId]="userId"
       [articleData]="article"
-      *ngFor="let article of allArticles | async"
+      *ngFor="let article of allArticles"
     >
     </cos-article-preview-card>
   </div>

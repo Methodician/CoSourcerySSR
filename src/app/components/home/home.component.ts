@@ -1,8 +1,11 @@
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformServer, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { TransferState, makeStateKey } from '@angular/platform-browser'
+
 import { Observable } from 'rxjs';
 import { ArticlePreview } from '@models/interfaces/article-info';
 import { ArticleService } from '@services/article.service';
+
+const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
 
 @Component({
   selector: 'cos-home',
@@ -10,19 +13,27 @@ import { ArticleService } from '@services/article.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  allArticles: Observable<ArticlePreview[]>;
+  // allArticles: Observable<ArticlePreview[]>;
+  allArticles: ArticlePreview[];
 
-  constructor(@Inject(PLATFORM_ID) private platform: Object, private articleSvc: ArticleService) {}
+  constructor(private articleSvc: ArticleService, private state: TransferState) {}
 
   ngOnInit() {
-    if(isPlatformBrowser(this.platform)){
-
       this.initializeArticles();
-    }
   }
 
   initializeArticles() {
     // this.latestArticles = this.articleSvc.latestArticlesRef().valueChanges();
-    this.allArticles = this.articleSvc.allArticlesRef().valueChanges();
+    // this.allArticles = this.articleSvc.allArticlesRef().valueChanges();
+    this.allArticles = this.state.get(ALL_ARTICLES_KEY, null as any);
+
+    if(!this.allArticles) {
+      this.articleSvc.allArticlesRef()
+      .valueChanges()
+      .subscribe(articles => {
+        this.allArticles = articles;
+        this.state.set(ALL_ARTICLES_KEY, articles);
+      })
+    }
   }
 }

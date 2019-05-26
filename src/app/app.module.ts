@@ -1,6 +1,6 @@
 import { environment } from '../environments/environment';
 
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AngularFireModule } from '@angular/fire';
@@ -42,6 +42,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AngularFireAuthModule,
     AngularFirestoreModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserTransferStateModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

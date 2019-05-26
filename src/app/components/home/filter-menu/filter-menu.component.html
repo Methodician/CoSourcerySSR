@@ -1,0 +1,17 @@
+<section class="filter-menu-container"
+         [ngStyle]="{'height': filterContainerHeight ? filterContainerHeight + 'px' : 'auto'}"
+         (window:scroll)="checkScrollPosition()"
+         (window:resize)="adjustFilterContainerOnResize()">
+  <ul #filterMenu
+      class="filter-menu"
+      [ngClass]="{'filter-menu_sticky': filterMenuIsSticky}">
+    <li *ngFor="let tab of tabList; let i = index"
+        class="filter-menu__item"
+        [class.active]="tab.selected"
+        (click)="onTabClicked(i)">
+      {{ tab.name }}
+    </li>
+    <!-- Display this in mobile until hover? -->
+    <!-- <li class="filter-menu__item active">{{ getSelectedTab().name }}</li> -->
+  </ul>
+</section>

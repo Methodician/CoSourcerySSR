@@ -22,7 +22,6 @@ export class TopNavComponent implements OnInit {
 
   ngOnInit() {
     this.authSvc.authInfo$.subscribe(authInfo => {
-      console.log(authInfo);
       this.authInfo = authInfo;
     });
   }

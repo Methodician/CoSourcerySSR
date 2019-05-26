@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser'
 
-import { Observable } from 'rxjs';
 import { ArticlePreview } from '@models/interfaces/article-info';
 import { ArticleService } from '@services/article.service';
+
+import { map } from 'rxjs/operators';
 
 const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
 
@@ -30,6 +31,13 @@ export class HomeComponent implements OnInit {
     if(!this.allArticles) {
       this.articleSvc.allArticlesRef()
       .valueChanges()
+      .pipe(map(articles => {
+        return articles.map(art => {
+          if(art.timestamp) art.timestamp = art.timestamp.toDate();
+          if(art.lastUpdated) art.lastUpdated = art.lastUpdated.toDate();
+          return art;
+        })
+      }))
       .subscribe(articles => {
         this.allArticles = articles;
         this.state.set(ALL_ARTICLES_KEY, articles);

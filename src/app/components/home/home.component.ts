@@ -14,7 +14,6 @@ const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  // allArticles: Observable<ArticlePreview[]>;
   allArticles: ArticlePreview[];
 
   constructor(private articleSvc: ArticleService, private state: TransferState) {}
@@ -25,11 +24,11 @@ export class HomeComponent implements OnInit {
 
   initializeArticles() {
     // this.latestArticles = this.articleSvc.latestArticlesRef().valueChanges();
-    // this.allArticles = this.articleSvc.allArticlesRef().valueChanges();
     this.allArticles = this.state.get(ALL_ARTICLES_KEY, null as any);
 
     if(!this.allArticles) {
-      this.articleSvc.allArticlesRef()
+      this.articleSvc
+      .allArticlesRef()
       .valueChanges()
       .pipe(map(articles => {
         return articles.map(art => {

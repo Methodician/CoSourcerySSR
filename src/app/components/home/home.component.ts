@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser'
 
 import { ArticlePreview } from '@models/interfaces/article-info';
 import { ArticleService } from '@services/article.service';
+import { TabItem, TabList } from './filter-menu/filter-menu.component';
 
 import { map } from 'rxjs/operators';
 
@@ -14,15 +15,24 @@ const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('filterMenu') filterMenu;
+
+  filterTabs = [
+    { name: 'Latest', selected: true },
+    { name: 'All', selected: false },
+  ];
+
   allArticles: ArticlePreview[];
 
-  constructor(private articleSvc: ArticleService, private state: TransferState) {}
+  userId;
 
+  constructor(private articleSvc: ArticleService, private state: TransferState) {}
+  
   ngOnInit() {
       this.initializeArticles();
   }
 
-  initializeArticles() {
+  initializeArticles = () => {
     // this.latestArticles = this.articleSvc.latestArticlesRef().valueChanges();
     this.allArticles = this.state.get(ALL_ARTICLES_KEY, null as any);
 
@@ -41,6 +51,23 @@ export class HomeComponent implements OnInit {
         this.allArticles = articles;
         this.state.set(ALL_ARTICLES_KEY, articles);
       })
+    }
+  }
+
+
+  // HOME FILTER FUNCTIONALITY
+
+  addFilterTab = (tab: TabItem) => {
+    if(!this.filterMenu.getTabByName(tab.name)) {
+      this.filterTabs.push(tab);
+    }
+  }
+
+  onFilterTabAdded = ($event: TabList) => {
+    const lastTabIndex = $event.length - 1;
+    const newestTabName = $event[lastTabIndex].name;
+    if (newestTabName === 'Search Results') {
+      this.filterMenu.selectTab(lastTabIndex);
     }
   }
 }

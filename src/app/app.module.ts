@@ -26,6 +26,7 @@ import { TopNavComponent } from '@components/top-nav/top-nav.component';
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TruncateStringPipe,
     TopNavComponent,
     LoginDialogComponent,
+    FilterMenuComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

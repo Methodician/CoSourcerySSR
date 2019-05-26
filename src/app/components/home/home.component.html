@@ -8,16 +8,15 @@
 </section>
 
 <!-- ARTICLE FILTERS -->
-<!-- <cos-filter-menu
+<cos-filter-menu
   #filterMenu
   [tabList]="filterTabs"
-  (tabAdded)="onFilterTabAdded($event)"
-  (tabSelected)="onFilterTabSelected($event)"
+  (onTabAdded)="onFilterTabAdded($event)"
 >
-</cos-filter-menu> -->
+</cos-filter-menu>
 
 <!-- ARTICLE COLLECTIONS -->
-<!-- <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
+<section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
   <div class="article-grid">
     <cos-article-preview-card
       [userId]="userId"
@@ -26,10 +25,9 @@
     >
     </cos-article-preview-card>
   </div>
-</section> -->
+</section>
 
-<section id="all-articles">
-  <!-- <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')"> -->
+<section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
   <div class="article-grid" *ngIf="allArticles">
     <cos-article-preview-card
       *ngFor="let article of allArticles"

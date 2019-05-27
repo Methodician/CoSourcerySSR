@@ -14,6 +14,7 @@ import { SeoService } from '@services/seo.service';
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
 import { AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AuthService } from '@services/auth.service';
 
 const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
 const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
@@ -25,6 +26,7 @@ const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
 })
 export class HomeComponent implements OnInit {
   @ViewChild('filterMenu') filterMenu;
+  userId: string;
 
   filterTabs = [
     { name: 'Latest', selected: true },
@@ -34,19 +36,32 @@ export class HomeComponent implements OnInit {
   allArticles$: Observable<ArticlePreview[]>;
   latestArticles$: Observable<ArticlePreview[]>;
 
-  userId;
-
   constructor(
     private articleSvc: ArticleService,
     private seoSvc: SeoService,
+    private authSvc: AuthService,
     private state: TransferState
   ) {}
 
   ngOnInit() {
     this.initializeArticles();
     this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
+    this.watchAuthInfo();
   }
 
+  // AUTH STUFF
+  watchAuthInfo = () => {
+    this.authSvc.authInfo$.subscribe(authInfo => {
+      this.userId = authInfo.uid;
+      if (this.userId) {
+        this.watchBookmarkedArticles();
+        this.addFilterTab({ name: 'Bookmarked', selected: false });
+      }
+    });
+  };
+  //end auth stuff
+
+  // ARTICLE STUFF
   initializeArticles = () => {
     this.latestArticles$ = this.ssrArticleCollection(
       this.articleSvc.latestArticlesRef(),
@@ -57,6 +72,16 @@ export class HomeComponent implements OnInit {
       this.articleSvc.allArticlesRef(),
       ALL_ARTICLES_KEY
     );
+  };
+
+  watchBookmarkedArticles = () => {
+    const bookmarkedArticles$ = this.articleSvc.watchBookmarkedArticles(
+      this.userId
+    );
+    console.log('bookmarked', bookmarkedArticles$);
+    bookmarkedArticles$.subscribe(res => {
+      console.log('first subscription', res);
+    });
   };
 
   ssrArticleCollection = (
@@ -76,9 +101,9 @@ export class HomeComponent implements OnInit {
       startWith(preExisting$)
     );
   };
+  //end article stuff
 
   // HOME FILTER FUNCTIONALITY
-
   addFilterTab = (tab: TabItem) => {
     if (!this.filterMenu.getTabByName(tab.name)) {
       this.filterTabs.push(tab);
@@ -92,4 +117,5 @@ export class HomeComponent implements OnInit {
       this.filterMenu.selectTab(lastTabIndex);
     }
   };
+  //end home filter functionality
 }

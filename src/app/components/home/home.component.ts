@@ -6,8 +6,10 @@ import {
 } from '@angular/platform-browser';
 
 import { ArticlePreview } from '@models/interfaces/article-info';
-import { ArticleService } from '@services/article.service';
 import { TabItem, TabList } from './filter-menu/filter-menu.component';
+
+import { ArticleService } from '@services/article.service';
+import { SeoService } from '@services/seo.service';
 
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
@@ -36,11 +38,13 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private articleSvc: ArticleService,
+    private seoSvc: SeoService,
     private state: TransferState
   ) {}
 
   ngOnInit() {
     this.initializeArticles();
+    this.seoSvc.generateTags();
   }
 
   initializeArticles = () => {

@@ -1,12 +1,18 @@
 import { environment } from '../environments/environment';
 
-import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
+import {
+  BrowserModule,
+  BrowserTransferStateModule,
+} from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+// AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
+// Angular Material
 import {
   MatIconModule,
   MatDialogModule,
@@ -43,6 +49,7 @@ import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.c
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    AngularFireDatabaseModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserTransferStateModule,
     FormsModule,

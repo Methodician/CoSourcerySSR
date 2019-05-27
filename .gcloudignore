@@ -15,3 +15,10 @@
 
 # Node.js dependencies:
 node_modules/
+
+# compiled output (build runs on server)
+dist/
+
+#general
+.vscode/
+e2e/

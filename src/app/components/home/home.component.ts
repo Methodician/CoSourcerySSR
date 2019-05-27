@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.initializeArticles();
-    this.seoSvc.generateTags();
+    this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
   }
 
   initializeArticles = () => {

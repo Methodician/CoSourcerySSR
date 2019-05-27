@@ -38,24 +38,29 @@
   </div>
 </section>
 
-<!-- <section
+<section
   id="bookmarked-articles"
   *ngIf="filterMenu.isTabSelected('Bookmarked')"
 >
   <h3 class="collection-text">
     You have
-    <span class="collection-text_accent">{{ bookmarkedArticles.length }}</span>
-    {{ bookmarkedArticles.length === 1 ? 'bookmark' : 'bookmarks' }}.
+    <span class="collection-text_accent">{{
+      (bookmarkedArticles$ | async)?.length
+    }}</span>
+    {{
+      (bookmarkedArticles$ | async)?.length === 1 ? 'bookmark' : 'bookmarks'
+    }}.
   </h3>
   <div class="article-grid">
+    <!-- *ngFor="let article of bookmarkedArticles$ | async | reverseArray" -->
     <cos-article-preview-card
+      *ngFor="let article of bookmarkedArticles$ | async"
       [userId]="userId"
       [articleData]="article"
-      *ngFor="let article of bookmarkedArticles | reverseArray"
     >
     </cos-article-preview-card>
   </div>
-</section> -->
+</section>
 
 <!-- <section
   id="searched-articles"

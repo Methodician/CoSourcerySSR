@@ -14,6 +14,7 @@ import { SeoService } from '@services/seo.service';
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
 import { AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AuthService } from '@services/auth.service';
 
 const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
 const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
@@ -25,6 +26,7 @@ const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
 })
 export class HomeComponent implements OnInit {
   @ViewChild('filterMenu') filterMenu;
+  userId: string;
 
   filterTabs = [
     { name: 'Latest', selected: true },
@@ -33,52 +35,75 @@ export class HomeComponent implements OnInit {
 
   allArticles$: Observable<ArticlePreview[]>;
   latestArticles$: Observable<ArticlePreview[]>;
-
-  userId;
+  bookmarkedArticles$: Observable<ArticlePreview[]>;
 
   constructor(
     private articleSvc: ArticleService,
     private seoSvc: SeoService,
+    private authSvc: AuthService,
     private state: TransferState
   ) {}
 
   ngOnInit() {
     this.initializeArticles();
     this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
+    this.watchAuthInfo();
   }
 
+  // AUTH STUFF
+  watchAuthInfo = () => {
+    this.authSvc.authInfo$.subscribe(({ uid }) => {
+      this.userId = uid;
+      if (uid) {
+        this.watchBookmarkedArticles(uid);
+        this.addFilterTab({ name: 'Bookmarked', selected: false });
+      }
+    });
+  };
+  //end auth stuff
+
+  // ARTICLE STUFF
   initializeArticles = () => {
     this.latestArticles$ = this.ssrArticleCollection(
-      this.articleSvc.latestArticlesRef(),
+      this.articleSvc.latestArticlesRef().valueChanges(),
       LATEST_ARTICLES_KEY
     );
 
     this.allArticles$ = this.ssrArticleCollection(
-      this.articleSvc.allArticlesRef(),
+      this.articleSvc.allArticlesRef().valueChanges(),
       ALL_ARTICLES_KEY
     );
   };
 
+  watchBookmarkedArticles = (uid: string) => {
+    this.bookmarkedArticles$ = this.articleSvc
+      .watchBookmarkedArticles(this.userId)
+      .pipe(
+        map(articles => articles.map(art => this.processArticleTimestamps(art)))
+      );
+  };
+
   ssrArticleCollection = (
-    fsRef: AngularFirestoreCollection,
+    articles$: Observable<ArticlePreview[]>,
     stateKey: StateKey<ArticlePreview[]>
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
-    return fsRef.valueChanges().pipe(
-      map(articles => {
-        return articles.map(art => {
-          if (art.timestamp) art.timestamp = art.timestamp.toDate();
-          if (art.lastUpdated) art.lastUpdated = art.lastUpdated.toDate();
-          return art;
-        });
-      }),
+    return articles$.pipe(
+      map(articles => articles.map(art => this.processArticleTimestamps(art))),
       tap(articles => this.state.set(stateKey, articles)),
       startWith(preExisting$)
     );
   };
 
-  // HOME FILTER FUNCTIONALITY
+  processArticleTimestamps = (article: ArticlePreview) => {
+    const { timestamp, lastUpdated } = article;
+    if (timestamp) article.timestamp = timestamp.toDate();
+    if (lastUpdated) article.lastUpdated = lastUpdated.toDate();
+    return article;
+  };
+  //end article stuff
 
+  // HOME FILTER FUNCTIONALITY
   addFilterTab = (tab: TabItem) => {
     if (!this.filterMenu.getTabByName(tab.name)) {
       this.filterTabs.push(tab);
@@ -92,4 +117,5 @@ export class HomeComponent implements OnInit {
       this.filterMenu.selectTab(lastTabIndex);
     }
   };
+  //end home filter functionality
 }

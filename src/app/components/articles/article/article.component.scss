@@ -1,0 +1,451 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../../sass/vars.scss';
+// Uses Modified CKEditor Styles
+@import '../../../sass/ckeditor.scss';
+// Uses CommentList Styles for Top Level Comments Section
+// @import '../../comments/comment-list/comment-list.component.scss';
+
+label,
+input,
+textarea,
+mat-form-field,
+mat-error {
+  font-family: $primary-typeface;
+}
+
+mat-form-field {
+  display: block;
+  margin-bottom: 10px;
+}
+
+mat-error,
+mat-hint {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+label {
+  font-weight: bold;
+  color: $accent-color-1-dark;
+}
+
+.article-form {
+  width: 100%;
+  max-width: 768px;
+  position: relative;
+  margin: 24px auto;
+  padding: 20px 20px 40px;
+  box-shadow: 0 2px 5px $light-gray-50;
+  overflow: hidden;
+
+  ::ng-deep .mat-form-field-infix {
+    padding: 0 0 2px;
+    border: none;
+  }
+}
+
+.article-cover-image {
+  &__display {
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  &__image {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+
+  &__editor {
+    margin-bottom: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 4px $light-gray-50;
+
+    input {
+      padding-top: 10px;
+    }
+
+    .file-input {
+      flex-direction: column;
+
+      input {
+        width: 100%;
+        min-width: 0;
+        max-width: 250px;
+        padding: 6px;
+        border: 1px solid $light-gray-50;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.article-header {
+  margin-bottom: 24px;
+  padding: 0 20px 20px;
+  box-shadow: 0 2px 4px $light-gray-50;
+}
+
+:host ::ng-deep .article-title,
+.article-intro {
+  position: relative;
+
+  mat-form-field {
+    width: 100%;
+    padding-right: 50px;
+  }
+
+  input {
+    margin-top: 0;
+    padding: 5px 0;
+  }
+
+  button {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-left: 10px;
+
+    &.active {
+      visibility: visible;
+    }
+  }
+
+  &:hover button {
+    visibility: visible;
+  }
+}
+
+.article-intro {
+  p {
+    margin: 0;
+    padding-top: 5px;
+    padding-right: 3px;
+  }
+
+  p.static-display {
+    min-height: 80px;
+  }
+
+  textarea {
+    margin: 0 0 2px;
+    padding: 0;
+  }
+
+  mat-form-field {
+    margin-bottom: 0;
+  }
+}
+
+.article-date {
+  margin: 0 0 5px;
+  color: $medium-gray;
+  font-size: 0.8rem;
+}
+
+.article-utils {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 15px;
+  border-radius: 4px;
+  background-color: lighten($accent-color-1-dark, 30%);
+
+  @media screen and (min-width: 500px) {
+    padding: 0 20px;
+  }
+}
+
+.counters {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: #fff;
+    cursor: default;
+
+    &:not(:first-child) {
+      margin-left: 15px;
+    }
+
+    &:hover .mat-icon-btn__tooltip {
+      visibility: visible;
+    }
+
+    &-stat {
+      display: block;
+      margin-left: 5px;
+      font-size: 0.9rem;
+    }
+
+    &_clickable {
+      cursor: pointer;
+    }
+
+    @media screen and (min-width: 500px) {
+      &:not(:first-child) {
+        margin-left: 20px;
+      }
+
+      &-stat {
+        margin-left: 15px;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  &__icon {
+    height: auto;
+    width: auto;
+    font-size: 1.2rem;
+
+    @media screen and (min-width: 500px) {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.article-body {
+  margin-bottom: 24px;
+
+  &__interior {
+    position: relative;
+    border-radius: 4px;
+    border: 1px solid #fff;
+    transition: border 0.5s;
+
+    &.border {
+      border: 1px solid $accent-color-1;
+    }
+
+    button {
+      visibility: hidden;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    &:hover button,
+    button.active {
+      visibility: visible;
+    }
+  }
+}
+
+.article-tags {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 0 10px;
+
+  h3 {
+    margin: 0 0 10px;
+    color: $medium-gray;
+  }
+
+  ::ng-deep .mat-chip-list-wrapper {
+    padding: 5px 0;
+  }
+
+  mat-chip {
+    margin: 6px;
+    box-shadow: 0 0 5px $light-gray;
+    background-color: #fff;
+  }
+
+  input {
+    min-width: 100px;
+    padding: 7px 7px 7px 12px;
+    border-radius: 25px;
+    border: 1px solid rgba($accent-color-1, 0.25);
+    background-color: transparent;
+
+    &.error {
+      border: 1px solid #f44336;
+    }
+  }
+
+  mat-hint.error {
+    color: #f44336;
+  }
+
+  button {
+    visibility: hidden;
+    position: absolute;
+    top: -10px;
+    right: 0;
+
+    &.active {
+      visibility: visible;
+    }
+  }
+
+  &:hover button {
+    visibility: visible;
+  }
+}
+
+.save-undo-abs-position {
+  height: 58px;
+  width: 58px;
+  position: absolute;
+  bottom: 0;
+  right: 80px;
+  z-index: 20;
+}
+
+.save-undo-sticky-position {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-top-right-radius: 100%;
+  border-top-left-radius: 100%;
+  box-shadow: 0 1px 5px $light-gray-50;
+  background-color: lighten($accent-color-1-dark, 15%);
+  transform: translateY(100%);
+  transition: transform 0.3s;
+
+  &.disabled {
+    background-color: $medium-gray;
+
+    .flag-pole {
+      background-color: $medium-gray;
+    }
+  }
+
+  &.extended {
+    transform: translateY(0);
+
+    .save-button {
+      transform: scale(1);
+    }
+  }
+
+  &.sticky {
+    position: fixed;
+    bottom: 0;
+  }
+}
+
+.flag {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: lighten($accent-color-1-dark, 15%);
+
+  &-axle {
+    height: 0;
+    width: 0;
+
+    &-270 {
+      transform: rotate(-90deg);
+      transition: transform 0.4s;
+
+      &_active {
+        transform: rotate(-360deg);
+        transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+      }
+    }
+
+    &-90 {
+      transform: rotate(90deg);
+      transition: transform 0.8s;
+
+      &_active {
+        transform: rotate(0deg);
+        transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+      }
+    }
+  }
+
+  &-pole {
+    height: 2px;
+    width: 40px;
+
+    &_left {
+      right: 0;
+    }
+
+    &_right {
+      left: 0;
+    }
+  }
+
+  &-tooltip {
+    left: 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: $dark-gray;
+    color: #fff;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transform: translateX(-100%);
+
+    &_changes {
+      display: block;
+    }
+
+    &_save,
+    &_restore {
+      display: none;
+    }
+  }
+}
+
+.save-control:hover ~ .flag {
+  .flag-tooltip_changes {
+    display: none;
+  }
+
+  .flag-tooltip_save {
+    display: block;
+  }
+}
+
+.restore-control:hover ~ .flag {
+  .flag-tooltip_changes {
+    display: none;
+  }
+
+  .flag-tooltip_restore {
+    display: block;
+  }
+}
+
+.save-button {
+  transform: scale(0);
+  transition: transform cubic-bezier(0.5, -0.35, 0.5, 1.35) 0.5s;
+}
+
+.restore-button {
+  position: absolute;
+  right: -45px;
+}
+
+.article-comments {
+  margin-bottom: 48px;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    margin-top: 0;
+    color: $primary-color;
+    text-align: center;
+  }
+}

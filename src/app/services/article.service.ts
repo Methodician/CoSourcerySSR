@@ -7,7 +7,7 @@ import {
   AngularFirestoreCollection,
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
-import { ArticlePreview } from '@models/interfaces/article-info';
+import { ArticlePreview, ArticleDetail } from '@models/interfaces/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
@@ -22,42 +22,65 @@ export class ArticleService {
     private afd: AngularFireDatabase
   ) {}
 
-  articlePreviewRef = (
-    id: string
-  ): AngularFirestoreDocument<ArticlePreview> => {
-    return this.afs.doc(`articleData/articles/previews/${id}`);
-  };
+  // Firestore Ref Builders
 
-  allArticlesRef = (): AngularFirestoreCollection<ArticlePreview> => {
-    return this.afs.collection('articleData/articles/previews', ref =>
+  articleDetailRef = (id: string): AngularFirestoreDocument<ArticleDetail> =>
+    this.afs.doc(`articleData/articles/articles/${id}`);
+
+  articlePreviewRef = (id: string): AngularFirestoreDocument<ArticlePreview> =>
+    this.afs.doc(`articleData/articles/previews/${id}`);
+
+  allArticlesRef = (): AngularFirestoreCollection<ArticlePreview> =>
+    this.afs.collection('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
-  };
 
-  latestArticlesRef = (): AngularFirestoreCollection<ArticlePreview> => {
-    return this.afs.collection('articleData/articles/previews', ref =>
+  latestArticlesRef = (): AngularFirestoreCollection<ArticlePreview> =>
+    this.afs.collection('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
         .limit(12)
     );
-  };
 
   watchBookmarkedArticles = uid => {
-    const bookmarksRef: AngularFireList<Number> = this.afd.list(
-      `userInfo/articleBookmarksPerUser/${uid}`
-    );
-    return bookmarksRef.snapshotChanges().pipe(
+    const bookmarks$ = this.afd
+      .list(`userInfo/articleBookmarksPerUser/${uid}`)
+      .snapshotChanges();
+
+    return bookmarks$.pipe(
       switchMap(bookmarkSnaps => {
         // switchMap is like map but removes observable nesting
         const keys = bookmarkSnaps.map(snap => snap.key);
-        const snapshots = keys.map(key =>
+        const articleSnapshots = keys.map(key =>
           this.articlePreviewRef(key)
             .valueChanges()
             .pipe(take(1))
         );
-        return combineLatest(snapshots);
+        return combineLatest(articleSnapshots);
       })
     );
   };
+
+  // Feeling clever - doing above in effectively one line of code does not make it better...
+  // watchBookmarkedArticles = uid =>
+  //   this.afd
+  //     .list(`userInfo/articleBookmarksPerUser/${uid}`)
+  //     .snapshotChanges()
+  //     .pipe(
+  //       switchMap(bookmarkSnaps =>
+  //         combineLatest(
+  //           bookmarkSnaps
+  //             .map(snap => snap.key)
+  //             .map(key =>
+  //               this.articlePreviewRef(key)
+  //                 .valueChanges()
+  //                 .pipe(take(1))
+  //             )
+  //         )
+  //       )
+  //     );
+
+  // HELPERS
+  createArticleId = () => this.afs.createId();
 }

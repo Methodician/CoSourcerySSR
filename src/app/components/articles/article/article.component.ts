@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
+import { Subscription, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'cos-article',
@@ -13,6 +14,27 @@ import { UserService } from '@services/user.service';
 })
 export class ArticleComponent implements OnInit {
   loggedInUser = new UserInfo(null, null, null, null);
+
+  //  // Cover Image State
+  //  coverImageFile: File;
+  //  shouldAbortTempCoverImage = false;
+  //  coverImageUploadTask: AngularFireUploadTask;
+  //  coverImageUploadPercent$: Observable<number>;
+  //  coverImageUrl$ = new BehaviorSubject<string>(null);
+
+  // Article State
+  articleId: any;
+  articleIsNew: boolean;
+  // articleIsBookmarked: boolean;
+  articleSubscription: Subscription;
+  // articleEditorSubscription: Subscription;
+  // currentArticleEditors = {};
+
+  // Article Form State
+  isFormInCreateView: boolean;
+  // articleEditFormSubscription: Subscription;
+  // editSessionTimeout;
+  // saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
     articleId: '',
@@ -34,7 +56,9 @@ export class ArticleComponent implements OnInit {
     isFeatured: false,
     editors: {},
   });
-  // articleState: ArticleDetail = this.articleEditForm.value;
+  articleState$: BehaviorSubject<ArticleDetail> = new BehaviorSubject(
+    this.articleEditForm.value
+  );
 
   CtrlNames = CtrlNames; // Enum Availablility in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
@@ -51,43 +75,49 @@ export class ArticleComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.watchArticleId().subscribe(id => this.watchArticle(id));
+  }
 
   // Form Setup & Breakdown
   // initializeArticleState = () => {
   //   this.articleState = this.articleEditForm.value;
   // };
 
-  // setArticleId = () => {
-  //   this.route.params.subscribe(params => {
-  //     if (params['key']) {
-  //       this.articleId = params['key'];
-  //       this.articleIsNew = false;
-  //     } else {
-  //       this.articleId = this.articleSvc.createArticleId();
-  //       this.articleIsNew = true;
-  //       this.formIsInCreateView = true;
-  //     }
-  //     this.ckeditor.config.fbImageStorage = {
-  //       storageRef: this.articleSvc.createVanillaStorageRef(
-  //         `articleBodyImages/${this.articleId}/`,
-  //       ),
-  //     };
-  //   });
-  // }
+  watchArticleId = () => {
+    const id$ = new BehaviorSubject<string>(null);
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.articleIsNew = false;
+        id$.next(params['id']);
+      } else {
+        this.articleIsNew = true;
+        this.isFormInCreateView = true;
+        id$.next(this.articleSvc.createArticleId());
+      }
+      // this.ckeditor.config.fbImageStorage = {
+      //   storageRef: this.articleSvc.createVanillaStorageRef(
+      //     `articleBodyImages/${this.articleId}/`
+      //   ),
+      // };
+    });
+    return id$;
+  };
 
-  // watchArticle() {
-  //   this.articleSubscription = this.articleSvc
-  //     .getArticleRefById(this.articleId)
-  //     .valueChanges()
-  //     .subscribe(articleData => {
-  //       this.updateMetaData(articleData);
-  //       this.ckeditor.content = articleData
-  //         ? articleData.body
-  //         : this.ckeditor.placeholder;
-  //       this.setFormData(articleData);
-  //     });
-  // }
+  watchArticle = id => {
+    if (!id) return;
+    this.articleSubscription = this.articleSvc
+      .articleDetailRef(id)
+      .valueChanges()
+      .subscribe(articleData => {
+        this.articleState$.next(articleData);
+        // this.updateMetaData(articleData);
+        // this.ckeditor.content = articleData
+        //   ? articleData.body
+        //   : this.ckeditor.placeholder;
+        // this.setFormData(articleData);
+      });
+  };
 
   // watchFormChanges() {
   //   this.articleEditFormSubscription = this.articleEditForm.valueChanges.subscribe(

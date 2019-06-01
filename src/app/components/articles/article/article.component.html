@@ -151,16 +151,19 @@
       'not-editable': !loggedInUser.uid || !isCtrlActive(CtrlNames.body)
     }"
   >
-    <!-- <div
+    <div
       class="article-body__interior"
       [ngClass]="{ border: loggedInUser.uid && isCtrlActive(CtrlNames.body) }"
     >
+      <!-- 
+      BELONGS INSIDE FOLLOWING BUTTON
+      [ngStyle]="{
+      transform: 'translateY(' + ckeditor.toggleBtnOffset + 'px)'
+    }"
+   -->
       <button
         class="mat-icon-btn"
         [ngClass]="{ active: loggedInUser.uid && isCtrlActive(CtrlNames.body) }"
-        [ngStyle]="{
-          transform: 'translateY(' + ckeditor.toggleBtnOffset + 'px)'
-        }"
         type="button"
         (click)="toggleCtrl(CtrlNames.body)"
       >
@@ -172,9 +175,9 @@
             ? 'Close Body'
             : 'Edit Body'
         }}</span>
-      </button> -->
-    <div>BODY</div>
-    <!-- <ckeditor
+      </button>
+      <article [innerHTML]="(articleState$ | async).body"></article>
+      <!-- <ckeditor
         *ngIf="ckeditor.content"
         (change)="onCKEditorChanged($event)"
         (ready)="onCKEditorReady($event)"
@@ -184,7 +187,7 @@
         [disabled]="!loggedInUser.uid || !isCtrlActive(CtrlNames.body)"
       >
       </ckeditor> -->
-    <!-- </div> -->
+    </div>
   </section>
 
   <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">

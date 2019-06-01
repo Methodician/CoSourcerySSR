@@ -17,6 +17,7 @@ import {
   MatIconModule,
   MatDialogModule,
   MatInputModule,
+  MatChipsModule,
 } from '@angular/material';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -33,6 +34,7 @@ import { LoginDialogComponent } from '@components/modals/login-dialog/login-dial
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.component';
+import { ArticleComponent } from './components/articles/article/article.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.c
     TopNavComponent,
     LoginDialogComponent,
     FilterMenuComponent,
+    ArticleComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [
@@ -59,6 +62,7 @@ import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.c
     MatIconModule,
     MatDialogModule,
     MatInputModule,
+    MatChipsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

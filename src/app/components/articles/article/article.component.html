@@ -1,4 +1,9 @@
-<form #formBoundingBox [formGroup]="articleEditForm" class="article-form">
+<form
+  #formBoundingBox
+  [formGroup]="articleEditForm"
+  *ngIf="articleState$ | async"
+  class="article-form"
+>
   <section
     class="article-cover-image"
     (cosClickOut)="clickoutCtrl(CtrlNames.coverImage)"
@@ -36,8 +41,7 @@
         >Current Date: {{ articleSvc.tempTimestamp().toDate() | date }}</span
       >
       <span *ngIf="!isFormInCreateView"
-        >Last Updated:
-        {{ articleState$.value.lastUpdated?.toDate() | date }}</span
+        >Last Updated: {{ articleState$.value.lastUpdated | date }}</span
       >
     </p>
 

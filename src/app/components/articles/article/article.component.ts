@@ -10,7 +10,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
+
 import { Subscription, BehaviorSubject } from 'rxjs';
+import { tap, map, startWith } from 'rxjs/operators';
 
 const ARTICL_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -32,7 +34,7 @@ export class ArticleComponent implements OnInit {
   //  coverImageUrl$ = new BehaviorSubject<string>(null);
 
   // Article State
-  articleId: any;
+  articleId: string;
   isArticleNew: boolean;
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
@@ -66,15 +68,15 @@ export class ArticleComponent implements OnInit {
     editors: {},
   });
 
-  articleState$: BehaviorSubject<ArticleDetail>;
+  articleState$: BehaviorSubject<ArticleDetail> = new BehaviorSubject(null);
 
   CtrlNames = CtrlNames; // Enum Availablility in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private route: ActivatedRoute,
+    private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService
   ) {
@@ -84,16 +86,34 @@ export class ArticleComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.watchArticleId().subscribe(
-      id => (this.articleState$ = this.watchArticle(id))
+    this.initializeArticleIdAndState();
+    this.articleState$.subscribe(art =>
+      console.log("it's still loading twice...", art)
     );
-    this.articleState$.subscribe(art => console.log(art));
   }
 
   // Form Setup & Breakdown
-  // initializeArticleState = () => {
-  //   this.articleState = this.articleEditForm.value;
-  // };
+  initializeArticleIdAndState = () => {
+    this.watchArticleId().subscribe(id => {
+      if (id) this.initializeArticleState(id);
+    });
+  };
+
+  initializeArticleState = (id: string) => {
+    if (this.isArticleNew) this.articleState$.next(this.articleEditForm.value);
+    else {
+      const preExisting$ = this.state.get(ARTICL_STATE_KEY, null as any);
+      this.articleSubscription = this.watchArticle(id)
+        .pipe(
+          map(article =>
+            article ? this.articleSvc.processArticleTimestamps(article) : null
+          ),
+          tap(article => this.state.set(ARTICL_STATE_KEY, article)),
+          startWith(preExisting$)
+        )
+        .subscribe(article => this.articleState$.next(article));
+    }
+  };
 
   watchArticleId = () => {
     const id$ = new BehaviorSubject<string>(null);
@@ -116,21 +136,16 @@ export class ArticleComponent implements OnInit {
   };
 
   watchArticle = id => {
-    const article$ = new BehaviorSubject<ArticleDetail>(
-      this.articleEditForm.value
-    );
-    this.articleSubscription = this.articleSvc
-      .articleDetailRef(id)
-      .valueChanges()
-      .subscribe(articleData => {
-        article$.next(articleData);
-        // this.updateMetaData(articleData);
-        // this.ckeditor.content = articleData
-        //   ? articleData.body
-        //   : this.ckeditor.placeholder;
-        // this.setFormData(articleData);
-      });
-    return article$;
+    return this.articleSvc.articleDetailRef(id).valueChanges();
+    //   .subscribe(articleData => {
+    //     article$.next(articleData);
+    //     // this.updateMetaData(articleData);
+    //     // this.ckeditor.content = articleData
+    //     //   ? articleData.body
+    //     //   : this.ckeditor.placeholder;
+    //     // this.setFormData(articleData);
+    //   });
+    // return article$;
   };
 
   // watchFormChanges() {

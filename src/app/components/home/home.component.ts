@@ -82,7 +82,9 @@ export class HomeComponent implements OnInit {
     this.bookmarkedArticles$ = this.articleSvc
       .watchBookmarkedArticles(this.userId)
       .pipe(
-        map(articles => articles.map(art => this.processArticleTimestamps(art)))
+        map(articles =>
+          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+        )
       );
   };
 
@@ -92,18 +94,14 @@ export class HomeComponent implements OnInit {
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(
-      map(articles => articles.map(art => this.processArticleTimestamps(art))),
+      map(articles =>
+        articles.map(art => this.articleSvc.processArticleTimestamps(art))
+      ),
       tap(articles => this.state.set(stateKey, articles)),
       startWith(preExisting$)
     );
   };
 
-  processArticleTimestamps = (article: ArticlePreview) => {
-    const { timestamp, lastUpdated } = article;
-    if (timestamp) article.timestamp = timestamp.toDate();
-    if (lastUpdated) article.lastUpdated = lastUpdated.toDate();
-    return article;
-  };
   //end article stuff
 
   // HOME FILTER FUNCTIONALITY

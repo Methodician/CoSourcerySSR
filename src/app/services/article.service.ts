@@ -83,4 +83,11 @@ export class ArticleService {
 
   // HELPERS
   createArticleId = () => this.afs.createId();
+
+  processArticleTimestamps = (article: ArticlePreview) => {
+    const { timestamp, lastUpdated } = article;
+    if (timestamp) article.timestamp = timestamp.toDate();
+    if (lastUpdated) article.lastUpdated = lastUpdated.toDate();
+    return article;
+  };
 }

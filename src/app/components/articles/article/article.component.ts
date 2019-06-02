@@ -133,6 +133,46 @@ export class ArticleComponent implements OnInit {
   //   );
   // }
 
+  // UI Display
+  activateCtrl = async (ctrl: CtrlNames) => {
+    // if (ctrl === CtrlNames.none) {
+    //   this.ctrlBeingEdited = ctrl;
+    //   return;
+    // }
+    // // For now doesn't allow multiple editors. Will change later...
+    // if (!this.userIsEditingArticle() && this.articleHasEditors()) {
+    //   // Editors is an array so that we can later allow multilple collaborative editors.
+    //   // For now we'll just check the first (only) element in the array
+    //   const uid = Object.keys(this.currentArticleEditors)[0];
+    //   if (!this.userMap[uid]) {
+    //     await this.userSvc.addUserToMap(uid);
+    //   }
+    //   this.openMessageDialog(
+    //     'Edit Locked',
+    //     `The user "${this.userMap[
+    //       uid
+    //     ].displayName()}" is currently editing this article.`,
+    //     'Please try again later.',
+    //   );
+    // } else if (this.authCheck()) {
+    //   this.ctrlBeingEdited = ctrl;
+    // }
+  };
+
+  toggleCtrl = (ctrl: CtrlNames) => {
+    if (this.isCtrlActive(ctrl)) {
+      this.activateCtrl(CtrlNames.none);
+      return;
+    }
+    this.activateCtrl(ctrl);
+  };
+
+  clickoutCtrl = (ctrl: CtrlNames) => {
+    if (ctrl === this.ctrlBeingEdited) {
+      this.activateCtrl(CtrlNames.none);
+    }
+  };
+
   isCtrlActive = (ctrl: CtrlNames): boolean => {
     return this.ctrlBeingEdited === ctrl;
   };

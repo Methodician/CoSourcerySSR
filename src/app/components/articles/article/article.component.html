@@ -6,7 +6,7 @@
     <div>COVER IMAGE</div>
     <!-- <cos-cover-image-display
       [coverImageUrl]="coverImageUrl$ | async"
-      [imageAlt]="articleState?.imageAlt"
+      [imageAlt]="articleState$.value.imageAlt"
       [isCtrlActive]="isCtrlActive(CtrlNames.coverImage)"
       (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
     ></cos-cover-image-display>
@@ -27,17 +27,17 @@
       <!-- <cos-title
         [parentForm]="articleEditForm"
         [isActive]="isCtrlActive(CtrlNames.title)"
-        [title]="articleState?.title"
+        [title]="articleState$.value.title"
         (onCtrlToggle)="toggleCtrl(CtrlNames.title)"
       ></cos-title> -->
     </section>
 
     <p class="article-date">
-      <span *ngIf="formIsInCreateView"
+      <span *ngIf="isFormInCreateView"
         >Current Date: {{ articleSvc.tempTimestamp().toDate() | date }}</span
       >
-      <span *ngIf="!formIsInCreateView"
-        >Last Updated: {{ articleState?.lastUpdated?.toDate() | date }}</span
+      <span *ngIf="!isFormInCreateView"
+        >Last Updated: {{ articleState$.value.lastUpdated?.toDate() | date }}</span
       >
     </p>
 
@@ -46,8 +46,8 @@
       (cosClickOut)="clickoutCtrl(CtrlNames.intro)"
     >
       <p *ngIf="!isCtrlActive(CtrlNames.intro)" class="static-display">
-        {{ articleState?.introduction }}
-        <span *ngIf="articleState?.introduction === ''"
+        {{ articleState$.value.introduction }}
+        <span *ngIf="articleState$.value.introduction === ''"
           >Add an introduction to tell people what your article is about. It can
           be a few words or several sentences, but should be pretty short.</span
         >
@@ -90,26 +90,26 @@
             class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
             style="left: 0;"
           >
-            {{ articleState?.commentCount }} Comment(s)
+            {{ articleState$.value.commentCount }} Comment(s)
           </span>
           <span class="counters__item-stat">{{
-            articleState?.commentCount
+            articleState$.value.commentCount
           }}</span>
         </div>
         <div class="counters__item">
           <mat-icon class="counters__icon">border_color</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-            >{{ articleState?.version }} Edit(s)</span
+            >{{ articleState$.value.version }} Edit(s)</span
           >
-          <span class="counters__item-stat">{{ articleState?.version }}</span>
+          <span class="counters__item-stat">{{ articleState$.value.version }}</span>
         </div>
         <div class="counters__item">
           <mat-icon class="counters__icon">loyalty</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-            >{{ articleState?.tags.length }} Tag(s)</span
+            >{{ articleState$.value.tags.length }} Tag(s)</span
           >
           <span class="counters__item-stat">{{
-            articleState?.tags.length
+            articleState$.value.tags.length
           }}</span>
         </div>
       </div>
@@ -138,8 +138,8 @@
     <section class="article-attributions">
       <div>CONTRIBUTORS</div>
       <!-- <cos-contributors
-        [creatorId]="articleState?.authorId"
-        [editorMap]="articleState?.editors"
+        [creatorId]="articleState$.value.authorId"
+        [editorMap]="articleState$.value.editors"
       >
       </cos-contributors> -->
     </section>
@@ -192,12 +192,12 @@
 
   <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
     <h3>Tags</h3>
-    <p *ngIf="articleState?.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
+    <p *ngIf="articleState$.value.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
       This article has no tags. Click the edit icon, enter a tag, and press
       enter.
     </p>
     <mat-chip-list *ngIf="!isCtrlActive(CtrlNames.tags)">
-      <mat-chip *ngFor="let articleTag of articleState?.tags">{{
+      <mat-chip *ngFor="let articleTag of articleState$.value.tags">{{
         articleTag
       }}</mat-chip>
     </mat-chip-list>
@@ -205,7 +205,7 @@
     <mat-form-field *ngIf="isCtrlActive(CtrlNames.tags)">
       <mat-chip-list #chipList>
         <mat-chip
-          *ngFor="let articleTag of articleState?.tags"
+          *ngFor="let articleTag of articleState$.value.tags"
           (removed)="removeTag(articleTag)"
         >
           {{ articleTag }}

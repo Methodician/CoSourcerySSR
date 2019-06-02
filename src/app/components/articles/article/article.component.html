@@ -116,7 +116,7 @@
         </div>
       </div>
       <div
-        *ngIf="!articleIsNew"
+        *ngIf="!isArticleNew"
         class="counters__item counters__item_clickable"
         (click)="authCheck() ? bookmarkToggle() : null"
       >
@@ -266,7 +266,7 @@
       </button>
 
       <div
-        *ngIf="!articleIsNew"
+        *ngIf="!isArticleNew"
         class="restore-control flag flag-axle flag-axle-90"
         [ngClass]="{ 'flag-axle-90_active': articleHasUnsavedChanges() }"
       >
@@ -299,7 +299,7 @@
 </form>
 
 <!-- Top-Level Comment -->
-<section *ngIf="!articleIsNew" class="article-comments">
+<section *ngIf="!isArticleNew" class="article-comments">
   <!-- <section class="article-comments__header">
     <h2 class="article-comments__title">Discussion</h2>
     <button

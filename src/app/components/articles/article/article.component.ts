@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  TransferState,
+  makeStateKey,
+  StateKey,
+} from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ArticleService } from '@services/article.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -6,6 +11,10 @@ import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
 import { Subscription, BehaviorSubject } from 'rxjs';
+
+const ARTICL_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
+  'articleState'
+);
 
 @Component({
   selector: 'cos-article',
@@ -24,7 +33,7 @@ export class ArticleComponent implements OnInit {
 
   // Article State
   articleId: any;
-  articleIsNew: boolean;
+  isArticleNew: boolean;
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
   // articleEditorSubscription: Subscription;
@@ -56,9 +65,8 @@ export class ArticleComponent implements OnInit {
     isFeatured: false,
     editors: {},
   });
-  articleState$: BehaviorSubject<ArticleDetail> = new BehaviorSubject(
-    this.articleEditForm.value
-  );
+
+  articleState$: BehaviorSubject<ArticleDetail>;
 
   CtrlNames = CtrlNames; // Enum Availablility in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
@@ -91,10 +99,10 @@ export class ArticleComponent implements OnInit {
     const id$ = new BehaviorSubject<string>(null);
     this.route.params.subscribe(params => {
       if (params['id']) {
-        this.articleIsNew = false;
+        this.isArticleNew = false;
         id$.next(params['id']);
       } else {
-        this.articleIsNew = true;
+        this.isArticleNew = true;
         this.isFormInCreateView = true;
         id$.next(this.articleSvc.createArticleId());
       }

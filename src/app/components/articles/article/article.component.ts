@@ -76,7 +76,10 @@ export class ArticleComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.watchArticleId().subscribe(id => this.watchArticle(id));
+    this.watchArticleId().subscribe(
+      id => (this.articleState$ = this.watchArticle(id))
+    );
+    this.articleState$.subscribe(art => console.log(art));
   }
 
   // Form Setup & Breakdown
@@ -105,18 +108,21 @@ export class ArticleComponent implements OnInit {
   };
 
   watchArticle = id => {
-    if (!id) return;
+    const article$ = new BehaviorSubject<ArticleDetail>(
+      this.articleEditForm.value
+    );
     this.articleSubscription = this.articleSvc
       .articleDetailRef(id)
       .valueChanges()
       .subscribe(articleData => {
-        this.articleState$.next(articleData);
+        article$.next(articleData);
         // this.updateMetaData(articleData);
         // this.ckeditor.content = articleData
         //   ? articleData.body
         //   : this.ckeditor.placeholder;
         // this.setFormData(articleData);
       });
+    return article$;
   };
 
   // watchFormChanges() {

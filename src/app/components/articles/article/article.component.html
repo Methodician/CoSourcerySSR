@@ -3,14 +3,13 @@
     class="article-cover-image"
     (cosClickOut)="clickoutCtrl(CtrlNames.coverImage)"
   >
-    <div>COVER IMAGE</div>
-    <!-- <cos-cover-image-display
-      [coverImageUrl]="coverImageUrl$ | async"
+    <cos-cover-image-display
+      [coverImageUrl]="articleState$.value.imageUrl"
       [imageAlt]="articleState$.value.imageAlt"
       [isCtrlActive]="isCtrlActive(CtrlNames.coverImage)"
       (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
     ></cos-cover-image-display>
-    <cos-cover-image-edit
+    <!-- <cos-cover-image-edit
       [isCtrlActive]="isCtrlActive(CtrlNames.coverImage)"
       [shouldAbort]="shouldAbortTempCoverImage"
       [parentForm]="articleEditForm"
@@ -37,7 +36,8 @@
         >Current Date: {{ articleSvc.tempTimestamp().toDate() | date }}</span
       >
       <span *ngIf="!isFormInCreateView"
-        >Last Updated: {{ articleState$.value.lastUpdated?.toDate() | date }}</span
+        >Last Updated:
+        {{ articleState$.value.lastUpdated?.toDate() | date }}</span
       >
     </p>
 
@@ -101,7 +101,9 @@
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
             >{{ articleState$.value.version }} Edit(s)</span
           >
-          <span class="counters__item-stat">{{ articleState$.value.version }}</span>
+          <span class="counters__item-stat">{{
+            articleState$.value.version
+          }}</span>
         </div>
         <div class="counters__item">
           <mat-icon class="counters__icon">loyalty</mat-icon>
@@ -192,7 +194,11 @@
 
   <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
     <h3>Tags</h3>
-    <p *ngIf="articleState$.value.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
+    <p
+      *ngIf="
+        articleState$.value.tags.length === 0 && !isCtrlActive(CtrlNames.tags)
+      "
+    >
       This article has no tags. Click the edit icon, enter a tag, and press
       enter.
     </p>

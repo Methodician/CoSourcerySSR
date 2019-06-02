@@ -33,8 +33,9 @@ import { TopNavComponent } from '@components/top-nav/top-nav.component';
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FilterMenuComponent } from './components/home/filter-menu/filter-menu.component';
-import { ArticleComponent } from './components/articles/article/article.component';
+import { FilterMenuComponent } from '@components/home/filter-menu/filter-menu.component';
+import { ArticleComponent } from '@components/articles/article/article.component';
+import { CoverImageDisplayComponent } from './components/articles/article/cover-image-display/cover-image-display.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { ArticleComponent } from './components/articles/article/article.componen
     LoginDialogComponent,
     FilterMenuComponent,
     ArticleComponent,
+    CoverImageDisplayComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

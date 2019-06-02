@@ -1,0 +1,26 @@
+<section class="article-cover-image__display">
+  <img
+    *ngIf="!coverImageUrl"
+    class="article-cover-image__image"
+    src="../../../assets/images/logo.svg"
+    alt="Cover Image"
+  />
+  <img
+    *ngIf="coverImageUrl"
+    class="article-cover-image__image"
+    [src]="coverImageUrl"
+    [alt]="imageAlt"
+  />
+  <button
+    class="mat-icon-btn"
+    [ngClass]="{ active: isCtrlActive }"
+    type="button"
+    (click)="toggleCtrl()"
+  >
+    <mat-icon>{{ isCtrlActive ? 'clear' : 'edit' }}</mat-icon>
+    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+      isCtrlActive ? 'Close Image' : 'Edit
+      Image'
+    }}</span>
+  </button>
+</section>

@@ -17,7 +17,6 @@ import { tap, map, startWith } from 'rxjs/operators';
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
 );
-const ROUTE_PARAMS_KEY = makeStateKey<BehaviorSubject<String>>('articleId');
 
 @Component({
   selector: 'cos-article',
@@ -69,7 +68,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     editors: {},
   });
 
-  articleState$: BehaviorSubject<ArticleDetail> = new BehaviorSubject(null);
+  articleState: ArticleDetail;
 
   CtrlNames = CtrlNames; // Enum Availablility in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
@@ -88,67 +87,57 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeArticleIdAndState();
-    this.articleState$.subscribe(art =>
-      console.log("it's still loading twice...", art)
-    );
   }
 
   ngOnDestroy() {
     this.articleSubscription.unsubscribe();
-    this.articleState$.next(null);
+    this.state.set(ARTICLE_STATE_KEY, null);
   }
 
   // Form Setup & Breakdown
   initializeArticleIdAndState = () => {
     this.watchArticleId().subscribe(id => {
-      console.log(id);
       if (id) this.initializeArticleState(id);
     });
   };
 
   initializeArticleState = (id: string) => {
-    if (this.isArticleNew) this.articleState$.next(this.articleEditForm.value);
+    if (this.isArticleNew) this.articleState = this.articleEditForm.value;
     else {
-      const preExisting$ = this.state.get(ARTICLE_STATE_KEY, null as any);
+      const preExisting = this.state.get(ARTICLE_STATE_KEY, null as any);
       this.articleSubscription = this.watchArticle(id)
         .pipe(
           map(article =>
             article ? this.articleSvc.processArticleTimestamps(article) : null
           ),
           tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-          startWith(preExisting$)
+          startWith(preExisting)
         )
-        .subscribe(article => this.articleState$.next(article));
+        .subscribe(article => {
+          if (article && article != this.articleState) {
+            this.articleState = article;
+          }
+        });
     }
   };
 
   watchArticleId = () => {
     const id$ = new BehaviorSubject<string>(null);
-    const existingParams = this.state.get(ROUTE_PARAMS_KEY, {} as any);
-    this.route.params
-      .pipe(
-        tap(params => this.state.set(ROUTE_PARAMS_KEY, params)),
-        startWith(existingParams)
-      )
-      .subscribe(params => {
-        console.log(
-          'I thought it may be due to storing observables but params is an object',
-          params
-        );
-        if (params['id']) {
-          this.isArticleNew = false;
-          id$.next(params['id']);
-        } else {
-          this.isArticleNew = true;
-          this.isFormInCreateView = true;
-          id$.next(this.articleSvc.createArticleId());
-        }
-        // this.ckeditor.config.fbImageStorage = {
-        //   storageRef: this.articleSvc.createVanillaStorageRef(
-        //     `articleBodyImages/${this.articleId}/`
-        //   ),
-        // };
-      });
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.isArticleNew = false;
+        id$.next(params['id']);
+      } else {
+        this.isArticleNew = true;
+        this.isFormInCreateView = true;
+        id$.next(this.articleSvc.createArticleId());
+      }
+      // this.ckeditor.config.fbImageStorage = {
+      //   storageRef: this.articleSvc.createVanillaStorageRef(
+      //     `articleBodyImages/${this.articleId}/`
+      //   ),
+      // };
+    });
     return id$;
   };
 

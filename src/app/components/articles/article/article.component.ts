@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   TransferState,
   makeStateKey,
@@ -14,16 +14,17 @@ import { UserService } from '@services/user.service';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { tap, map, startWith } from 'rxjs/operators';
 
-const ARTICL_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
 );
+const ROUTE_PARAMS_KEY = makeStateKey<BehaviorSubject<String>>('articleId');
 
 @Component({
   selector: 'cos-article',
   templateUrl: './article.component.html',
   styleUrls: ['./article.component.scss'],
 })
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, OnDestroy {
   loggedInUser = new UserInfo(null, null, null, null);
 
   //  // Cover Image State
@@ -92,9 +93,15 @@ export class ArticleComponent implements OnInit {
     );
   }
 
+  ngOnDestroy() {
+    this.articleSubscription.unsubscribe();
+    this.articleState$.next(null);
+  }
+
   // Form Setup & Breakdown
   initializeArticleIdAndState = () => {
     this.watchArticleId().subscribe(id => {
+      console.log(id);
       if (id) this.initializeArticleState(id);
     });
   };
@@ -102,13 +109,13 @@ export class ArticleComponent implements OnInit {
   initializeArticleState = (id: string) => {
     if (this.isArticleNew) this.articleState$.next(this.articleEditForm.value);
     else {
-      const preExisting$ = this.state.get(ARTICL_STATE_KEY, null as any);
+      const preExisting$ = this.state.get(ARTICLE_STATE_KEY, null as any);
       this.articleSubscription = this.watchArticle(id)
         .pipe(
           map(article =>
             article ? this.articleSvc.processArticleTimestamps(article) : null
           ),
-          tap(article => this.state.set(ARTICL_STATE_KEY, article)),
+          tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
           startWith(preExisting$)
         )
         .subscribe(article => this.articleState$.next(article));
@@ -117,21 +124,31 @@ export class ArticleComponent implements OnInit {
 
   watchArticleId = () => {
     const id$ = new BehaviorSubject<string>(null);
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.isArticleNew = false;
-        id$.next(params['id']);
-      } else {
-        this.isArticleNew = true;
-        this.isFormInCreateView = true;
-        id$.next(this.articleSvc.createArticleId());
-      }
-      // this.ckeditor.config.fbImageStorage = {
-      //   storageRef: this.articleSvc.createVanillaStorageRef(
-      //     `articleBodyImages/${this.articleId}/`
-      //   ),
-      // };
-    });
+    const existingParams = this.state.get(ROUTE_PARAMS_KEY, {} as any);
+    this.route.params
+      .pipe(
+        tap(params => this.state.set(ROUTE_PARAMS_KEY, params)),
+        startWith(existingParams)
+      )
+      .subscribe(params => {
+        console.log(
+          'I thought it may be due to storing observables but params is an object',
+          params
+        );
+        if (params['id']) {
+          this.isArticleNew = false;
+          id$.next(params['id']);
+        } else {
+          this.isArticleNew = true;
+          this.isFormInCreateView = true;
+          id$.next(this.articleSvc.createArticleId());
+        }
+        // this.ckeditor.config.fbImageStorage = {
+        //   storageRef: this.articleSvc.createVanillaStorageRef(
+        //     `articleBodyImages/${this.articleId}/`
+        //   ),
+        // };
+      });
     return id$;
   };
 

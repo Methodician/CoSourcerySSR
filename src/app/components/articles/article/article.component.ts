@@ -104,20 +104,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
   initializeArticleState = (id: string) => {
     if (this.isArticleNew) this.articleState = this.articleEditForm.value;
     else {
-      const preExisting = this.state.get(ARTICLE_STATE_KEY, null as any);
-      this.articleSubscription = this.watchArticle(id)
-        .pipe(
-          map(article =>
-            article ? this.articleSvc.processArticleTimestamps(article) : null
-          ),
-          tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-          startWith(preExisting)
-        )
-        .subscribe(article => {
-          if (article && article != this.articleState) {
-            this.articleState = article;
-          }
-        });
+      this.articleSubscription = this.watchArticle(id).subscribe(article => {
+        if (article) {
+          this.articleState = article;
+        }
+      });
     }
   };
 
@@ -142,7 +133,17 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   watchArticle = id => {
-    return this.articleSvc.articleDetailRef(id).valueChanges();
+    const preExisting = this.state.get(ARTICLE_STATE_KEY, null as any);
+    return this.articleSvc
+      .articleDetailRef(id)
+      .valueChanges()
+      .pipe(
+        map(article =>
+          article ? this.articleSvc.processArticleTimestamps(article) : null
+        ),
+        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+        startWith(preExisting)
+      );
     //   .subscribe(articleData => {
     //     article$.next(articleData);
     //     // this.updateMetaData(articleData);

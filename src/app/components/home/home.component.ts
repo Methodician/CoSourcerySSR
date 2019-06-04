@@ -13,11 +13,14 @@ import { SeoService } from '@services/seo.service';
 
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
-import { AngularFirestoreCollection } from '@angular/fire/firestore';
 import { AuthService } from '@services/auth.service';
 
-const ALL_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('allArticles');
-const LATEST_ARTICLES_KEY = makeStateKey<ArticlePreview[]>('latestArticles');
+const ALL_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
+  'allArticles'
+);
+const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
+  'latestArticles'
+);
 
 @Component({
   selector: 'cos-home',
@@ -79,28 +82,26 @@ export class HomeComponent implements OnInit {
     this.bookmarkedArticles$ = this.articleSvc
       .watchBookmarkedArticles(this.userId)
       .pipe(
-        map(articles => articles.map(art => this.processArticleTimestamps(art)))
+        map(articles =>
+          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+        )
       );
   };
 
   ssrArticleCollection = (
     articles$: Observable<ArticlePreview[]>,
-    stateKey: StateKey<ArticlePreview[]>
+    stateKey: StateKey<Observable<ArticlePreview[]>>
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(
-      map(articles => articles.map(art => this.processArticleTimestamps(art))),
+      map(articles =>
+        articles.map(art => this.articleSvc.processArticleTimestamps(art))
+      ),
       tap(articles => this.state.set(stateKey, articles)),
       startWith(preExisting$)
     );
   };
 
-  processArticleTimestamps = (article: ArticlePreview) => {
-    const { timestamp, lastUpdated } = article;
-    if (timestamp) article.timestamp = timestamp.toDate();
-    if (lastUpdated) article.lastUpdated = lastUpdated.toDate();
-    return article;
-  };
   //end article stuff
 
   // HOME FILTER FUNCTIONALITY

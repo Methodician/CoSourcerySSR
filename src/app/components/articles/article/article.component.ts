@@ -1,18 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  TransferState,
+  makeStateKey,
+  StateKey,
+} from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ArticleService } from '@services/article.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
+
 import { Subscription, BehaviorSubject } from 'rxjs';
+import { tap, map, startWith } from 'rxjs/operators';
+
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
+  'articleState'
+);
 
 @Component({
   selector: 'cos-article',
   templateUrl: './article.component.html',
   styleUrls: ['./article.component.scss'],
 })
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, OnDestroy {
   loggedInUser = new UserInfo(null, null, null, null);
 
   //  // Cover Image State
@@ -23,8 +34,8 @@ export class ArticleComponent implements OnInit {
   //  coverImageUrl$ = new BehaviorSubject<string>(null);
 
   // Article State
-  articleId: any;
-  articleIsNew: boolean;
+  articleId: string;
+  isArticleNew: boolean;
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
   // articleEditorSubscription: Subscription;
@@ -56,17 +67,16 @@ export class ArticleComponent implements OnInit {
     isFeatured: false,
     editors: {},
   });
-  articleState$: BehaviorSubject<ArticleDetail> = new BehaviorSubject(
-    this.articleEditForm.value
-  );
+
+  articleState: ArticleDetail;
 
   CtrlNames = CtrlNames; // Enum Availablility in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private route: ActivatedRoute,
+    private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService
   ) {
@@ -76,25 +86,40 @@ export class ArticleComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.watchArticleId().subscribe(
-      id => (this.articleState$ = this.watchArticle(id))
-    );
-    this.articleState$.subscribe(art => console.log(art));
+    this.initializeArticleIdAndState();
+  }
+
+  ngOnDestroy() {
+    this.articleSubscription.unsubscribe();
+    this.state.set(ARTICLE_STATE_KEY, null);
   }
 
   // Form Setup & Breakdown
-  // initializeArticleState = () => {
-  //   this.articleState = this.articleEditForm.value;
-  // };
+  initializeArticleIdAndState = () => {
+    this.watchArticleId().subscribe(id => {
+      if (id) this.initializeArticleState(id);
+    });
+  };
+
+  initializeArticleState = (id: string) => {
+    if (this.isArticleNew) this.articleState = this.articleEditForm.value;
+    else {
+      this.articleSubscription = this.watchArticle(id).subscribe(article => {
+        if (article) {
+          this.articleState = article;
+        }
+      });
+    }
+  };
 
   watchArticleId = () => {
     const id$ = new BehaviorSubject<string>(null);
     this.route.params.subscribe(params => {
       if (params['id']) {
-        this.articleIsNew = false;
+        this.isArticleNew = false;
         id$.next(params['id']);
       } else {
-        this.articleIsNew = true;
+        this.isArticleNew = true;
         this.isFormInCreateView = true;
         id$.next(this.articleSvc.createArticleId());
       }
@@ -108,21 +133,26 @@ export class ArticleComponent implements OnInit {
   };
 
   watchArticle = id => {
-    const article$ = new BehaviorSubject<ArticleDetail>(
-      this.articleEditForm.value
-    );
-    this.articleSubscription = this.articleSvc
+    const preExisting = this.state.get(ARTICLE_STATE_KEY, null as any);
+    return this.articleSvc
       .articleDetailRef(id)
       .valueChanges()
-      .subscribe(articleData => {
-        article$.next(articleData);
-        // this.updateMetaData(articleData);
-        // this.ckeditor.content = articleData
-        //   ? articleData.body
-        //   : this.ckeditor.placeholder;
-        // this.setFormData(articleData);
-      });
-    return article$;
+      .pipe(
+        map(article =>
+          article ? this.articleSvc.processArticleTimestamps(article) : null
+        ),
+        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+        startWith(preExisting)
+      );
+    //   .subscribe(articleData => {
+    //     article$.next(articleData);
+    //     // this.updateMetaData(articleData);
+    //     // this.ckeditor.content = articleData
+    //     //   ? articleData.body
+    //     //   : this.ckeditor.placeholder;
+    //     // this.setFormData(articleData);
+    //   });
+    // return article$;
   };
 
   // watchFormChanges() {

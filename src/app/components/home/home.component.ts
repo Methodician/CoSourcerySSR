@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {
   TransferState,
   makeStateKey,
@@ -27,7 +27,7 @@ const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('filterMenu') filterMenu;
   userId: string;
 
@@ -53,6 +53,10 @@ export class HomeComponent implements OnInit {
     this.watchAuthInfo();
   }
 
+  ngOnDestroy() {
+    this.clearArticleKeys();
+  }
+
   // AUTH STUFF
   watchAuthInfo = () => {
     this.authSvc.authInfo$.subscribe(({ uid }) => {
@@ -76,6 +80,11 @@ export class HomeComponent implements OnInit {
       this.articleSvc.allArticlesRef().valueChanges(),
       ALL_ARTICLES_KEY
     );
+  };
+
+  clearArticleKeys = () => {
+    this.state.set(ALL_ARTICLES_KEY, null);
+    this.state.set(LATEST_ARTICLES_KEY, null);
   };
 
   watchBookmarkedArticles = (uid: string) => {

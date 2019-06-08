@@ -96,7 +96,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Form Setup & Breakdown
   initializeArticleIdAndState = () => {
-    this.watchArticleId().subscribe(id => {
+    this.watchArticleId$().subscribe(id => {
       if (id) this.initializeArticleState(id);
     });
   };
@@ -112,7 +112,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     }
   };
 
-  watchArticleId = () => {
+  watchArticleId$ = () => {
     const id$ = new BehaviorSubject<string>(null);
     this.route.params.subscribe(params => {
       if (params['id']) {

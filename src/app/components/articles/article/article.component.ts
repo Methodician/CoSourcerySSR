@@ -11,8 +11,8 @@ import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
 
-import { Subscription, BehaviorSubject } from 'rxjs';
-import { tap, map, startWith } from 'rxjs/operators';
+import { Subscription, BehaviorSubject, Observable } from 'rxjs';
+import { tap, map, startWith, switchMap } from 'rxjs/operators';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -96,50 +96,60 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Form Setup & Breakdown
   initializeArticleIdAndState = () => {
-    this.watchArticleId$().subscribe(id => {
-      if (id) this.initializeArticleState(id);
-    });
-  };
-
-  initializeArticleState = (id: string) => {
-    if (this.isArticleNew) this.articleState = this.articleEditForm.value;
-    else {
-      this.articleSubscription = this.watchArticle(id).subscribe(article => {
-        if (article) {
-          this.articleState = article;
+    const article$ = this.watchArticleIdAndStatus$().pipe(
+      tap(({ id, isNew }) => {
+        if (id) this.articleId = id;
+        if (isNew) {
+          this.isArticleNew = true;
+          this.isFormInCreateView = true;
+        } else this.isArticleNew = false;
+      }),
+      switchMap(
+        ({ id, isNew }): Observable<ArticleDetail> => {
+          if (isNew) {
+            return Observable.create(observer => {
+              observer.next(this.articleEditForm.value);
+              observer.complete();
+            });
+          } else return this.watchArticle$(id);
         }
-      });
-    }
+      )
+    );
+    this.articleSubscription = article$.subscribe(
+      article => (this.articleState = article)
+    );
   };
 
-  watchArticleId$ = () => {
-    const id$ = new BehaviorSubject<string>(null);
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.isArticleNew = false;
-        id$.next(params['id']);
-      } else {
-        this.isArticleNew = true;
-        this.isFormInCreateView = true;
-        id$.next(this.articleSvc.createArticleId());
-      }
-      // this.ckeditor.config.fbImageStorage = {
-      //   storageRef: this.articleSvc.createVanillaStorageRef(
-      //     `articleBodyImages/${this.articleId}/`
-      //   ),
-      // };
-    });
-    return id$;
+  watchArticleIdAndStatus$ = () => {
+    return this.route.params.pipe(
+      map(params => {
+        if (params['id']) return { id: params['id'], isNew: false };
+        else return { id: this.articleSvc.createArticleId(), isNew: true };
+      })
+    );
+    //   // this.ckeditor.config.fbImageStorage = {
+    //   //   storageRef: this.articleSvc.createVanillaStorageRef(
+    //   //     `articleBodyImages/${this.articleId}/`
+    //   //   ),
+    //   // };
+    // });
   };
 
-  watchArticle = id => {
-    const preExisting = this.state.get(ARTICLE_STATE_KEY, null as any);
-    return this.articleSvc
+  watchArticle$ = id => {
+    const preExisting: ArticleDetail = this.state.get(
+      ARTICLE_STATE_KEY,
+      null as any
+    );
+    const article$ = this.articleSvc
       .articleDetailRef(id)
       .valueChanges()
       .pipe(
         map(article =>
-          article ? this.articleSvc.processArticleTimestamps(article) : null
+          article
+            ? (this.articleSvc.processArticleTimestamps(
+                article
+              ) as ArticleDetail)
+            : null
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
         startWith(preExisting)
@@ -152,7 +162,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     //     //   : this.ckeditor.placeholder;
     //     // this.setFormData(articleData);
     //   });
-    // return article$;
+    return article$;
   };
 
   // watchFormChanges() {

@@ -36,6 +36,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterMenuComponent } from '@components/home/filter-menu/filter-menu.component';
 import { ArticleComponent } from '@components/articles/article/article.component';
 import { CoverImageDisplayComponent } from './components/articles/article/cover-image-display/cover-image-display.component';
+import { TitleComponent } from './components/articles/article/title/title.component';
+import { TitleDisplayComponent } from './components/articles/article/title/title-display/title-display.component';
+import { TitleEditComponent } from './components/articles/article/title/title-edit/title-edit.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +51,9 @@ import { CoverImageDisplayComponent } from './components/articles/article/cover-
     FilterMenuComponent,
     ArticleComponent,
     CoverImageDisplayComponent,
+    TitleComponent,
+    TitleDisplayComponent,
+    TitleEditComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

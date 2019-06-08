@@ -39,6 +39,9 @@ import { CoverImageDisplayComponent } from './components/articles/article/cover-
 import { TitleComponent } from './components/articles/article/title/title.component';
 import { TitleDisplayComponent } from './components/articles/article/title/title-display/title-display.component';
 import { TitleEditComponent } from './components/articles/article/title/title-edit/title-edit.component';
+import { IntroComponent } from './components/articles/article/intro/intro.component';
+import { IntroDisplayComponent } from './components/articles/article/intro/intro-display/intro-display.component';
+import { IntroEditComponent } from './components/articles/article/intro/intro-edit/intro-edit.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +57,9 @@ import { TitleEditComponent } from './components/articles/article/title/title-ed
     TitleComponent,
     TitleDisplayComponent,
     TitleEditComponent,
+    IntroComponent,
+    IntroDisplayComponent,
+    IntroEditComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

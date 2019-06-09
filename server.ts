@@ -4,19 +4,14 @@ import { enableProdMode } from '@angular/core';
 import { ngExpressEngine } from '@nguniversal/express-engine';
 // Import module map for lazy loading
 import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
-// Import gCloud debug-agent for Stackdriver debugging
-import * as debugAgent from '@google-cloud/debug-agent';
 
 import * as express from 'express';
 import { join } from 'path';
 
+// Import gCloud debug-agent for Stackdriver debugging
+import * as debugAgent from '@google-cloud/debug-agent';
 // Enable gCould debug-agent
-debugAgent.start({
-  serviceContext: {
-    service: 'CoSourcery-dev',
-    version: 'v1.1',
-  },
-});
+debugAgent.start();
 
 // Faster server renders w/ Prod mode (dev mode never needed)
 enableProdMode();

@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'cos-intro',
   templateUrl: './intro.component.html',
-  styleUrls: ['./intro.component.scss']
+  styleUrls: ['./intro.component.scss'],
 })
-export class IntroComponent implements OnInit {
+export class IntroComponent {
+  @Input() parentForm: FormGroup;
+  @Input() isActive: boolean;
+  @Input() introduction: string;
 
-  constructor() { }
+  @Output() onCtrlToggle = new EventEmitter();
 
-  ngOnInit() {
-  }
-
+  toggleCtrl = () => {
+    this.onCtrlToggle.emit();
+  };
 }

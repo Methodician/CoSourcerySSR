@@ -1,35 +1,17 @@
-<section class="article-intro" (cosClickOut)="clickoutCtrl(CtrlNames.intro)">
-  <p *ngIf="!isCtrlActive(CtrlNames.intro)" class="static-display">
-    {{ articleState.introduction }}
-    <span *ngIf="articleState.introduction === ''"
-      >Add an introduction to tell people what your article is about. It can be
-      a few words or several sentences, but should be pretty short.</span
-    >
-  </p>
-  <mat-form-field *ngIf="isCtrlActive(CtrlNames.intro)">
-    <p>
-      <textarea
-        #introduction
-        matInput
-        type="text"
-        formControlName="introduction"
-        rows="3"
-        maxlength="300"
-        required
-      ></textarea>
-    </p>
-    <mat-hint align="end">{{ introduction.value.length }} / 300</mat-hint>
-    <mat-error>Please add an introduction.</mat-error>
-  </mat-form-field>
-  <button
-    class="mat-icon-btn"
-    [ngClass]="{ active: isCtrlActive(CtrlNames.intro) }"
-    type="button"
-    (click)="toggleCtrl(CtrlNames.intro)"
-  >
-    <mat-icon>{{ isCtrlActive(CtrlNames.intro) ? 'clear' : 'edit' }}</mat-icon>
-    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-      isCtrlActive(CtrlNames.intro) ? 'Close Intro' : 'Edit Intro'
-    }}</span>
-  </button>
-</section>
+<cos-intro-display
+  *ngIf="!isActive"
+  [introduction]="introduction"
+></cos-intro-display>
+<!-- <cos-intro-edit *ngIf="isActive" [parentForm]="parentForm"></cos-intro-edit> -->
+<!-- ToDo: Abstract below out into shared component -->
+<button
+  class="mat-icon-btn"
+  [ngClass]="{ active: isActive }"
+  type="button"
+  (click)="toggleCtrl(CtrlNames.intro)"
+>
+  <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
+  <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+    isActive ? 'Close Intro' : 'Edit Intro'
+  }}</span>
+</button>

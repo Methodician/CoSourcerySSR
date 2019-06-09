@@ -23,6 +23,7 @@
   </section>
 
   <section class="article-header">
+    <!-- TITLE -->
     <section
       class="article-title"
       (cosClickOut)="clickoutCtrl(CtrlNames.title)"
@@ -35,6 +36,7 @@
       ></cos-title>
     </section>
 
+    <!-- DATE -->
     <p class="article-date">
       <span *ngIf="isFormInCreateView"
         >Current Date: {{ articleSvc.tempTimestamp().toDate() | date }}</span
@@ -43,46 +45,18 @@
         >Last Updated: {{ articleState.lastUpdated | date }}</span
       >
     </p>
-
+    
+    <!-- INTRO -->
     <section
       class="article-intro"
       (cosClickOut)="clickoutCtrl(CtrlNames.intro)"
     >
-      <p *ngIf="!isCtrlActive(CtrlNames.intro)" class="static-display">
-        {{ articleState.introduction }}
-        <span *ngIf="articleState.introduction === ''"
-          >Add an introduction to tell people what your article is about. It can
-          be a few words or several sentences, but should be pretty short.</span
-        >
-      </p>
-      <mat-form-field *ngIf="isCtrlActive(CtrlNames.intro)">
-        <p>
-          <textarea
-            #introduction
-            matInput
-            type="text"
-            formControlName="introduction"
-            rows="3"
-            maxlength="300"
-            required
-          ></textarea>
-        </p>
-        <mat-hint align="end">{{ introduction.value.length }} / 300</mat-hint>
-        <mat-error>Please add an introduction.</mat-error>
-      </mat-form-field>
-      <button
-        class="mat-icon-btn"
-        [ngClass]="{ active: isCtrlActive(CtrlNames.intro) }"
-        type="button"
-        (click)="toggleCtrl(CtrlNames.intro)"
-      >
-        <mat-icon>{{
-          isCtrlActive(CtrlNames.intro) ? 'clear' : 'edit'
-        }}</mat-icon>
-        <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-          isCtrlActive(CtrlNames.intro) ? 'Close Intro' : 'Edit Intro'
-        }}</span>
-      </button>
+      <cos-intro
+        [parentForm]="articleEditForm"
+        [isActive]="isCtrlActive(CtrlNames.intro)"
+        [introduction]="articleState.introduction"
+        (onCtrlToggle)="toggleCtrl(CtrlNames.intro)"
+      ></cos-intro>
     </section>
 
     <section class="article-utils">

@@ -1,8 +1,8 @@
-<cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
-<!-- <cos-title-edit
-  [shouldDisplay]="isActive"
-  [parentForm]="parentForm"
-></cos-title-edit> -->
+<cos-intro-display
+  *ngIf="!isActive"
+  [introduction]="introduction"
+></cos-intro-display>
+<!-- <cos-intro-edit *ngIf="isActive" [parentForm]="parentForm"></cos-intro-edit> -->
 <!-- ToDo: Abstract below out into shared component -->
 <button
   class="mat-icon-btn"
@@ -12,6 +12,6 @@
 >
   <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
   <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-    isActive ? 'Close Title' : 'Edit Title'
+    isActive ? 'Close Intro' : 'Edit Intro'
   }}</span>
 </button>

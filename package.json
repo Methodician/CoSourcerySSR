@@ -7,6 +7,7 @@
     "local-ssr": "npm run build:ssr && npm run serve:ssr",
     "gcp-build": "npm run build:ssr",
     "deploy": "gcloud app deploy --version dev",
+    "deploy-beta": "gcloud beta app deploy --version dev",
     "stop-gcloud": "gcloud app versions stop dev",
     "start-gcloud": "gcloud app versions start dev",
     "build": "ng build",

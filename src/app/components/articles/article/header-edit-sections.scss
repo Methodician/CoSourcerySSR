@@ -1,0 +1,30 @@
+:host ::ng-deep .article-title,
+.article-intro {
+  position: relative;
+
+  mat-form-field {
+    width: 100%;
+    padding-right: 50px;
+  }
+
+  input {
+    margin-top: 0;
+    padding: 5px 0;
+  }
+
+  button {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-left: 10px;
+
+    &.active {
+      visibility: visible;
+    }
+  }
+
+  &:hover button {
+    visibility: visible;
+  }
+}

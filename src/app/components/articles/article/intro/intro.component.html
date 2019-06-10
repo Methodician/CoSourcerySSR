@@ -1,17 +1,19 @@
-<cos-intro-display
-  *ngIf="!isActive"
-  [introduction]="introduction"
-></cos-intro-display>
-<!-- <cos-intro-edit *ngIf="isActive" [parentForm]="parentForm"></cos-intro-edit> -->
-<!-- ToDo: Abstract below out into shared component -->
-<button
-  class="mat-icon-btn"
-  [ngClass]="{ active: isActive }"
-  type="button"
-  (click)="toggleCtrl()"
->
-  <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
-  <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-    isActive ? 'Close Intro' : 'Edit Intro'
-  }}</span>
-</button>
+<section class="article-intro" (cosClickOut)="clickOut()">
+  <cos-intro-display
+    *ngIf="!isActive"
+    [introduction]="introduction"
+  ></cos-intro-display>
+  <!-- <cos-intro-edit *ngIf="isActive" [parentForm]="parentForm"></cos-intro-edit> -->
+  <!-- ToDo: Abstract below out into shared component -->
+  <button
+    class="mat-icon-btn"
+    [ngClass]="{ active: isActive }"
+    type="button"
+    (click)="toggleCtrl()"
+  >
+    <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
+    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+      isActive ? 'Close Intro' : 'Edit Intro'
+    }}</span>
+  </button>
+</section>

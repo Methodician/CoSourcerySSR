@@ -1,17 +1,19 @@
-<cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
-<!-- <cos-title-edit
+<section class="article-title" (cosClickOut)="clickOut()">
+  <cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
+  <!-- <cos-title-edit
   [shouldDisplay]="isActive"
   [parentForm]="parentForm"
 ></cos-title-edit> -->
-<!-- ToDo: Abstract below out into shared component -->
-<button
-  class="mat-icon-btn"
-  [ngClass]="{ active: isActive }"
-  type="button"
-  (click)="toggleCtrl()"
->
-  <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
-  <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-    isActive ? 'Close Title' : 'Edit Title'
-  }}</span>
-</button>
+  <!-- ToDo: Abstract below out into shared component -->
+  <button
+    class="mat-icon-btn"
+    [ngClass]="{ active: isActive }"
+    type="button"
+    (click)="toggleCtrl()"
+  >
+    <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
+    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+      isActive ? 'Close Title' : 'Edit Title'
+    }}</span>
+  </button>
+</section>

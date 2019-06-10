@@ -24,17 +24,13 @@
 
   <section class="article-header">
     <!-- TITLE -->
-    <section
-      class="article-title"
-      (cosClickOut)="clickoutCtrl(CtrlNames.title)"
-    >
-      <cos-title
-        [parentForm]="articleEditForm"
-        [isActive]="isCtrlActive(CtrlNames.title)"
-        [title]="articleState.title"
-        (onCtrlToggle)="toggleCtrl(CtrlNames.title)"
-      ></cos-title>
-    </section>
+    <cos-title
+      [parentForm]="articleEditForm"
+      [isActive]="isCtrlActive(CtrlNames.title)"
+      [title]="articleState.title"
+      (onCtrlToggle)="toggleCtrl(CtrlNames.title)"
+      (onClickOut)="clickoutCtrl(CtrlNames.title)"
+    ></cos-title>
 
     <!-- DATE -->
     <p class="article-date">
@@ -45,19 +41,15 @@
         >Last Updated: {{ articleState.lastUpdated | date }}</span
       >
     </p>
-    
+
     <!-- INTRO -->
-    <section
-      class="article-intro"
-      (cosClickOut)="clickoutCtrl(CtrlNames.intro)"
-    >
-      <cos-intro
-        [parentForm]="articleEditForm"
-        [isActive]="isCtrlActive(CtrlNames.intro)"
-        [introduction]="articleState.introduction"
-        (onCtrlToggle)="toggleCtrl(CtrlNames.intro)"
-      ></cos-intro>
-    </section>
+    <cos-intro
+      [parentForm]="articleEditForm"
+      [isActive]="isCtrlActive(CtrlNames.intro)"
+      [introduction]="articleState.introduction"
+      (onCtrlToggle)="toggleCtrl(CtrlNames.intro)"
+      (onClickOut)="clickoutCtrl(CtrlNames.intro)"
+    ></cos-intro>
 
     <section class="article-utils">
       <div class="counters">

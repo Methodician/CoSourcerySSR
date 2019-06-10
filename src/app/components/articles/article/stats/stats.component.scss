@@ -1,0 +1,69 @@
+@import '../../../../sass/vars.scss';
+
+.article-utils {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 15px;
+  border-radius: 4px;
+  background-color: lighten($accent-color-1-dark, 30%);
+
+  @media screen and (min-width: 500px) {
+    padding: 0 20px;
+  }
+}
+
+.counters {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: #fff;
+    cursor: default;
+
+    &:not(:first-child) {
+      margin-left: 15px;
+    }
+
+    &:hover .mat-icon-btn__tooltip {
+      visibility: visible;
+    }
+
+    &-stat {
+      display: block;
+      margin-left: 5px;
+      font-size: 0.9rem;
+    }
+
+    &_clickable {
+      cursor: pointer;
+    }
+
+    @media screen and (min-width: 500px) {
+      &:not(:first-child) {
+        margin-left: 20px;
+      }
+
+      &-stat {
+        margin-left: 15px;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  &__icon {
+    height: auto;
+    width: auto;
+    font-size: 1.2rem;
+
+    @media screen and (min-width: 500px) {
+      font-size: 1.5rem;
+    }
+  }
+}

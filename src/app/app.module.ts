@@ -42,6 +42,7 @@ import { TitleEditComponent } from './components/articles/article/title/title-ed
 import { IntroComponent } from './components/articles/article/intro/intro.component';
 import { IntroDisplayComponent } from './components/articles/article/intro/intro-display/intro-display.component';
 import { IntroEditComponent } from './components/articles/article/intro/intro-edit/intro-edit.component';
+import { StatsComponent } from './components/articles/article/stats/stats.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { IntroEditComponent } from './components/articles/article/intro/intro-ed
     IntroComponent,
     IntroDisplayComponent,
     IntroEditComponent,
+    StatsComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

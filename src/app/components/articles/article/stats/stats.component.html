@@ -1,0 +1,43 @@
+<section class="article-utils">
+  <div class="counters">
+    <div class="counters__item">
+      <mat-icon class="counters__icon">comment</mat-icon>
+      <span
+        class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        style="left: 0;"
+      >
+        {{ commentCount }} Comment(s)
+      </span>
+      <span class="counters__item-stat">{{ commentCount }}</span>
+    </div>
+    <div class="counters__item">
+      <mat-icon class="counters__icon">border_color</mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ editCount }} Edit(s)</span
+      >
+      <span class="counters__item-stat">{{ editCount }}</span>
+    </div>
+    <div class="counters__item">
+      <mat-icon class="counters__icon">loyalty</mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ tagsCount }} Tag(s)</span
+      >
+      <span class="counters__item-stat">{{ tagsCount }}</span>
+    </div>
+  </div>
+  <div
+    *ngIf="!isArticleNew"
+    class="counters__item counters__item_clickable"
+    (click)="clickBookmark()"
+  >
+    <mat-icon class="counters__icon">{{
+      isBookmarked ? 'bookmark' : 'bookmark_border'
+    }}</mat-icon>
+    <span
+      class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+      style="right: 0;"
+    >
+      {{ isBookmarked ? 'Remove Bookmark' : 'Bookmark' }}
+    </span>
+  </div>
+</section>

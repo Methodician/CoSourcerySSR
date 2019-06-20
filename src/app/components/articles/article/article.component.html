@@ -65,7 +65,11 @@
 
     <!-- ATTRIBUTIONS -->
     <section class="article-attributions">
-      <cos-contributors> </cos-contributors>
+      <cos-contributors
+        [creatorKey]="loggedInUser.uid"
+        [editorMap]="articleState.editors"
+      >
+      </cos-contributors>
     </section>
   </section>
   <section

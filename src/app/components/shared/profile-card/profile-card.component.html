@@ -1,3 +1,26 @@
-<p>
-  profile-card works!
-</p>
+<div
+  *ngIf="user"
+  [routerLink]="['/profile', user.uid]"
+  class="contributors__header"
+>
+  <div class="contributors__author-image-wrapper">
+    <img
+      class="contributors__author-image"
+      [src]="user.displayImageUrl()"
+      alt="Author Image"
+    />
+  </div>
+  <div class="contributors__author">
+    <p
+      class="contributors__author-detail"
+      [class.contributors__author-detail--highlight]="shouldHighlight"
+    >
+      <strong>{{
+        user.displayName() | truncateString: maxUsernameLength
+      }}</strong>
+    </p>
+    <em class="contributors__author-detail contributors__author-detail_light">{{
+      displayText
+    }}</em>
+  </div>
+</div>

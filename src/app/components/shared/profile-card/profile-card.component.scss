@@ -1,0 +1,59 @@
+@import '../../../sass/vars.scss';
+@import '../../../sass/mixins.scss';
+
+.contributors__header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  width: 100px;
+  @include respond-to($phone-md) {
+    width: 120px;
+  }
+  @include respond-to($phone-lg) {
+    width: 150px;
+  }
+  @include respond-to($tablet-sm) {
+    width: 220px;
+  }
+}
+
+.contributors__header:hover {
+  transition: 1s;
+}
+
+.contributors__author {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contributors__author-image {
+  @include size(20px, 20px);
+  border-radius: 100%;
+  object-fit: cover;
+  @include respond-to($phone-md) {
+    @include size(50px, 50px);
+  }
+}
+
+.contributors__author-detail {
+  font: 10px/12px;
+  margin: 0;
+  color: lighten($accent-color-1-dark, 30%);
+  &_light {
+    color: $medium-gray;
+    font-size: 6px;
+  }
+  @include respond-to($phone-md) {
+    font: 12px/14px;
+    &_light {
+      font-size: 10px;
+    }
+  }
+}
+
+.contributors__author-detail--highlight {
+  color: $accent-color-2-dark;
+}

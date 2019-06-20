@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserInfo } from '@models/classes/user-info';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -27,5 +28,8 @@ export class UserService {
     });
   }
 
-  userRef = uid => this.afd.object(`userInfo/open/${uid}`);
+  // refs
+  userRef = uid => this.afd.object<UserInfo>(`userInfo/open/${uid}`);
+
+  // watchers
 }

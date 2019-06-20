@@ -13,12 +13,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 // Angular Material
-import {
-  MatIconModule,
-  MatDialogModule,
-  MatInputModule,
-  MatChipsModule,
-} from '@angular/material';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 

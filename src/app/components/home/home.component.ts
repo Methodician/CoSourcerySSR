@@ -28,7 +28,8 @@ const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  @ViewChild('filterMenu') filterMenu;
+  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
+  @ViewChild('filterMenu', { static: true }) filterMenu;
   userId: string;
 
   filterTabs = [

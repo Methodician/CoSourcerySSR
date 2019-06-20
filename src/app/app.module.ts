@@ -43,6 +43,8 @@ import { IntroComponent } from './components/articles/article/intro/intro.compon
 import { IntroDisplayComponent } from './components/articles/article/intro/intro-display/intro-display.component';
 import { IntroEditComponent } from './components/articles/article/intro/intro-edit/intro-edit.component';
 import { StatsComponent } from './components/articles/article/stats/stats.component';
+import { ContributorsComponent } from './components/articles/article/contributors/contributors.component';
+import { ProfileCardComponent } from './components/shared/profile-card/profile-card.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,8 @@ import { StatsComponent } from './components/articles/article/stats/stats.compon
     IntroDisplayComponent,
     IntroEditComponent,
     StatsComponent,
+    ContributorsComponent,
+    ProfileCardComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

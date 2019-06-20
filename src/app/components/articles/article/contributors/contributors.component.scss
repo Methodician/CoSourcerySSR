@@ -1,0 +1,280 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../../../sass/vars.scss';
+@import '../../../../sass/mixins.scss';
+
+.wrapper {
+  position: relative;
+}
+
+.contributors {
+  height: 60px;
+  overflow: hidden;
+  display: flex;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  @include respond-to($phone-md) {
+    width: 280px;
+  }
+  @include respond-to($phone-lg) {
+    width: 320px;
+    // justify-content: flex-start;
+  }
+  @include respond-to($tablet-sm) {
+    width: 460px;
+  }
+  @include respond-to($tablet-md) {
+    width: 660px;
+  }
+}
+
+.contributors__set {
+  min-width: 100%;
+  display: inline-flex;
+}
+
+.contributors__elem {
+  padding: 0 5px;
+}
+
+.contributors__elem:hover {
+  transition: 1s;
+  box-shadow: 0px 1px 0px rgba(189, 189, 189, 0.5);
+}
+
+.transition-btn {
+  opacity: 0.3;
+  outline: none;
+  background-color: transparent !important;
+  transition: 2s;
+  height: 30px;
+  width: 30px;
+}
+
+.left-btn {
+  position: absolute;
+  left: -10px;
+  bottom: 15px;
+}
+
+.right-btn {
+  position: absolute;
+  right: -10px;
+  bottom: 15px;
+}
+
+.transition-btn.hidden {
+  opacity: 0;
+}
+
+.transition-btn.hidden:hover {
+  opacity: 0;
+}
+
+.transition-btn:hover {
+  opacity: 1;
+}
+
+.transition-img {
+  height: 30px;
+  width: 30px;
+}
+
+.transition-left {
+  position: relative;
+  -webkit-animation: moveLeft 2s infinite; /* Safari 4.0 - 8.0 */
+  animation: moveLeft 2s infinite ease;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes moveLeft {
+  from {
+    right: 0px;
+  }
+  to {
+    right: 220px;
+  }
+}
+
+/* Standard syntax */
+@keyframes moveLeft {
+  from {
+    right: 0px;
+  }
+  to {
+    right: 220px;
+  }
+}
+
+.transition-right {
+  position: relative;
+  -webkit-animation: moveRight 2s infinite; /* Safari 4.0 - 8.0 */
+  animation: moveRight 2s infinite ease;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes moveRight {
+  from {
+    left: 0px;
+  }
+  to {
+    left: 220px;
+  }
+}
+
+/* Standard syntax */
+@keyframes moveRight {
+  from {
+    left: 0px;
+  }
+  to {
+    left: 220px;
+  }
+}
+
+@include respond-to($phone-md) {
+  @-webkit-keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 280px;
+    }
+  }
+  @keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 280px;
+    }
+  }
+}
+@include respond-to($phone-lg) {
+  @-webkit-keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 320px;
+    }
+  }
+  @keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 320px;
+    }
+  }
+}
+@include respond-to($tablet-sm) {
+  @-webkit-keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 460px;
+    }
+  }
+  @keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 460px;
+    }
+  }
+}
+@include respond-to($tablet-md) {
+  @-webkit-keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 660px;
+    }
+  }
+  @keyframes moveLeft {
+    from {
+      right: 0px;
+    }
+    to {
+      right: 660px;
+    }
+  }
+}
+
+@include respond-to($phone-md) {
+  @-webkit-keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 280px;
+    }
+  }
+  @keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 280px;
+    }
+  }
+}
+@include respond-to($phone-lg) {
+  @-webkit-keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 320px;
+    }
+  }
+  @keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 320px;
+    }
+  }
+}
+@include respond-to($tablet-sm) {
+  @-webkit-keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 460px;
+    }
+  }
+  @keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 460px;
+    }
+  }
+}
+@include respond-to($tablet-md) {
+  @-webkit-keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 660px;
+    }
+  }
+  @keyframes moveRight {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 660px;
+    }
+  }
+}

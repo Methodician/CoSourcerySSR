@@ -57,7 +57,7 @@
     </div>
   </section>
   <button
-    *ngIf="_editors?.length > 3"
+    *ngIf="editorKeys?.length > 3"
     class="transition-btn right-btn"
     [disabled]="transitionRight || transitionLeft"
     (click)="nextEditorPanel()"

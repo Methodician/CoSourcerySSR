@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { UserInfo } from '@models/classes/user-info';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { UserService } from '@services/user.service';
 
 @Component({
@@ -19,12 +19,31 @@ export class ProfileCardComponent implements OnInit {
   @Input() shouldHighlight = false;
   windowMaxWidth = 435;
   maxUsernameLength;
-  user$: Observable<UserInfo>;
+  userSubscription: Subscription;
+  user: UserInfo;
 
   constructor(private userSvc: UserService) {}
 
   ngOnInit() {
-    this.user$ = this.userSvc.userRef(this.userKey).valueChanges();
+    this.userSubscription = this.userSvc
+      .userRef(this.userKey)
+      .valueChanges()
+      .subscribe(
+        user =>
+          // TODO: simplify UserInfo constructor to take interface
+          (this.user = new UserInfo(
+            user.alias,
+            user.fName,
+            null,
+            user.uid,
+            user.imageUrl,
+            null,
+            null,
+            null,
+            null,
+            null
+          ))
+      );
   }
 
   checkWindowSize() {

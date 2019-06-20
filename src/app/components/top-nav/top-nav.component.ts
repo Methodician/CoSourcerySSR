@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthInfo } from '@models/classes/auth-info';
 import { AuthService } from '@services/auth.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 
 @Component({

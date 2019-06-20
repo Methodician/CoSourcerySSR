@@ -13,7 +13,6 @@ export class ContributorsComponent implements OnInit {
   @Input() creatorKey: string;
   @Input() set editorMap(editorMap: object) {
     if (editorMap && editorMap !== {}) {
-      console.log(this.displayEditorsPosition, this.editorPanelCount);
       const editorKeys = (this.editorKeys = Object.keys(editorMap));
       this._editorMap = editorMap;
       this._displayEditorsPrev = [];
@@ -24,11 +23,6 @@ export class ContributorsComponent implements OnInit {
       this._displayEditorsNext = editorKeys.slice(
         this.displayEditorsPosition + this.editorPanelCount,
         this.editorPanelCount * 2
-      );
-      console.log(
-        this._displayEditors,
-        this._displayEditorsNext,
-        this._displayEditorsPrev
       );
     }
   }

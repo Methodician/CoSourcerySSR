@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ArticleService } from '@services/article.service';
 import { ArticlePreview } from '@models/interfaces/article-info';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 // import { LoginDialogComponent } from '@modals/login-dialog/login-dialog.component';
 
 @Component({

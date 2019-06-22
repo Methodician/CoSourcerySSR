@@ -1,4 +1,12 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  HostListener,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'cos-contributors',
@@ -39,7 +47,7 @@ export class ContributorsComponent implements OnInit {
   hasTransitioned = false;
   windowMaxWidth = 780;
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platform: Object) {
     this.checkWindowSize();
   }
 
@@ -133,8 +141,10 @@ export class ContributorsComponent implements OnInit {
   }
 
   checkWindowSize() {
-    window.innerWidth < this.windowMaxWidth
-      ? (this.editorPanelCount = 2)
-      : (this.editorPanelCount = 3);
+    if (isPlatformBrowser(this.platform)) {
+      window.innerWidth < this.windowMaxWidth
+        ? (this.editorPanelCount = 2)
+        : (this.editorPanelCount = 3);
+    }
   }
 }

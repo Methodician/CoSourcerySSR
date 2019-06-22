@@ -4,5 +4,8 @@
     "prettier.singleQuote": true,
     "javascript.preferences.quoteStyle": "single",
     "typescript.preferences.quoteStyle": "single",
-    "prettier.trailingComma": "es5"
+    "prettier.trailingComma": "es5",
+    "cSpell.words": [
+        "ckeditor"
+    ]
 }

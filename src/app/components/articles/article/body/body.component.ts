@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss'],
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent {
   @Input() parentForm: FormGroup;
   @Input() isActive: boolean;
   @Input() body: string;
@@ -15,25 +15,11 @@ export class BodyComponent implements OnInit {
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
 
-  constructor() {
-    const { parentForm, isActive, body, onCtrlToggle, onClickOut } = this;
-    console.log({
-      parentForm,
-      isActive,
-      body,
-      onCtrlToggle,
-      onClickOut,
-    });
-  }
+  toggleCtrl = () => {
+    this.onCtrlToggle.emit();
+  };
 
-  ngOnInit() {
-    const { parentForm, isActive, body, onCtrlToggle, onClickOut } = this;
-    console.log({
-      parentForm,
-      isActive,
-      body,
-      onCtrlToggle,
-      onClickOut,
-    });
-  }
+  clickOut = () => {
+    this.onClickOut.emit();
+  };
 }

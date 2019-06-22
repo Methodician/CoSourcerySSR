@@ -6,7 +6,7 @@
     class="mat-icon-btn"
     [ngClass]="{ active: isLoggedIn && isActive }"
     type="button"
-    (click)="toggleCtrl(CtrlNames.body)"
+    (click)="toggleCtrl()"
   >
     <mat-icon>{{ isLoggedIn && isActive ? 'clear' : 'edit' }}</mat-icon>
     <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{

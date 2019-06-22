@@ -13,8 +13,9 @@ section {
 
   button {
     visibility: hidden;
-    position: absolute;
-    top: 10px;
+    position: sticky;
+    float: right;
+    top: calc(#{$navbar-height} + 10px);
     right: 10px;
   }
 

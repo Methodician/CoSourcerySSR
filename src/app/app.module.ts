@@ -43,6 +43,9 @@ import { IntroEditComponent } from './components/articles/article/intro/intro-ed
 import { StatsComponent } from './components/articles/article/stats/stats.component';
 import { ContributorsComponent } from './components/articles/article/contributors/contributors.component';
 import { ProfileCardComponent } from './components/shared/profile-card/profile-card.component';
+import { BodyComponent } from './components/articles/article/body/body.component';
+import { BodyDisplayComponent } from './components/articles/article/body/body-display/body-display.component';
+import { BodyEditComponent } from './components/articles/article/body/body-edit/body-edit.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +67,9 @@ import { ProfileCardComponent } from './components/shared/profile-card/profile-c
     StatsComponent,
     ContributorsComponent,
     ProfileCardComponent,
+    BodyComponent,
+    BodyDisplayComponent,
+    BodyEditComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

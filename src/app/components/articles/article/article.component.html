@@ -89,33 +89,6 @@
       (onCtrlToggle)="toggleCtrl(CtrlNames.body)"
       (onClickOut)="clickoutCtrl(CtrlNames.body)"
     ></cos-body>
-    <div
-      class="article-body__interior"
-      [ngClass]="{ border: loggedInUser.uid && isCtrlActive(CtrlNames.body) }"
-    >
-      <!-- 
-      BELONGS INSIDE FOLLOWING BUTTON
-      [ngStyle]="{
-      transform: 'translateY(' + ckeditor.toggleBtnOffset + 'px)'
-    }"
-   -->
-      <button
-        class="mat-icon-btn"
-        [ngClass]="{ active: loggedInUser.uid && isCtrlActive(CtrlNames.body) }"
-        type="button"
-        (click)="toggleCtrl(CtrlNames.body)"
-      >
-        <mat-icon>{{
-          loggedInUser.uid && isCtrlActive(CtrlNames.body) ? 'clear' : 'edit'
-        }}</mat-icon>
-        <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-          loggedInUser.uid && isCtrlActive(CtrlNames.body)
-            ? 'Close Body'
-            : 'Edit Body'
-        }}</span>
-      </button>
-      <article [innerHTML]="articleState.body"></article>
-    </div>
   </section>
 
   <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">

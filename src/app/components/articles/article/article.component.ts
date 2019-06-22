@@ -70,7 +70,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   articleState: ArticleDetail;
 
-  CtrlNames = CtrlNames; // Enum Availablility in HTML Template
+  CtrlNames = CtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
 
   constructor(

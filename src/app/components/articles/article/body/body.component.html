@@ -2,12 +2,6 @@
   class="article-body__interior"
   [ngClass]="{ border: isLoggedIn && isActive }"
 >
-  <!-- 
-      BELONGS INSIDE FOLLOWING BUTTON
-      [ngStyle]="{
-      transform: 'translateY(' + ckeditor.toggleBtnOffset + 'px)'
-    }"
-   -->
   <button
     class="mat-icon-btn"
     [ngClass]="{ active: isLoggedIn && isActive }"

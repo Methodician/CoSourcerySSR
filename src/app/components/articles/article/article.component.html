@@ -115,16 +115,6 @@
         }}</span>
       </button>
       <article [innerHTML]="articleState.body"></article>
-      <!-- <ckeditor
-        *ngIf="ckeditor.content"
-        (change)="onCKEditorChanged($event)"
-        (ready)="onCKEditorReady($event)"
-        [data]="ckeditor.content"
-        [editor]="ckeditor.build"
-        [config]="ckeditor.config"
-        [disabled]="!loggedInUser.uid || !isCtrlActive(CtrlNames.body)"
-      >
-      </ckeditor> -->
     </div>
   </section>
 

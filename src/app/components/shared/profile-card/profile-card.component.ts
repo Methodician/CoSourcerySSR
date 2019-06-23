@@ -28,22 +28,7 @@ export class ProfileCardComponent implements OnInit {
     this.userSubscription = this.userSvc
       .userRef(this.userKey)
       .valueChanges()
-      .subscribe(
-        user =>
-          // TODO: simplify UserInfo constructor to take interface
-          (this.user = new UserInfo(
-            user.alias,
-            user.fName,
-            null,
-            user.uid,
-            user.imageUrl,
-            null,
-            null,
-            null,
-            null,
-            null
-          ))
-      );
+      .subscribe(user => (this.user = new UserInfo(user)));
   }
 
   checkWindowSize() {

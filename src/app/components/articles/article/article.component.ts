@@ -24,7 +24,7 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  loggedInUser = new UserInfo(null, null, null, null);
+  loggedInUser = new UserInfo({ fName: null, lName: null });
 
   //  // Cover Image State
   //  coverImageFile: File;

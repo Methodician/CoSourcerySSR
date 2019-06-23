@@ -7,23 +7,35 @@ import {
 } from '@models/interfaces/comment';
 import { rtServerTimestamp } from '../shared/helpers/firebase';
 import { combineLatest } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CommentService {
-  commentState = {
-    replyParentKey: null,
-    currentlyEditingKey: null,
-  };
+  commentState$: BehaviorSubject<Comment> = new BehaviorSubject(null);
 
   constructor(private afd: AngularFireDatabase) {}
 
-  createCommentStub(
+  enterNewCommentMode = (
     authorId: string,
     parentKey: string,
     parentType: ParentTypes
-  ) {
+  ) => {
+    const comment = this.createCommentStub(authorId, parentKey, parentType);
+    this.commentState$.next(comment);
+  };
+
+  saveNewComment = async (comment: Comment) => {
+    await this.createComment(comment);
+    this.commentState$.next(null);
+  };
+
+  createCommentStub = (
+    authorId: string,
+    parentKey: string,
+    parentType: ParentTypes
+  ) => {
     const newComment: Comment = {
       authorId: authorId,
       parentKey: parentKey,
@@ -33,7 +45,7 @@ export class CommentService {
       voteCount: 0,
     };
     return newComment;
-  }
+  };
 
   getUserVotesRef(userId: string) {
     return this.afd.list<VoteDirections>(this.userVotesPath(userId));
@@ -112,13 +124,6 @@ export class CommentService {
 
   watchCommentByKey(key: string): AngularFireObject<{}> {
     return this.afd.object(this.singleCommentPath(key));
-  }
-
-  async getUserInfo(uid): Promise<firebase.database.DataSnapshot> {
-    if (uid) {
-      return this.afd.object(`userInfo/open/${uid}`).query.once('value');
-    }
-    return null;
   }
 
   // helpers etc

@@ -14,7 +14,7 @@ export class AuthService {
   authInfo$ = new BehaviorSubject<AuthInfo>(this.NULL_USER);
 
   constructor(
-    private afAuth: AngularFireAuth, // private rtdb: AngularFireDatabase,
+    private afAuth: AngularFireAuth // private rtdb: AngularFireDatabase,
   ) {
     this.afAuth.user.subscribe(user => {
       if (user) {
@@ -23,8 +23,8 @@ export class AuthService {
             user.uid,
             user.emailVerified,
             user.displayName,
-            user.email,
-          ),
+            user.email
+          )
         );
       } else {
         this.authInfo$.next(this.NULL_USER);
@@ -72,10 +72,19 @@ export class AuthService {
         take(1),
         map(res => {
           return !!res;
-        }),
+        })
       )
       .toPromise();
   }
+
+  authCheck = async () => {
+    if (await this.isSignedIn()) {
+      return true;
+    } else {
+      alert('Did I already implement LoginDialogComponent?');
+      return false;
+    }
+  };
 
   async sendVerificationEmail() {
     const user = this.afAuth.auth.currentUser;
@@ -84,7 +93,7 @@ export class AuthService {
     } catch (err) {
       alert(
         'It looks like your verification email was not sent. Please try again or contact support.' +
-          err,
+          err
       );
     }
   }

@@ -24,17 +24,16 @@
           class="border-endpoint border-endpoint_bottom border-endpoint_accent-2"
         ></div>
       </div>
-      <!-- <cos-comment
+      <cos-comment
+        #newCommentComponent
         [isBeingEdited]="true"
-        [loggedInUser]="loggedInUser"
-        [authorInfo]="loggedInUser"
-        [comment]="newCommentStub"
+        [comment]="commentState$.value"
       >
-      </cos-comment> -->
+      </cos-comment>
       <section class="comment-controls">
         <button
           class="mat-icon-btn mat-icon-btn_small"
-          (click)="onAddComment()"
+          (click)="saveNewComment(newCommentComponent.comment)"
         >
           <mat-icon class="mat-icon_small">check</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"

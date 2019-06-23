@@ -193,4 +193,8 @@
   </section> -->
 </form>
 
-<cos-comments></cos-comments>
+<cos-comments
+  *ngIf="articleState"
+  [articleId]="articleState.articleId"
+  [isArticleNew]="isArticleNew"
+></cos-comments>

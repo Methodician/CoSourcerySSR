@@ -52,8 +52,9 @@
       </section>
     </section>
   </section>
-  <div>COMMENT LIST</div>
   <!-- Existing Comments -->
+  <cos-comment-list [isUnderComment]="false" [parentKey]="articleId">
+  </cos-comment-list>
   <!-- <cos-comment-list
     [isUnderComment]="false"
     [commentReplyInfo]="commentReplyInfo"

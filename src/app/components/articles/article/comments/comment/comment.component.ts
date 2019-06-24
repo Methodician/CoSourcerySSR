@@ -1,15 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UserService } from '@services/user.service';
 import { UserInfo } from '@models/classes/user-info';
 import { Comment } from '@models/interfaces/comment';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'cos-comment',
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss'],
 })
-export class CommentComponent implements OnInit {
+export class CommentComponent implements OnInit, OnDestroy {
   @Input() comment: Comment;
   @Input() isBeingEdited = false;
+
+  authorSubscription: Subscription;
 
   authorInfo: UserInfo;
   constructor(private userSvc: UserService) {}
@@ -18,11 +21,14 @@ export class CommentComponent implements OnInit {
     this.initializeAuthor();
   }
 
-  initializeAuthor = async () => {
-    const snap = await this.userSvc
+  ngOnDestroy() {
+    this.authorSubscription.unsubscribe();
+  }
+
+  initializeAuthor = () => {
+    this.authorSubscription = this.userSvc
       .userRef(this.comment.authorId)
-      .query.once('value');
-    const author = snap.val();
-    this.authorInfo = new UserInfo(author);
+      .valueChanges()
+      .subscribe(user => (this.authorInfo = new UserInfo(user)));
   };
 }

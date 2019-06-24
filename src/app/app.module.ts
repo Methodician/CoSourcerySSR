@@ -49,6 +49,7 @@ import { BodyEditComponent } from './components/articles/article/body/body-edit/
 import { CommentsComponent } from './components/articles/article/comments/comments.component';
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
 import { CommentListComponent } from './components/articles/article/comments/comment-list/comment-list.component';
+import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { CommentListComponent } from './components/articles/article/comments/com
     CommentsComponent,
     CommentComponent,
     CommentListComponent,
+    ReverseArrayPipe,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

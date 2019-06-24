@@ -6,8 +6,8 @@ import {
   VoteDirections,
 } from '@models/interfaces/comment';
 import { rtServerTimestamp } from '../shared/helpers/firebase';
-import { combineLatest } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -110,19 +110,26 @@ export class CommentService {
       .update({ removedAt: rtServerTimestamp });
   }
 
-  watchCommentsByParent = (parentKey: string) =>
-    this.afd
-      .list(`commentData/commentsByParent/${parentKey}`)
-      .snapshotChanges()
-      .pipe(
-        combineLatest(snapshots =>
-          snapshots.map(snapshot =>
-            this.watchCommentByKey(snapshot.key).snapshotChanges()
-          )
-        )
-      );
+  // May be deprecated in light of Firebase's caching...
+  watchCommentsByParent = (parentKey: string) => {
+    return this.watchCommentKeysByParent(parentKey).pipe(
+      switchMap(keys => {
+        const comments$ = keys.map(key =>
+          this.watchCommentByKey(key).valueChanges()
+        );
+        return combineLatest(comments$);
+      })
+    );
+  };
 
-  watchCommentByKey(key: string): AngularFireObject<{}> {
+  watchCommentKeysByParent = (parentKey: string) => {
+    const commentList$ = this.afd
+      .list(`commentData/commentsByParent/${parentKey}`)
+      .snapshotChanges();
+    return commentList$.pipe(map(keySnaps => keySnaps.map(snap => snap.key)));
+  };
+
+  watchCommentByKey(key: string): AngularFireObject<Comment> {
     return this.afd.object(this.singleCommentPath(key));
   }
 

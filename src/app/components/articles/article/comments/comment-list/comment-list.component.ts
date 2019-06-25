@@ -6,6 +6,7 @@ import { Comment, VoteDirections } from '@models/interfaces/comment';
 import { tap } from 'rxjs/operators';
 import { KeyMap } from '@models/interfaces/article-info';
 import { Subscription } from 'rxjs';
+import { AuthService } from '@services/auth.service';
 @Component({
   selector: 'cos-comment-list',
   templateUrl: './comment-list.component.html',
@@ -24,6 +25,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
   constructor(
     private commentSvc: CommentService,
     private userSvc: UserService,
+    private authSvc: AuthService,
     private dialog: MatDialog
   ) {}
 
@@ -51,7 +53,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
       .subscribe(votesSnap => {
         const votesMap = {};
         for (let vote of votesSnap) {
-          // The vote key happens to be an articleId
+          // The vote key happens to be a commentKey
           votesMap[vote.key] = vote.payload.val();
         }
         this.userVotesMap = votesMap;
@@ -80,4 +82,6 @@ export class CommentListComponent implements OnInit, OnDestroy {
       this.commentState$.value.parentKey === key
     );
   };
+
+  authCheck = async () => await this.authSvc.authCheck();
 }

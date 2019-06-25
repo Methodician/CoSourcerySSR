@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
 import { MatDialog } from '@angular/material/dialog';
-import { Comment } from '@models/interfaces/comment';
-
+import { Comment, VoteDirections } from '@models/interfaces/comment';
+import { tap } from 'rxjs/operators';
+import { KeyMap } from '@models/interfaces/article-info';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'cos-comment-list',
   templateUrl: './comment-list.component.html',
@@ -14,8 +16,10 @@ export class CommentListComponent implements OnInit, OnDestroy {
   @Input() parentKey: string;
 
   // TODO: Make an object map a more global interface
-  subscriptionMap: any = {};
+  subscriptionMap: KeyMap<Subscription> = {};
   comments: Array<Comment>;
+  // TODO: Make KeyMap a shared interface
+  userVotesMap: KeyMap<VoteDirections> = {};
 
   constructor(
     private commentSvc: CommentService,
@@ -31,6 +35,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
       throw 'CommentList cannot function without a parentKey input';
     }
     this.watchComments();
+    this.watchUserVotes();
   }
 
   ngOnDestroy() {
@@ -39,13 +44,33 @@ export class CommentListComponent implements OnInit, OnDestroy {
     }
   }
 
+  watchUserVotes = () => {
+    const userVotesSub = this.commentSvc
+      .userVotesRef(this.loggedInUser$.value.uid)
+      .snapshotChanges()
+      .subscribe(votesSnap => {
+        const votesMap = {};
+        for (let vote of votesSnap) {
+          // The vote key happens to be an articleId
+          votesMap[vote.key] = vote.payload.val();
+        }
+        this.userVotesMap = votesMap;
+      });
+    this.subscriptionMap.userVotes = userVotesSub;
+  };
+
   watchComments = () => {
     const commentsSubscription = this.commentSvc
       .watchCommentsByParent(this.parentKey)
       .subscribe(comments => {
         this.comments = comments;
       });
-    this.subscriptionMap.commentSub = commentsSubscription;
+    this.subscriptionMap.comments = commentsSubscription;
+  };
+
+  wasVoteCast = (parentKey: string, direction: VoteDirections) => {
+    const existingVote = this.userVotesMap[parentKey];
+    return existingVote && existingVote === direction;
   };
 
   isCommentBeingEdited = (key: string) => {

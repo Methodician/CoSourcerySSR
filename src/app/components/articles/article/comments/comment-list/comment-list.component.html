@@ -9,38 +9,38 @@
       <div class="border-endpoint border-endpoint_bottom"></div>
     </div>
     <section id="{{ comment.commentKey }}" class="comment-content-region">
-      <!-- <section class="comment-rating">
+      <section class="comment-rating">
         <div class="comment-rating__score-container">
           <span
             class="comment-rating__score"
             [ngClass]="{
-              'comment-rating__score_negative': commentMap[key].voteCount < 0
+              'comment-rating__score_negative': comment.voteCount < 0
             }"
           >
-            {{ commentMap[key].voteCount }}
+            {{ comment.voteCount }}
           </span>
         </div>
         <button
           class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden"
-          [ngClass]="{ 'comment-rating__btn_voted': hasUserVoted(key, 'up') }"
+          [ngClass]="{ 'comment-rating__btn_voted': wasVoteCast(key, 'up') }"
           (click)="authCheck() ? onUpvoteComment(key) : null"
         >
           <mat-icon>expand_less</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{
-            hasUserVoted(key, 'up') ? 'Remove Vote' : 'Upvote'
+            wasVoteCast(key, 'up') ? 'Remove Vote' : 'Upvote'
           }}</span>
         </button>
         <button
           class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden"
-          [ngClass]="{ 'comment-rating__btn_voted': hasUserVoted(key, 'down') }"
+          [ngClass]="{ 'comment-rating__btn_voted': wasVoteCast(key, 'down') }"
           (click)="authCheck() ? onDownvoteComment(key) : null"
         >
           <mat-icon>expand_more</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{
-            hasUserVoted(key, 'down') ? 'Remove Vote' : 'Downvote'
+            wasVoteCast(key, 'down') ? 'Remove Vote' : 'Downvote'
           }}</span>
         </button>
-      </section> -->
+      </section>
 
       <cos-comment
         [comment]="comment"
@@ -48,11 +48,11 @@
       >
       </cos-comment>
 
-      <!-- <p *ngIf="commentMap[key].replyCount > 0" class="comment-reply-count">
+      <!-- <p *ngIf="comment.replyCount > 0" class="comment-reply-count">
         <a (click)="toggleCommentListUnfurl(key)">
           {{ commentListUnfurlMap[key] ? 'Hide' : 'Show' }}
-          {{ commentMap[key].replyCount }}
-          {{ commentMap[key].replyCount === 1 ? 'Reply' : 'Replies' }}
+          {{ comment.replyCount }}
+          {{ comment.replyCount === 1 ? 'Reply' : 'Replies' }}
         </a>
       </p> -->
 
@@ -72,7 +72,7 @@
           >
         </button>
         <div
-          *ngIf="loggedInUser.uid === commentMap[key].authorId"
+          *ngIf="loggedInUser.uid === comment.authorId"
           class="comment-controls__btn-group"
         >
           <button

@@ -47,7 +47,7 @@ export class CommentService {
     return newComment;
   };
 
-  getUserVotesRef(userId: string) {
+  userVotesRef(userId: string) {
     return this.afd.list<VoteDirections>(this.userVotesPath(userId));
   }
 
@@ -115,7 +115,15 @@ export class CommentService {
     return this.watchCommentKeysByParent(parentKey).pipe(
       switchMap(keys => {
         const comments$ = keys.map(key =>
-          this.watchCommentByKey(key).valueChanges()
+          this.watchCommentByKey(key)
+            .snapshotChanges()
+            .pipe(
+              map(commentSnap => {
+                const key = commentSnap.key;
+                const val = commentSnap.payload.val();
+                return { key, ...val };
+              })
+            )
         );
         return combineLatest(comments$);
       })

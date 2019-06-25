@@ -5,6 +5,7 @@ export interface Comment {
   replyCount: number;
   parentType: ParentTypes;
   voteCount: number;
+  key?: string;
   timestamp?: number;
   lastUpdated?: number;
 }

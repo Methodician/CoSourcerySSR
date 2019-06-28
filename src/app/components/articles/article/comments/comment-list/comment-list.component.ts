@@ -2,8 +2,11 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
 import { MatDialog } from '@angular/material/dialog';
-import { Comment, VoteDirections } from '@models/interfaces/comment';
-import { tap } from 'rxjs/operators';
+import {
+  Comment,
+  VoteDirections,
+  ParentTypes,
+} from '@models/interfaces/comment';
 import { KeyMap } from '@models/interfaces/article-info';
 import { Subscription } from 'rxjs';
 import { AuthService } from '@services/auth.service';
@@ -24,8 +27,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
   constructor(
     private commentSvc: CommentService,
     private userSvc: UserService,
-    private authSvc: AuthService,
-    private dialog: MatDialog
+    private authSvc: AuthService
   ) {}
 
   commentState$ = this.commentSvc.commentState$;
@@ -44,6 +46,16 @@ export class CommentListComponent implements OnInit, OnDestroy {
       console.log('should destroy subscription:', key);
     }
   }
+
+  enterNewCommentMode = parentKey => {
+    this.commentSvc.enterNewCommentMode(
+      this.loggedInUser$.value.uid,
+      parentKey,
+      ParentTypes.comment
+    );
+  };
+
+  onAddComment = () => this.commentSvc.saveNewComment();
 
   onUpvoteComment = (commentKey: string) =>
     this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
@@ -82,9 +94,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
     this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
   isCommentBeingEdited = (key: string) =>
-    this.loggedInUser$.value.uid &&
-    this.commentState$.value &&
-    this.commentState$.value.parentKey === key;
+    this.loggedInUser$.value.uid && this.commentState$.value.key === key;
 
   authCheck = () => this.authSvc.authCheck();
 }

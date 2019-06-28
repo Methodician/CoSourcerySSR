@@ -35,8 +35,8 @@ export class CommentsComponent implements OnInit {
     );
   };
 
-  saveNewComment = (comment: Comment) => {
-    this.commentSvc.saveNewComment(comment);
+  saveNewComment = () => {
+    this.commentSvc.saveNewComment();
   };
 
   // Helpers etc

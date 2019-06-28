@@ -13,7 +13,17 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
   providedIn: 'root',
 })
 export class CommentService {
-  commentState$: BehaviorSubject<Comment> = new BehaviorSubject(null);
+  NULL_COMMENT: Comment = {
+    authorId: null,
+    parentKey: null,
+    text: null,
+    replyCount: null,
+    parentType: null,
+    voteCount: null,
+  };
+  commentState$: BehaviorSubject<Comment> = new BehaviorSubject(
+    this.NULL_COMMENT
+  );
 
   constructor(private afd: AngularFireDatabase) {}
 
@@ -26,9 +36,9 @@ export class CommentService {
     this.commentState$.next(comment);
   };
 
-  saveNewComment = async (comment: Comment) => {
-    await this.createComment(comment);
-    this.commentState$.next(null);
+  saveNewComment = async () => {
+    console.log(await this.createComment(this.commentState$.value));
+    this.commentState$.next(this.NULL_COMMENT);
   };
 
   createCommentStub = (
@@ -82,14 +92,9 @@ export class CommentService {
 
   async createComment(comment: Comment) {
     const commentToSave = {
-      authorId: comment.authorId,
-      text: comment.text,
-      parentKey: comment.parentKey,
+      ...comment,
       lastUpdated: rtServerTimestamp,
       timestamp: rtServerTimestamp,
-      parentType: comment.parentType,
-      replyCount: comment.replyCount,
-      voteCount: comment.voteCount,
     };
     return this.afd.list('commentData/comments').push(commentToSave).key;
   }

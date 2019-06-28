@@ -60,15 +60,16 @@
         </a>
       </p>
 
-      <!-- <section class="comment-controls">
+      <!-- COMMENT CONTROLS -->
+      <section class="comment-controls">
         <button
           *ngIf="
             (!isCommentBeingEdited(comment.key) &&
-              commentReplyInfo.replyParentKey !== key) ||
-            !loggedInUser.uid
+              commentState$.value.parentKey !== comment.key) ||
+            !loggedInUser$.value.uid
           "
           class="mat-icon-btn mat-icon-btn_small"
-          (click)="authCheck() ? enterNewCommentMode(comment.key) : null"
+          (click)="enterNewCommentMode(comment.key)"
         >
           <mat-icon class="mat-icon_small">reply</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
@@ -76,13 +77,13 @@
           >
         </button>
         <div
-          *ngIf="loggedInUser.uid === comment.authorId"
+          *ngIf="loggedInUser$.value.uid === comment.authorId"
           class="comment-controls__btn-group"
         >
           <button
             *ngIf="
               !isCommentBeingEdited(comment.key) &&
-              commentReplyInfo.replyParentKey !== key
+              commentState$.value.parentKey !== comment.key
             "
             class="mat-icon-btn mat-icon-btn_small"
             (click)="enterEditMode(comment.key)"
@@ -95,7 +96,7 @@
           <button
             *ngIf="
               !isCommentBeingEdited(comment.key) &&
-              commentReplyInfo.replyParentKey !== key
+              commentState$.value.parentKey !== comment.key
             "
             class="mat-icon-btn mat-icon-btn_small"
             (click)="onRemoveComment(comment.key)"
@@ -126,11 +127,15 @@
             >
           </button>
         </div>
-      </section> -->
+      </section>
+      <!-- end comment controls -->
 
       <!-- New Reply Stub -->
-      <!-- <section
-        *ngIf="commentReplyInfo.replyParentKey === key && loggedInUser.uid"
+      <section
+        *ngIf="
+          commentState$.value.parentKey === comment.key &&
+          loggedInUser$.value.uid
+        "
         class="comment-container comment-container_new-reply comment-content-region"
       >
         <div class="comment-container__border-decoration">
@@ -141,12 +146,7 @@
             class="border-endpoint border-endpoint_bottom border-endpoint_accent-2"
           ></div>
         </div>
-        <cos-comment
-          [isBeingEdited]="true"
-          [loggedInUser]="loggedInUser"
-          [authorInfo]="loggedInUser"
-          [comment]="newCommentStub"
-        >
+        <cos-comment [isBeingEdited]="true" [comment]="commentState$.value">
         </cos-comment>
         <section class="comment-controls">
           <button
@@ -168,7 +168,7 @@
             >
           </button>
         </section>
-      </section> -->
+      </section>
     </section>
 
     <!-- List of Nested Comments -->

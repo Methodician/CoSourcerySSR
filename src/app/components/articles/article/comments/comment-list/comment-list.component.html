@@ -52,13 +52,13 @@
       >
       </cos-comment>
 
-      <!-- <p *ngIf="comment.replyCount > 0" class="comment-reply-count">
-        <a (click)="toggleCommentListUnfurl(comment.key)">
-          {{ commentListUnfurlMap[key] ? 'Hide' : 'Show' }}
+      <p *ngIf="comment.replyCount > 0" class="comment-reply-count">
+        <a (click)="onToggleUnfurl(comment.key)">
+          {{ unfurlMap[key] ? 'Hide' : 'Show' }}
           {{ comment.replyCount }}
           {{ comment.replyCount === 1 ? 'Reply' : 'Replies' }}
         </a>
-      </p> -->
+      </p>
 
       <!-- <section class="comment-controls">
         <button
@@ -172,14 +172,7 @@
     </section>
 
     <!-- List of Nested Comments -->
-    <!-- <cos-comment-list *ngIf="commentListUnfurlMap[key]"
-                      [parentKey]="key"
-                      [loggedInUser]="loggedInUser"
-                      [userMap]="userMap"
-                      [userKeys]="userKeys"
-                      [commentReplyInfo]="commentReplyInfo"
-                      [commentEditInfo]="commentEditInfo"
-                      [userVotesMap]="userVotesMap">
-    </cos-comment-list> -->
+    <cos-comment-list *ngIf="unfurlMap[comment.key]" [parentKey]="comment.key">
+    </cos-comment-list>
   </section>
 </section>

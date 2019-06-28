@@ -16,11 +16,10 @@ export class CommentListComponent implements OnInit, OnDestroy {
   @Input() isUnderComment = true;
   @Input() parentKey: string;
 
-  // TODO: Make an object map a more global interface
   subscriptionMap: KeyMap<Subscription> = {};
   comments: Array<Comment>;
-  // TODO: Make KeyMap a shared interface
-  userVotesMap: KeyMap<VoteDirections> = {};
+  votesMap: KeyMap<VoteDirections> = {};
+  unfurlMap: KeyMap<boolean> = {};
 
   constructor(
     private commentSvc: CommentService,
@@ -52,6 +51,9 @@ export class CommentListComponent implements OnInit, OnDestroy {
   onDownvoteComment = (commentKey: string) =>
     this.commentSvc.downvoteComment(this.loggedInUser$.value.uid, commentKey);
 
+  onToggleUnfurl = (key: string) =>
+    (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true);
+
   watchUserVotes = () => {
     const userVotesSub = this.commentSvc
       .userVotesRef(this.loggedInUser$.value.uid)
@@ -62,7 +64,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
           // The vote key happens to be a commentKey
           votesMap[vote.key] = vote.payload.val();
         }
-        this.userVotesMap = votesMap;
+        this.votesMap = votesMap;
       });
     this.subscriptionMap.userVotes = userVotesSub;
   };
@@ -77,7 +79,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
   };
 
   wasVoteCast = (parentKey: string, direction: VoteDirections) =>
-    this.userVotesMap[parentKey] && this.userVotesMap[parentKey] === direction;
+    this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
   isCommentBeingEdited = (key: string) =>
     this.loggedInUser$.value.uid &&

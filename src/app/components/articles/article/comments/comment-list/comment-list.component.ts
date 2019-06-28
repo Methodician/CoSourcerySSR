@@ -46,6 +46,12 @@ export class CommentListComponent implements OnInit, OnDestroy {
     }
   }
 
+  onUpvoteComment = (commentKey: string) =>
+    this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
+
+  onDownvoteComment = (commentKey: string) =>
+    this.commentSvc.downvoteComment(this.loggedInUser$.value.uid, commentKey);
+
   watchUserVotes = () => {
     const userVotesSub = this.commentSvc
       .userVotesRef(this.loggedInUser$.value.uid)
@@ -70,18 +76,13 @@ export class CommentListComponent implements OnInit, OnDestroy {
     this.subscriptionMap.comments = commentsSubscription;
   };
 
-  wasVoteCast = (parentKey: string, direction: VoteDirections) => {
-    const existingVote = this.userVotesMap[parentKey];
-    return existingVote && existingVote === direction;
-  };
+  wasVoteCast = (parentKey: string, direction: VoteDirections) =>
+    this.userVotesMap[parentKey] && this.userVotesMap[parentKey] === direction;
 
-  isCommentBeingEdited = (key: string) => {
-    return (
-      this.loggedInUser$.value.uid &&
-      this.commentState$.value &&
-      this.commentState$.value.parentKey === key
-    );
-  };
+  isCommentBeingEdited = (key: string) =>
+    this.loggedInUser$.value.uid &&
+    this.commentState$.value &&
+    this.commentState$.value.parentKey === key;
 
-  authCheck = async () => await this.authSvc.authCheck();
+  authCheck = () => this.authSvc.authCheck();
 }

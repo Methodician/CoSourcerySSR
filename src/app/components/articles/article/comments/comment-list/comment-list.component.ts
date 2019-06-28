@@ -93,8 +93,13 @@ export class CommentListComponent implements OnInit, OnDestroy {
   wasVoteCast = (parentKey: string, direction: VoteDirections) =>
     this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
+  isLoggedIn = () => !!this.loggedInUser$.value.uid;
+
   isCommentBeingEdited = (key: string) =>
-    this.loggedInUser$.value.uid && this.commentState$.value.key === key;
+    this.isLoggedIn && this.commentState$.value.key === key;
+
+  isParentOfCommentBeingEdited = (key: string) =>
+    this.commentState$.value.parentKey === key;
 
   authCheck = () => this.authSvc.authCheck();
 }

@@ -64,9 +64,9 @@
       <section class="comment-controls">
         <button
           *ngIf="
-            (!isCommentBeingEdited(comment.key) &&
-              commentState$.value.parentKey !== comment.key) ||
-            !loggedInUser$.value.uid
+            isLoggedIn() &&
+            !isCommentBeingEdited(comment.key) &&
+            !isParentOfCommentBeingEdited(comment.key)
           "
           class="mat-icon-btn mat-icon-btn_small"
           (click)="enterNewCommentMode(comment.key)"
@@ -82,8 +82,9 @@
         >
           <button
             *ngIf="
+              isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
-              commentState$.value.parentKey !== comment.key
+              !isParentOfCommentBeingEdited(comment.key)
             "
             class="mat-icon-btn mat-icon-btn_small"
             (click)="enterEditMode(comment.key)"
@@ -95,8 +96,9 @@
           </button>
           <button
             *ngIf="
+              isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
-              commentState$.value.parentKey !== comment.key
+              !isParentOfCommentBeingEdited(comment.key)
             "
             class="mat-icon-btn mat-icon-btn_small"
             (click)="onRemoveComment(comment.key)"
@@ -132,10 +134,7 @@
 
       <!-- New Reply Stub -->
       <section
-        *ngIf="
-          commentState$.value.parentKey === comment.key &&
-          loggedInUser$.value.uid
-        "
+        *ngIf="commentState$.value.parentKey === comment.key && isLoggedIn()"
         class="comment-container comment-container_new-reply comment-content-region"
       >
         <div class="comment-container__border-decoration">

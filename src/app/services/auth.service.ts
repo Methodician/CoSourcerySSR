@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthInfo } from '@models/classes/auth-info';
+import { MatDialog } from '@angular/material/dialog';
 // import { AngularFireDatabase } from '@angular/fire/database';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AuthService {
   authInfo$ = new BehaviorSubject<AuthInfo>(this.NULL_USER);
 
   constructor(
+    private dialogue: MatDialog,
     private afAuth: AngularFireAuth // private rtdb: AngularFireDatabase,
   ) {
     this.afAuth.user.subscribe(user => {
@@ -81,7 +83,10 @@ export class AuthService {
     if (await this.isSignedIn()) {
       return true;
     } else {
-      alert('Did I already implement LoginDialogComponent?');
+      const { LoginDialogComponent } = await import(
+        '@modals/login-dialog/login-dialog.component'
+      );
+      this.dialogue.open(LoginDialogComponent);
       return false;
     }
   };

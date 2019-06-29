@@ -47,15 +47,18 @@ export class CommentListComponent implements OnInit, OnDestroy {
     }
   }
 
-  enterNewCommentMode = parentKey => {
+  enterEditMode = comment => this.commentSvc.enterEditCommentMode(comment);
+
+  enterNewCommentMode = parentKey =>
     this.commentSvc.enterNewCommentMode(
       this.loggedInUser$.value.uid,
       parentKey,
       ParentTypes.comment
     );
-  };
 
   onAddComment = () => this.commentSvc.saveNewComment();
+
+  onSaveEdits = () => this.commentSvc.saveCommentEdits();
 
   onUpvoteComment = (commentKey: string) =>
     this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
@@ -95,10 +98,14 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   isLoggedIn = () => !!this.loggedInUser$.value.uid;
 
-  isCommentBeingEdited = (key: string) =>
-    this.isLoggedIn && this.commentState$.value.key === key;
+  isCommentNew = () => {
+    // console.log(this.commentState$.value);
+    return this.commentState$.value.parentKey && !this.commentState$.value.key;
+  };
 
-  isParentOfCommentBeingEdited = (key: string) =>
+  isCommentBeingEdited = (key: string) => this.commentState$.value.key === key;
+
+  isChildBeingEdited = (key: string) =>
     this.commentState$.value.parentKey === key;
 
   authCheck = () => this.authSvc.authCheck();

@@ -27,6 +27,8 @@ export class CommentService {
 
   constructor(private afd: AngularFireDatabase) {}
 
+  enterEditCommentMode = (comment: Comment) => this.commentState$.next(comment);
+
   enterNewCommentMode = (
     authorId: string,
     parentKey: string,
@@ -37,7 +39,12 @@ export class CommentService {
   };
 
   saveNewComment = async () => {
-    console.log(await this.createComment(this.commentState$.value));
+    await this.createComment(this.commentState$.value);
+    this.commentState$.next(this.NULL_COMMENT);
+  };
+
+  saveCommentEdits = async () => {
+    await this.updateComment(this.commentState$.value);
     this.commentState$.next(this.NULL_COMMENT);
   };
 
@@ -90,30 +97,23 @@ export class CommentService {
     return voteRef.set(VoteDirections.down);
   }
 
-  async createComment(comment: Comment) {
-    const commentToSave = {
+  createComment = (comment: Comment) =>
+    this.afd.list('commentData/comments').push({
       ...comment,
       lastUpdated: rtServerTimestamp,
       timestamp: rtServerTimestamp,
-    };
-    return this.afd.list('commentData/comments').push(commentToSave).key;
-  }
+    }).key;
 
-  updateComment(comment: Comment, commentKey: string) {
-    const commentToSave = {
+  updateComment = (comment: Comment) =>
+    this.afd.object(this.singleCommentPath(comment.key)).update({
       lastUpdated: rtServerTimestamp,
       text: comment.text,
-    };
-    return this.afd
-      .object(this.singleCommentPath(commentKey))
-      .update(commentToSave);
-  }
+    });
 
-  removeComment(commentKey) {
-    return this.afd
+  removeComment = commentKey =>
+    this.afd
       .object(this.singleCommentPath(commentKey))
       .update({ removedAt: rtServerTimestamp });
-  }
 
   // May be deprecated in light of Firebase's caching...
   watchCommentsByParent = (parentKey: string) => {

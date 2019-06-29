@@ -8,7 +8,7 @@
     <div class="comment-container__border-decoration">
       <div class="border-endpoint border-endpoint_bottom"></div>
     </div>
-    <section id="{{ comment.commentKey }}" class="comment-content-region">
+    <section id="{{ comment.key }}" class="comment-content-region">
       <section class="comment-rating">
         <div class="comment-rating__score-container">
           <span
@@ -46,12 +46,15 @@
         </button>
       </section>
 
+      <!-- DISPLAY COMMENT -->
       <cos-comment
         [comment]="comment"
         [isBeingEdited]="isCommentBeingEdited(comment.key)"
       >
       </cos-comment>
+      <!-- end display comment -->
 
+      <!-- COMMENT CONTROLS -->
       <p *ngIf="comment.replyCount > 0" class="comment-reply-count">
         <a (click)="onToggleUnfurl(comment.key)">
           {{ unfurlMap[key] ? 'Hide' : 'Show' }}
@@ -60,13 +63,12 @@
         </a>
       </p>
 
-      <!-- COMMENT CONTROLS -->
       <section class="comment-controls">
         <button
           *ngIf="
             isLoggedIn() &&
             !isCommentBeingEdited(comment.key) &&
-            !isParentOfCommentBeingEdited(comment.key)
+            !isChildBeingEdited(comment.key)
           "
           class="mat-icon-btn mat-icon-btn_small"
           (click)="enterNewCommentMode(comment.key)"
@@ -84,10 +86,10 @@
             *ngIf="
               isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
-              !isParentOfCommentBeingEdited(comment.key)
+              !isChildBeingEdited(comment.key)
             "
             class="mat-icon-btn mat-icon-btn_small"
-            (click)="enterEditMode(comment.key)"
+            (click)="enterEditMode(comment)"
           >
             <mat-icon class="mat-icon_small">edit</mat-icon>
             <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
@@ -98,7 +100,7 @@
             *ngIf="
               isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
-              !isParentOfCommentBeingEdited(comment.key)
+              !isChildBeingEdited(comment.key)
             "
             class="mat-icon-btn mat-icon-btn_small"
             (click)="onRemoveComment(comment.key)"
@@ -134,7 +136,9 @@
 
       <!-- New Reply Stub -->
       <section
-        *ngIf="commentState$.value.parentKey === comment.key && isLoggedIn()"
+        *ngIf="
+          isLoggedIn() && isCommentNew() && isChildBeingEdited(comment.key)
+        "
         class="comment-container comment-container_new-reply comment-content-region"
       >
         <div class="comment-container__border-decoration">

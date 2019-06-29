@@ -47,8 +47,8 @@ export class CommentsComponent implements OnInit {
   isTopLevelCommentBeingCreated = () => {
     return (
       this.loggedInUser$.value.uid &&
-      this.commentState$.value &&
-      this.commentState$.value.parentKey === this.articleId
+      this.commentState$.value.parentKey === this.articleId &&
+      !this.commentState$.value.key
     );
   };
 }

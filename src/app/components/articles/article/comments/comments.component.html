@@ -1,4 +1,3 @@
-<!-- Top-Level Comment -->
 <section *ngIf="!isArticleNew" class="wrapper">
   <section class="header">
     <h2 class="title">Discussion</h2>
@@ -11,6 +10,7 @@
     </button>
   </section>
 
+  <!-- TOP-LEVEL COMMENT -->
   <section class="comment-wrapper_root">
     <section
       *ngIf="isTopLevelCommentBeingCreated()"
@@ -48,7 +48,8 @@
       </section>
     </section>
   </section>
-  <!-- Existing Comments -->
+  <!-- end top-level comment -->
+  <!-- EXISTING COMMENTS -->
   <cos-comment-list [isUnderComment]="false" [parentKey]="articleId">
   </cos-comment-list>
 </section>

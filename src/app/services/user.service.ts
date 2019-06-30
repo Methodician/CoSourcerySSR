@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class UserService {
-  private NULL_USER = new UserInfo(null, null, null, null);
+  private NULL_USER = new UserInfo({ fName: null, lName: null });
   loggedInUser$: BehaviorSubject<UserInfo> = new BehaviorSubject(
     this.NULL_USER
   );

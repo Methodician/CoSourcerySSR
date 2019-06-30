@@ -1,0 +1,152 @@
+@import '../../../../../sass/vars.scss';
+
+.comment-wrapper {
+  padding-top: 40px;
+
+  &_root {
+    margin-left: 30px;
+  }
+}
+
+.comment-container {
+  min-width: 250px;
+  max-width: 768px;
+  position: relative;
+  margin: 0 auto;
+  padding-left: 30px;
+  border-left: 2px solid lighten($accent-color-1, 30%);
+
+  &_new-reply {
+    margin-top: 40px;
+    padding-bottom: 20px;
+    border-left: 2px solid lighten($accent-color-2, 30%);
+  }
+
+  &__border-decoration {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: -1px;
+  }
+}
+
+.border-endpoint {
+  height: 10px;
+  width: 10px;
+  position: absolute;
+  border-radius: 2px;
+  background-color: lighten($accent-color-1, 30%);
+
+  &_top {
+    top: 0px;
+  }
+
+  &_bottom {
+    bottom: 0px;
+  }
+
+  &_accent-2 {
+    background-color: lighten($accent-color-2, 30%);
+  }
+}
+
+.comment-content-region {
+  padding-right: 30px;
+
+  @media screen and (min-width: 500px) {
+    padding-right: 60px;
+  }
+
+  &:hover {
+    .comment-controls {
+      visibility: visible;
+    }
+
+    .comment-rating__btn_hidden {
+      visibility: visible;
+    }
+  }
+}
+
+.comment-rating {
+  height: 100%;
+  position: absolute;
+  top: -10px;
+  left: -21px;
+
+  &__score-container {
+    height: 40px;
+    width: 40px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__score {
+    min-width: 30px;
+    position: absolute;
+    padding: 4px 5px;
+    border-radius: 5px;
+    border: 2px solid lighten($accent-color-1, 30%);
+    background-color: #fff;
+    color: $accent-color-1-dark;
+    text-align: center;
+
+    &_negative {
+      color: red;
+    }
+  }
+
+  &__btn {
+    margin: 0 5px 8px;
+    box-shadow: none;
+    border: 2px solid lighten($accent-color-1, 30%);
+    background-color: #fff;
+    color: $accent-color-1-dark;
+
+    &_voted {
+      border: 2px solid lighten($primary-color, 30%);
+      color: $primary-color;
+    }
+
+    &:hover {
+      border: 2px solid lighten($accent-color-2, 30%);
+      background-color: lighten($accent-color-2, 30%);
+    }
+
+    @media screen and (min-width: 500px) {
+      &_hidden {
+        visibility: hidden;
+      }
+    }
+  }
+}
+
+.comment-reply-count {
+  margin-left: 10px;
+}
+
+.comment-controls {
+  display: flex;
+
+  &__btn-group {
+    display: flex;
+  }
+
+  @media screen and (min-width: 500px) {
+    visibility: hidden;
+    position: absolute;
+    top: -12px;
+    right: 15px;
+    flex-direction: column;
+    align-items: flex-end;
+
+    &__btn-group {
+      flex-direction: column;
+    }
+  }
+}

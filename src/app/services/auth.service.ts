@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthInfo } from '@models/classes/auth-info';
+import { MatDialog } from '@angular/material/dialog';
 // import { AngularFireDatabase } from '@angular/fire/database';
 
 @Injectable({
@@ -14,7 +15,8 @@ export class AuthService {
   authInfo$ = new BehaviorSubject<AuthInfo>(this.NULL_USER);
 
   constructor(
-    private afAuth: AngularFireAuth, // private rtdb: AngularFireDatabase,
+    private dialogue: MatDialog,
+    private afAuth: AngularFireAuth // private rtdb: AngularFireDatabase,
   ) {
     this.afAuth.user.subscribe(user => {
       if (user) {
@@ -23,8 +25,8 @@ export class AuthService {
             user.uid,
             user.emailVerified,
             user.displayName,
-            user.email,
-          ),
+            user.email
+          )
         );
       } else {
         this.authInfo$.next(this.NULL_USER);
@@ -72,10 +74,22 @@ export class AuthService {
         take(1),
         map(res => {
           return !!res;
-        }),
+        })
       )
       .toPromise();
   }
+
+  authCheck = async () => {
+    if (await this.isSignedIn()) {
+      return true;
+    } else {
+      const { LoginDialogComponent } = await import(
+        '@modals/login-dialog/login-dialog.component'
+      );
+      this.dialogue.open(LoginDialogComponent);
+      return false;
+    }
+  };
 
   async sendVerificationEmail() {
     const user = this.afAuth.auth.currentUser;
@@ -84,7 +98,7 @@ export class AuthService {
     } catch (err) {
       alert(
         'It looks like your verification email was not sent. Please try again or contact support.' +
-          err,
+          err
       );
     }
   }

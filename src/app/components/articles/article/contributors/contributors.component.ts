@@ -37,9 +37,9 @@ export class ContributorsComponent implements OnInit {
 
   editorKeys: Array<string>;
   _editorMap: Object;
-  _displayEditors: Array<String>;
-  _displayEditorsNext: Array<String>;
-  _displayEditorsPrev: Array<String>;
+  _displayEditors: Array<string>;
+  _displayEditorsNext: Array<string>;
+  _displayEditorsPrev: Array<string>;
   displayEditorsPosition = 0;
   editorPanelCount: number;
   transitionLeft = false;

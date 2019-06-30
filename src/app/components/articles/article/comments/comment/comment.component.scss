@@ -1,0 +1,63 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../../../../sass/vars.scss';
+
+.comment {
+  min-height: 100px;
+}
+
+.comment__header {
+  display: block;
+
+  @media screen and (min-width: 500px) {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    grid-gap: 20px;
+  }
+}
+
+.comment__author-image {
+  height: 50px;
+  width: 50px;
+  display: none;
+  border-radius: 100%;
+  object-fit: cover;
+
+  @media screen and (min-width: 500px) {
+    display: block;
+  }
+}
+
+.comment__author-detail {
+  margin: 0;
+  color: lighten($accent-color-1-dark, 30%);
+
+  &_light {
+    color: $medium-gray;
+    font-size: 0.8rem;
+  }
+}
+
+.comment__text {
+  margin-top: 20px;
+}
+
+.comment__input {
+  min-height: 100px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+mat-form-field::ng-deep {
+  display: block;
+  margin-bottom: -14px;
+
+  .mat-form-field-wrapper {
+    padding: 0;
+  }
+
+  .mat-form-field-infix {
+    padding: 0 3px 14px 0;
+    border: none;
+  }
+}

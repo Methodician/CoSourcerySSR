@@ -46,6 +46,10 @@ import { ProfileCardComponent } from './components/shared/profile-card/profile-c
 import { BodyComponent } from './components/articles/article/body/body.component';
 import { BodyDisplayComponent } from './components/articles/article/body/body-display/body-display.component';
 import { BodyEditComponent } from './components/articles/article/body/body-edit/body-edit.component';
+import { CommentsComponent } from './components/articles/article/comments/comments.component';
+import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
+import { CommentListComponent } from './components/articles/article/comments/comment-list/comment-list.component';
+import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
 
 @NgModule({
   declarations: [
@@ -70,6 +74,10 @@ import { BodyEditComponent } from './components/articles/article/body/body-edit/
     BodyComponent,
     BodyDisplayComponent,
     BodyEditComponent,
+    CommentsComponent,
+    CommentComponent,
+    CommentListComponent,
+    ReverseArrayPipe,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

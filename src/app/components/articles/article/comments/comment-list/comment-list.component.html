@@ -59,7 +59,7 @@
       <!-- COMMENT CONTROLS -->
       <p *ngIf="comment.replyCount > 0" class="comment-reply-count">
         <a (click)="onToggleUnfurl(comment.key)">
-          {{ unfurlMap[key] ? 'Hide' : 'Show' }}
+          {{ unfurlMap[comment.key] ? 'Hide' : 'Show' }}
           {{ comment.replyCount }}
           {{ comment.replyCount === 1 ? 'Reply' : 'Replies' }}
         </a>

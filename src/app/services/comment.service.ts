@@ -115,7 +115,7 @@ export class CommentService {
       text: comment.text,
     });
 
-  removeComment = commentKey =>
+  removeComment = (commentKey: string) =>
     this.afd
       .object(this.singleCommentPath(commentKey))
       .update({ removedAt: rtServerTimestamp });

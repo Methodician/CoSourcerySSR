@@ -48,6 +48,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   enterEditMode = comment => this.commentSvc.enterEditCommentMode(comment);
 
+  onSaveEdits = () => this.commentSvc.saveCommentEdits();
+
   enterNewCommentMode = parentKey =>
     this.commentSvc.enterNewCommentMode(
       this.loggedInUser$.value.uid,
@@ -55,11 +57,12 @@ export class CommentListComponent implements OnInit, OnDestroy {
       ParentTypes.comment
     );
 
-  onCancelComment = () => this.commentSvc.resetCommentState();
-
   onAddComment = () => this.commentSvc.saveNewComment();
 
-  onSaveEdits = () => this.commentSvc.saveCommentEdits();
+  onCancelComment = () => this.commentSvc.resetCommentState();
+
+  onRemoveComment = (commentKey: string) =>
+    this.commentSvc.removeComment(commentKey);
 
   onUpvoteComment = (commentKey: string) =>
     this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);

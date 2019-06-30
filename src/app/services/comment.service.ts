@@ -27,24 +27,29 @@ export class CommentService {
 
   constructor(private afd: AngularFireDatabase) {}
 
-  enterEditCommentMode = (comment: Comment) => this.commentState$.next(comment);
+  enterEditCommentMode = (comment: Comment) =>
+    this.commentState$.next({ ...comment });
 
   enterNewCommentMode = (
     authorId: string,
     parentKey: string,
     parentType: ParentTypes
   ) => {
-    const comment = this.createCommentStub(authorId, parentKey, parentType);
-    this.commentState$.next(comment);
+    const newComment = this.createCommentStub(authorId, parentKey, parentType);
+    this.commentState$.next(newComment);
   };
 
   saveNewComment = async () => {
     await this.createComment(this.commentState$.value);
-    this.commentState$.next(this.NULL_COMMENT);
+    this.resetCommentState();
   };
 
   saveCommentEdits = async () => {
     await this.updateComment(this.commentState$.value);
+    this.resetCommentState();
+  };
+
+  resetCommentState = () => {
     this.commentState$.next(this.NULL_COMMENT);
   };
 

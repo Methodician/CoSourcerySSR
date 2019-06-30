@@ -48,7 +48,9 @@
 
       <!-- DISPLAY COMMENT -->
       <cos-comment
-        [comment]="comment"
+        [comment]="
+          isCommentBeingEdited(comment.key) ? commentState$.value : comment
+        "
         [isBeingEdited]="isCommentBeingEdited(comment.key)"
       >
       </cos-comment>
@@ -123,7 +125,7 @@
           <button
             *ngIf="isCommentBeingEdited(comment.key)"
             class="mat-icon-btn mat-icon-btn_small"
-            (click)="onCancelEdit()"
+            (click)="onCancelComment()"
           >
             <mat-icon class="mat-icon_small">clear</mat-icon>
             <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
@@ -134,7 +136,7 @@
       </section>
       <!-- end comment controls -->
 
-      <!-- New Reply Stub -->
+      <!-- NEW REPLY STUB -->
       <section
         *ngIf="
           isLoggedIn() && isCommentNew() && isChildBeingEdited(comment.key)
@@ -163,7 +165,7 @@
           </button>
           <button
             class="mat-icon-btn mat-icon-btn_small"
-            (click)="onCancelNewComment()"
+            (click)="onCancelComment()"
           >
             <mat-icon class="mat-icon_small">clear</mat-icon>
             <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
@@ -172,6 +174,7 @@
           </button>
         </section>
       </section>
+      <!-- end new reply stub -->
     </section>
 
     <!-- List of Nested Comments -->

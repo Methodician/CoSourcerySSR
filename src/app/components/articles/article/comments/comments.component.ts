@@ -35,14 +35,12 @@ export class CommentsComponent implements OnInit {
     );
   };
 
-  saveNewComment = () => {
-    this.commentSvc.saveNewComment();
-  };
+  onCancelComment = () => this.commentSvc.resetCommentState();
+
+  saveNewComment = () => this.commentSvc.saveNewComment();
 
   // Helpers etc
-  authCheck = async () => {
-    return await this.authSvc.authCheck();
-  };
+  authCheck = async () => await this.authSvc.authCheck();
 
   isTopLevelCommentBeingCreated = () => {
     return (

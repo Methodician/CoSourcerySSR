@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import { MatDialog } from '@angular/material/dialog';
 import {
   Comment,
   VoteDirections,
@@ -55,6 +54,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
       parentKey,
       ParentTypes.comment
     );
+
+  onCancelComment = () => this.commentSvc.resetCommentState();
 
   onAddComment = () => this.commentSvc.saveNewComment();
 

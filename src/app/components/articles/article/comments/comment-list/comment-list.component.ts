@@ -42,7 +42,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     for (let key in this.subscriptionMap) {
-      console.log('should destroy subscription:', key);
+      this.subscriptionMap[key].unsubscribe();
     }
   }
 

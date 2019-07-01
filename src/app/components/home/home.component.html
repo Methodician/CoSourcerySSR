@@ -20,7 +20,6 @@
   <div class="article-grid">
     <cos-article-preview-card
       *ngFor="let article of latestArticles$ | async"
-      [userId]="userId"
       [articleData]="article"
     >
     </cos-article-preview-card>
@@ -31,7 +30,6 @@
   <div class="article-grid">
     <cos-article-preview-card
       *ngFor="let article of allArticles$ | async"
-      [userId]="userId"
       [articleData]="article"
     >
     </cos-article-preview-card>
@@ -55,7 +53,6 @@
     <!-- *ngFor="let article of bookmarkedArticles$ | async | reverseArray" -->
     <cos-article-preview-card
       *ngFor="let article of bookmarkedArticles$ | async"
-      [userId]="userId"
       [articleData]="article"
     >
     </cos-article-preview-card>

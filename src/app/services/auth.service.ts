@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take, map, tap } from 'rxjs/operators';
 import { AuthInfo } from '@models/classes/auth-info';
 import { MatDialog } from '@angular/material/dialog';
 // import { AngularFireDatabase } from '@angular/fire/database';
@@ -68,17 +68,36 @@ export class AuthService {
     return this.afAuth.auth.createUserWithEmailAndPassword(email, password);
   }
 
-  async isSignedIn(): Promise<boolean> {
-    return this.afAuth.authState
-      .pipe(
-        take(1),
-        map(res => {
-          return !!res;
-        })
-      )
-      .toPromise();
-  }
+  /**
+   * Checks auth state once
+   */
+  isSignedIn = () => {
+    return this.afAuth.authState.pipe(
+      take(1),
+      map(res => {
+        return !!res;
+      })
+    );
+  };
 
+  /**
+   * Checks authstate once, returns isSignedIn,
+   * and prompts user to sign in if they haven't
+   */
+  isSignedInOrPrompt = () => {
+    return this.isSignedIn().pipe(
+      tap(async isSignedIn => {
+        if (!isSignedIn) {
+          const { LoginDialogComponent } = await import(
+            '@modals/login-dialog/login-dialog.component'
+          );
+          this.dialogue.open(LoginDialogComponent);
+        }
+      })
+    );
+  };
+
+  // TODO: Should be globally replaced with above
   authCheck = async () => {
     if (await this.isSignedIn()) {
       return true;

@@ -1,78 +1,73 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  SimpleChanges,
-  OnChanges,
-} from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+
+import { map, switchMap, tap } from 'rxjs/operators';
+
 import { ArticleService } from '@services/article.service';
 import { ArticlePreview } from '@models/interfaces/article-info';
-import { MatDialog } from '@angular/material/dialog';
-// import { LoginDialogComponent } from '@modals/login-dialog/login-dialog.component';
+import { AuthService } from '@services/auth.service';
+import { BehaviorSubject } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-article-preview-card',
   templateUrl: './article-preview-card.component.html',
   styleUrls: ['./article-preview-card.component.scss'],
 })
-export class ArticlePreviewCardComponent implements OnInit, OnChanges {
+export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleData: ArticlePreview;
-  @Input() userId: string;
-  isArticleBookmarked: boolean;
-  constructor(private articleSvc: ArticleService, private dialog: MatDialog) {}
+  isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private alive = true;
+  constructor(
+    private articleSvc: ArticleService,
+    private authSvc: AuthService
+  ) {}
 
   ngOnInit() {
-    // if (this.userId) {
-    //   this.checkIfBookmarked();
-    // }
-    // const url = this.articleData.imageUrl;
-    // if (url === 'unset') {
-    //   this.articleSvc.setThumbnailImageUrl(this.articleData.articleId);
-    // }
+    this.isArticleBookmarked()
+      .pipe(takeWhile(() => this.alive))
+      .subscribe(val => {
+        this.isArticleBookmarked$.next(val);
+      });
+    const url = this.articleData.imageUrl;
+    if (url === 'unset') {
+      this.articleSvc.setThumbnailImageUrl(this.articleData.articleId);
+    }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // if (changes.userId.currentValue) {
-    //   this.checkIfBookmarked();
-    // }
+  ngOnDestroy() {
+    this.alive = false;
   }
 
-  // async checkIfBookmarked() {
-  //   const ref = await this.articleSvc.bookmarkedRef(
-  //     this.userId,
-  //     this.articleData.articleId,
-  //   );
-  //   ref.valueChanges().subscribe(snapshot => {
-  //     if (snapshot && snapshot.toString().length === 13) {
-  //       this.isArticleBookmarked = true;
-  //     } else {
-  //       this.isArticleBookmarked = false;
-  //     }
-  //   });
-  // }
+  isValidUrl = (str: string) => {
+    try {
+      return Boolean(new URL(str));
+    } catch (_) {
+      return false;
+    }
+  };
 
-  // bookmarkToggle() {
-  //   if (this.userId) {
-  //     if (this.isArticleBookmarked) {
-  //       this.articleSvc.unBookmarkArticle(
-  //         this.userId,
-  //         this.articleData.articleId,
-  //       );
-  //     } else {
-  //       this.articleSvc.bookmarkArticle(
-  //         this.userId,
-  //         this.articleData.articleId,
-  //       );
-  //     }
-  //   }
-  // }
+  isArticleBookmarked = () =>
+    this.authSvc.authInfo$.pipe(
+      switchMap(info =>
+        this.articleSvc
+          .singleBookmarkRef(info.uid, this.articleData.articleId)
+          .valueChanges()
+      ),
+      map(bookmark => !!bookmark)
+    );
 
-  // authCheck() {
-  //   if (this.userId) {
-  //     return true;
-  //   } else {
-  //     this.dialog.open(LoginDialogComponent);
-  //     return false;
-  //   }
-  // }
+  onToggleBookmark = () => {
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn) {
+        const uid = this.authSvc.authInfo$.value.uid,
+          aid = this.articleData.articleId,
+          isBookemarked = this.isArticleBookmarked$.value;
+        if (isBookemarked) {
+          this.articleSvc.unBookmarkArticle(uid, aid);
+        } else {
+          this.articleSvc.bookmarkArticle(uid, aid);
+        }
+      }
+    });
+  };
 }

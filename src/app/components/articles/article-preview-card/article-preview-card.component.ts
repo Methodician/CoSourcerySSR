@@ -70,13 +70,4 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       }
     });
   };
-
-  // authCheck() {
-  //   if (this.userId) {
-  //     return true;
-  //   } else {
-  //     this.dialog.open(LoginDialogComponent);
-  //     return false;
-  //   }
-  // }
 }

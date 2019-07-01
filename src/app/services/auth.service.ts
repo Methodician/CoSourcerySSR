@@ -97,19 +97,6 @@ export class AuthService {
     );
   };
 
-  // TODO: Should be globally replaced with above
-  authCheck = async () => {
-    if (await this.isSignedIn()) {
-      return true;
-    } else {
-      const { LoginDialogComponent } = await import(
-        '@modals/login-dialog/login-dialog.component'
-      );
-      this.dialogue.open(LoginDialogComponent);
-      return false;
-    }
-  };
-
   async sendVerificationEmail() {
     const user = this.afAuth.auth.currentUser;
     try {

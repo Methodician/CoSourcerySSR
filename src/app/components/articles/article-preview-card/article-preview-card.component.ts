@@ -5,8 +5,8 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { ArticleService } from '@services/article.service';
 import { ArticlePreview } from '@models/interfaces/article-info';
 import { AuthService } from '@services/auth.service';
-import { BehaviorSubject } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-article-preview-card',
@@ -16,7 +16,8 @@ import { takeWhile } from 'rxjs/operators';
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleData: ArticlePreview;
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  private alive = true;
+  private unsubscribe: Subject<void> = new Subject();
+
   constructor(
     private articleSvc: ArticleService,
     private authSvc: AuthService
@@ -24,7 +25,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isArticleBookmarked()
-      .pipe(takeWhile(() => this.alive))
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
         this.isArticleBookmarked$.next(val);
       });
@@ -35,7 +36,8 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.alive = false;
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   isValidUrl = (str: string) => {

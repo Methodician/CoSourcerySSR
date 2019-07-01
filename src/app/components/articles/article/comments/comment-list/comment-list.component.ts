@@ -65,10 +65,19 @@ export class CommentListComponent implements OnInit, OnDestroy {
     this.commentSvc.removeComment(commentKey);
 
   onUpvoteComment = (commentKey: string) =>
-    this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn)
+        this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
+    });
 
   onDownvoteComment = (commentKey: string) =>
-    this.commentSvc.downvoteComment(this.loggedInUser$.value.uid, commentKey);
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn)
+        this.commentSvc.downvoteComment(
+          this.loggedInUser$.value.uid,
+          commentKey
+        );
+    });
 
   onToggleUnfurl = (key: string) =>
     (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true);
@@ -111,6 +120,4 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   isChildBeingEdited = (key: string) =>
     this.commentState$.value.parentKey === key;
-
-  authCheck = () => this.authSvc.authCheck();
 }

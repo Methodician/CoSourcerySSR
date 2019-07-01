@@ -25,7 +25,7 @@
           [ngClass]="{
             'comment-rating__btn_voted': wasVoteCast(comment.key, 'up')
           }"
-          (click)="authCheck() ? onUpvoteComment(comment.key) : null"
+          (click)="onUpvoteComment(comment.key)"
         >
           <mat-icon>expand_less</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{
@@ -37,7 +37,7 @@
           [ngClass]="{
             'comment-rating__btn_voted': wasVoteCast(comment.key, 'down')
           }"
-          (click)="authCheck() ? onDownvoteComment(comment.key) : null"
+          (click)="onDownvoteComment(comment.key)"
         >
           <mat-icon>expand_more</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{

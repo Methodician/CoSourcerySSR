@@ -28,11 +28,14 @@ export class CommentsComponent implements OnInit {
   ngOnInit() {}
 
   enterNewCommentMode = () => {
-    this.commentSvc.enterNewCommentMode(
-      this.loggedInUser$.value.uid,
-      this.articleId,
-      ParentTypes.article
-    );
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn)
+        this.commentSvc.enterNewCommentMode(
+          this.loggedInUser$.value.uid,
+          this.articleId,
+          ParentTypes.article
+        );
+    });
   };
 
   onCancelComment = () => this.commentSvc.resetCommentState();
@@ -40,8 +43,6 @@ export class CommentsComponent implements OnInit {
   saveNewComment = () => this.commentSvc.saveNewComment();
 
   // Helpers etc
-  authCheck = async () => await this.authSvc.authCheck();
-
   isTopLevelCommentBeingCreated = () => {
     return (
       this.loggedInUser$.value.uid &&

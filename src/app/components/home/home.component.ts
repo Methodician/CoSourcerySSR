@@ -12,7 +12,7 @@ import { ArticleService } from '@services/article.service';
 import { SeoService } from '@services/seo.service';
 
 import { Observable } from 'rxjs';
-import { map, tap, startWith } from 'rxjs/operators';
+import { map, tap, startWith, takeWhile } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 
 const ALL_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
@@ -30,7 +30,7 @@ const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
 export class HomeComponent implements OnInit, OnDestroy {
   // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
   @ViewChild('filterMenu', { static: true }) filterMenu;
-  userId: string;
+  private alive = true;
 
   filterTabs = [
     { name: 'Latest', selected: true },
@@ -55,18 +55,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.alive = false;
     this.clearArticleKeys();
   }
 
   // AUTH STUFF
   watchAuthInfo = () => {
-    this.authSvc.authInfo$.subscribe(({ uid }) => {
-      this.userId = uid;
-      if (uid) {
-        this.watchBookmarkedArticles(uid);
-        this.addFilterTab({ name: 'Bookmarked', selected: false });
-      }
-    });
+    this.authSvc.authInfo$
+      .pipe(takeWhile(() => this.alive))
+      .subscribe(({ uid }) => {
+        if (uid) {
+          this.watchBookmarkedArticles(uid);
+          this.addFilterTab({ name: 'Bookmarked', selected: false });
+        }
+      });
   };
   //end auth stuff
 
@@ -90,7 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   watchBookmarkedArticles = (uid: string) => {
     this.bookmarkedArticles$ = this.articleSvc
-      .watchBookmarkedArticles(this.userId)
+      .watchBookmarkedArticles(uid)
       .pipe(
         map(articles =>
           articles.map(art => this.articleSvc.processArticleTimestamps(art))

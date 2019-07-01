@@ -7,6 +7,7 @@ import {
   AngularFirestoreCollection,
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { AngularFireStorage } from '@angular/fire/storage';
 import { ArticlePreview, ArticleDetail } from '@models/interfaces/article-info';
 
 // RXJS stuff
@@ -19,7 +20,8 @@ import { combineLatest } from 'rxjs';
 export class ArticleService {
   constructor(
     private afs: AngularFirestore,
-    private afd: AngularFireDatabase
+    private afd: AngularFireDatabase,
+    private storage: AngularFireStorage
   ) {}
 
   // Firestore Ref Builders
@@ -43,7 +45,10 @@ export class ArticleService {
         .limit(12)
     );
 
-  watchBookmarkedArticles = uid => {
+  singleBookmarkRef = (uid: string, articleId: string) =>
+    this.afd.object(`userInfo/articleBookmarksPerUser/${uid}/${articleId}`);
+
+  watchBookmarkedArticles = (uid: string) => {
     const bookmarks$ = this.afd
       .list(`userInfo/articleBookmarksPerUser/${uid}`)
       .snapshotChanges();
@@ -62,24 +67,24 @@ export class ArticleService {
     );
   };
 
-  // Feeling clever - doing above in effectively one line of code does not make it better...
-  // watchBookmarkedArticles = uid =>
-  //   this.afd
-  //     .list(`userInfo/articleBookmarksPerUser/${uid}`)
-  //     .snapshotChanges()
-  //     .pipe(
-  //       switchMap(bookmarkSnaps =>
-  //         combineLatest(
-  //           bookmarkSnaps
-  //             .map(snap => snap.key)
-  //             .map(key =>
-  //               this.articlePreviewRef(key)
-  //                 .valueChanges()
-  //                 .pipe(take(1))
-  //             )
-  //         )
-  //       )
-  //     );
+  setThumbnailImageUrl = async (articleId: string) => {
+    const storagePath = `articleCoverThumbnails/${articleId}`;
+    const storageRef = this.storage.ref(storagePath);
+    const url = await storageRef.getDownloadURL().toPromise();
+    const trackerDocRef = this.afs.doc(
+      `fileUploads/articleUploads/coverThumbnails/${articleId}`
+    );
+    const articleDocRef = this.afs.doc<ArticlePreview>(
+      `articleData/articles/previews/${articleId}`
+    );
+
+    const trackerSet = trackerDocRef.set({
+      downloadUrl: url,
+      path: storagePath,
+    });
+    const articleUpdate = articleDocRef.update({ imageUrl: url });
+    return await Promise.all([trackerSet, articleUpdate]);
+  };
 
   // HELPERS
   createArticleId = () => this.afs.createId();

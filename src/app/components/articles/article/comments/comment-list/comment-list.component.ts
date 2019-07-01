@@ -7,7 +7,8 @@ import {
   ParentTypes,
 } from '@models/interfaces/comment';
 import { KeyMap } from '@models/interfaces/article-info';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 @Component({
   selector: 'cos-comment-list',
@@ -15,10 +16,9 @@ import { AuthService } from '@services/auth.service';
   styleUrls: ['./comment-list.component.scss'],
 })
 export class CommentListComponent implements OnInit, OnDestroy {
+  private unsubscribe: Subject<void> = new Subject();
   @Input() isUnderComment = true;
   @Input() parentKey: string;
-
-  subscriptionMap: KeyMap<Subscription> = {};
   comments: Array<Comment>;
   votesMap: KeyMap<VoteDirections> = {};
   unfurlMap: KeyMap<boolean> = {};
@@ -41,9 +41,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    for (let key in this.subscriptionMap) {
-      this.subscriptionMap[key].unsubscribe();
-    }
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   enterEditMode = comment => this.commentSvc.enterEditCommentMode(comment);
@@ -83,9 +82,10 @@ export class CommentListComponent implements OnInit, OnDestroy {
     (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true);
 
   watchUserVotes = () => {
-    const userVotesSub = this.commentSvc
+    this.commentSvc
       .userVotesRef(this.loggedInUser$.value.uid)
       .snapshotChanges()
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(votesSnap => {
         const votesMap = {};
         for (let vote of votesSnap) {
@@ -94,16 +94,15 @@ export class CommentListComponent implements OnInit, OnDestroy {
         }
         this.votesMap = votesMap;
       });
-    this.subscriptionMap.userVotes = userVotesSub;
   };
 
   watchComments = () => {
-    const commentsSubscription = this.commentSvc
+    this.commentSvc
       .watchCommentsByParent(this.parentKey)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(comments => {
         this.comments = comments;
       });
-    this.subscriptionMap.comments = commentsSubscription;
   };
 
   wasVoteCast = (parentKey: string, direction: VoteDirections) =>

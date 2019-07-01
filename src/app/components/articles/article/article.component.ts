@@ -11,8 +11,8 @@ import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
 
-import { Subscription, BehaviorSubject, Observable } from 'rxjs';
-import { tap, map, startWith, switchMap } from 'rxjs/operators';
+import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
+import { tap, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -24,6 +24,7 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
+  private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new UserInfo({ fName: null, lName: null });
 
   //  // Cover Image State
@@ -80,9 +81,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private userSvc: UserService
   ) {
-    this.userSvc.loggedInUser$.subscribe(user => {
-      this.loggedInUser = user;
-    });
+    this.userSvc.loggedInUser$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(user => {
+        this.loggedInUser = user;
+      });
   }
 
   ngOnInit() {
@@ -90,7 +93,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.articleSubscription.unsubscribe();
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
     this.state.set(ARTICLE_STATE_KEY, null);
   }
 
@@ -115,9 +119,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
       )
     );
-    this.articleSubscription = article$.subscribe(
-      article => (this.articleState = article)
-    );
+    article$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(article => (this.articleState = article));
   };
 
   watchArticleIdAndStatus$ = () => {

@@ -13,6 +13,7 @@ import { ArticlePreview, ArticleDetail } from '@models/interfaces/article-info';
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
+import { rtServerTimestamp } from '../shared/helpers/firebase';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,6 @@ export class ArticleService {
   ) {}
 
   // Firestore Ref Builders
-
   articleDetailRef = (id: string): AngularFirestoreDocument<ArticleDetail> =>
     this.afs.doc(`articleData/articles/articles/${id}`);
 
@@ -65,6 +65,24 @@ export class ArticleService {
         return combineLatest(articleSnapshots);
       })
     );
+  };
+
+  unBookmarkArticle = (uid: string, articleId: string) => {
+    const updates = {};
+    updates[`userInfo/articleBookmarksPerUser/${uid}/${articleId}`] = null;
+    updates[`articleData/userBookmarksPerArticle/${articleId}/${uid}`] = null;
+    this.afd.database.ref().update(updates);
+  };
+
+  bookmarkArticle = (uid: string, articleId: string) => {
+    const updates = {};
+    updates[
+      `userInfo/articleBookmarksPerUser/${uid}/${articleId}`
+    ] = rtServerTimestamp;
+    updates[
+      `articleData/userBookmarksPerArticle/${articleId}/${uid}`
+    ] = rtServerTimestamp;
+    this.afd.database.ref().update(updates);
   };
 
   setThumbnailImageUrl = async (articleId: string) => {

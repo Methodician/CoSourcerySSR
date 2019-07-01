@@ -56,21 +56,20 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       map(bookmark => !!bookmark)
     );
 
-  // bookmarkToggle() {
-  //   if (this.userId) {
-  //     if (this.isArticleBookmarked) {
-  //       this.articleSvc.unBookmarkArticle(
-  //         this.userId,
-  //         this.articleData.articleId,
-  //       );
-  //     } else {
-  //       this.articleSvc.bookmarkArticle(
-  //         this.userId,
-  //         this.articleData.articleId,
-  //       );
-  //     }
-  //   }
-  // }
+  onToggleBookmark = () => {
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn) {
+        const uid = this.authSvc.authInfo$.value.uid,
+          aid = this.articleData.articleId,
+          isBookemarked = this.isArticleBookmarked$.value;
+        if (isBookemarked) {
+          this.articleSvc.unBookmarkArticle(uid, aid);
+        } else {
+          this.articleSvc.bookmarkArticle(uid, aid);
+        }
+      }
+    });
+  };
 
   // authCheck() {
   //   if (this.userId) {

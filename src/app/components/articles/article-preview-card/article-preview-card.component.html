@@ -51,7 +51,7 @@
       class="counter-icons__item bookmark-icon"
       (click)="authCheck() ? bookmarkToggle() : null"
     > -->
-    <div class="counter-icons__item bookmark-icon">
+    <div (click)="onToggleBookmark()" class="counter-icons__item bookmark-icon">
       <mat-icon>{{
         isArticleBookmarked$.value ? 'bookmark' : 'bookmark_border'
       }}</mat-icon>

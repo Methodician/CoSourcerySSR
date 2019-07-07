@@ -51,6 +51,8 @@ import { CommentsComponent } from './components/articles/article/comments/commen
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
 import { CommentListComponent } from './components/articles/article/comments/comment-list/comment-list.component';
 import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
+import { MessageDialogComponent } from './components/modals/message-dialog/message-dialog.component';
+import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +81,8 @@ import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
     CommentComponent,
     CommentListComponent,
     ReverseArrayPipe,
+    MessageDialogComponent,
+    ConfirmDialogComponent,
   ],
   entryComponents: [LoginDialogComponent],
   imports: [

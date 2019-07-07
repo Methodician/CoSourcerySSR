@@ -1,0 +1,18 @@
+// Uses Global Default Styles in src/styles.scss
+@import '../../../sass/vars.scss';
+
+.dialog-box {
+  width: 65vw;
+  max-width: 300px;
+  text-align: center;
+
+  &__title {
+    margin-top: 0;
+    color: $primary-color;
+    text-align: center;
+  }
+
+  &__btn-group {
+    margin-bottom: 10px;
+  }
+}

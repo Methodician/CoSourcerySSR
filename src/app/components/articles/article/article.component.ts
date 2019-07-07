@@ -108,6 +108,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+    this.removeUserEditingStatus();
     this.state.set(ARTICLE_STATE_KEY, null);
   }
 
@@ -241,7 +242,19 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // EDITING HELPERS
   addUserEditingStatus = () => {
-    this.articleSvc.updateEditStatus(this.articleId, this.loggedInUser.uid);
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      true
+    );
+  };
+
+  removeUserEditingStatus = () => {
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      false
+    );
   };
 
   // end editing helpers

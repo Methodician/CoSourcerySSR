@@ -108,23 +108,27 @@ export class ArticleService {
   currentEditorsRef = (articleId: string) =>
     this.afd.list(`articleData/editStatus/editorsByArticle/${articleId}`);
 
-  updateEditStatus = (articleId: string, editorId: string) => {
+  updateArticleEditStatus = (
+    articleId: string,
+    editorId: string,
+    status: boolean
+  ) => {
     const editorsPath = `articleData/editStatus/editorsByArticle/${articleId}/${editorId}`;
-
     const articlesPath = `articleData/editStatus/articlesByEditor/${editorId}/${articleId}`;
 
     const editorsRef = this.afd.database.ref(editorsPath);
     const articlesRef = this.afd.database.ref(articlesPath);
     const updates = {};
 
-    updates[editorsPath] = true;
-    updates[articlesPath] = true;
+    updates[editorsPath] = status ? status : null;
+    updates[articlesPath] = status ? status : null;
 
     editorsRef.onDisconnect().set(null);
     articlesRef.onDisconnect().set(null);
 
     return this.afd.database.ref().update(updates);
   };
+
   // end editors stuff
 
   // HELPERS

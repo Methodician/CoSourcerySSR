@@ -10,9 +10,18 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
+import { DialogService } from '@services/dialog.service';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
-import { tap, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import {
+  tap,
+  map,
+  startWith,
+  switchMap,
+  takeUntil,
+  take,
+} from 'rxjs/operators';
+import { AuthService } from '@services/auth.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -40,7 +49,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
   // articleEditorSubscription: Subscription;
-  // currentArticleEditors = {};
+  currentArticleEditors = {};
 
   // Article Form State
   isFormInCreateView: boolean;
@@ -79,7 +88,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private state: TransferState,
     private articleSvc: ArticleService,
-    private userSvc: UserService
+    private userSvc: UserService,
+    private authSvc: AuthService,
+    private dialogSvc: DialogService
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -90,6 +101,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeArticleIdAndState();
+    this.watchArticleEditors();
+    this.watchFormChanges();
   }
 
   ngOnDestroy() {
@@ -119,9 +132,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
       )
     );
-    article$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(article => (this.articleState = article));
+    article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
+      this.articleState = article;
+      if (article) this.articleEditForm.patchValue(article);
+    });
   };
 
   watchArticleIdAndStatus$ = () => {
@@ -169,46 +183,70 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return article$;
   };
 
-  // watchFormChanges() {
-  //   this.articleEditFormSubscription = this.articleEditForm.valueChanges.subscribe(
-  //     change => {
-  //       this.articleState = change;
-  //       if (this.articleEditForm.dirty) {
-  //         this.setEditSessionTimeout();
-  //         if (!this.userIsEditingArticle()) {
-  //           this.addUserEditingStatus();
-  //         }
-  //       }
-  //     },
-  //   );
-  // }
+  watchArticleEditors = () => {
+    this.articleSvc
+      .currentEditorsRef(this.articleId)
+      .snapshotChanges()
+      .pipe(
+        map(snapList => snapList.map(snap => snap.key)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe(keys => console.log(keys));
+  };
+
+  watchFormChanges = () => {
+    this.articleEditForm.valueChanges.subscribe(change => {
+      console.log(this.articleEditForm.dirty);
+      this.articleState = change;
+      if (this.articleEditForm.dirty) {
+        // this.setEditSessionTimeout();
+        // if (!this.isUserEditingArticle()) {
+        this.addUserEditingStatus();
+        // }
+      }
+    });
+  };
 
   // UI Display
   activateCtrl = async (ctrl: CtrlNames) => {
-    // if (ctrl === CtrlNames.none) {
-    //   this.ctrlBeingEdited = ctrl;
-    //   return;
-    // }
-    // // For now doesn't allow multiple editors. Will change later...
-    // if (!this.userIsEditingArticle() && this.articleHasEditors()) {
-    //   // Editors is an array so that we can later allow multilple collaborative editors.
-    //   // For now we'll just check the first (only) element in the array
-    //   const uid = Object.keys(this.currentArticleEditors)[0];
-    //   if (!this.userMap[uid]) {
-    //     await this.userSvc.addUserToMap(uid);
-    //   }
-    //   this.openMessageDialog(
-    //     'Edit Locked',
-    //     `The user "${this.userMap[
-    //       uid
-    //     ].displayName()}" is currently editing this article.`,
-    //     'Please try again later.',
-    //   );
-    // } else if (this.authCheck()) {
-    //   this.ctrlBeingEdited = ctrl;
-    // }
+    console.log('activating', ctrl);
+    if (ctrl === CtrlNames.none) {
+      this.ctrlBeingEdited = ctrl;
+      return;
+    }
+    // For now doesn't allow multiple editors. Will change later...
+    if (!this.isUserEditingArticle() && this.isArticleBeingEdited()) {
+      // Editors is an array so that we can later allow multilple collaborative editors.
+      // For now we'll just check the first (only) element in the array
+      const uid = Object.keys(this.currentArticleEditors)[0];
+      this.userSvc
+        .userRef(uid)
+        .valueChanges()
+        .pipe(take(1))
+        .subscribe(user => {
+          this.dialogSvc.openMessageDialog(
+            'Edit Locked',
+            `The user "${user.displayName()}" is currently editing this article.`,
+            'Please try again later.'
+          );
+        });
+    } else {
+      this.authSvc.isSignedInOrPrompt().subscribe(isLoggedIn => {
+        if (isLoggedIn) {
+          this.ctrlBeingEdited = ctrl;
+        }
+      });
+    }
   };
 
+  // EDITING HELPERS
+  addUserEditingStatus = () => {
+    this.articleSvc.updateEditStatus(this.articleId, this.loggedInUser.uid);
+  };
+
+  // end editing helpers
+
+  // CONTROL HELPERS
   toggleCtrl = (ctrl: CtrlNames) => {
     if (this.isCtrlActive(ctrl)) {
       this.activateCtrl(CtrlNames.none);
@@ -226,6 +264,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
   isCtrlActive = (ctrl: CtrlNames): boolean => {
     return this.ctrlBeingEdited === ctrl;
   };
+
+  isUserEditingArticle = () =>
+    !!this.currentArticleEditors[this.loggedInUser.uid];
+
+  isArticleBeingEdited = () =>
+    Object.keys(this.currentArticleEditors).length > 0;
 }
 
 // Types and Enums

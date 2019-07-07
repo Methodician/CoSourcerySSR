@@ -11,26 +11,18 @@ export class DialogService {
   constructor(private dialog: MatDialog) {}
 
   // Dialog Helpers
-  openMessageDialog(title: string, msg1: string, msg2: string = null) {
+  openMessageDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
     return this.dialog.open(MessageDialogComponent, dialogConfig);
-  }
+  };
 
-  openConfirmDialog(
-    title: string,
-    msg1: string,
-    msg2: string = null
-  ): Observable<boolean> {
+  openConfirmDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
     return dialogRef.afterClosed();
-  }
+  };
 
-  genericDialogConfig(
-    title: string,
-    msg1: string,
-    msg2: string = null
-  ): MatDialogConfig {
+  genericDialogConfig = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.data = {
@@ -40,5 +32,5 @@ export class DialogService {
     };
 
     return dialogConfig;
-  }
+  };
 }

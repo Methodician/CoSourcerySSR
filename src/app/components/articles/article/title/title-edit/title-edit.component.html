@@ -1,3 +1,14 @@
-<p>
-  title-edit works!
-</p>
+<mat-form-field [formGroup]="parentForm">
+  <h2>
+    <input
+      #title
+      matInput
+      type="text"
+      formControlName="title"
+      maxlength="100"
+      required
+    />
+  </h2>
+  <mat-hint align="end">{{ title.value.length }} / 100 </mat-hint>
+  <mat-error>Please give your article a title.</mat-error>
+</mat-form-field>

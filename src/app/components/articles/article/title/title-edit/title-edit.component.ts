@@ -1,15 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'cos-title-edit',
   templateUrl: './title-edit.component.html',
-  styleUrls: ['./title-edit.component.scss']
+  styleUrls: ['../title.component.scss'],
 })
-export class TitleEditComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class TitleEditComponent {
+  @Input() parentForm: FormGroup;
 }

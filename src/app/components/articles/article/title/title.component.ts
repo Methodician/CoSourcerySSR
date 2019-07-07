@@ -8,7 +8,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class TitleComponent {
   @Input() parentForm: FormGroup;
-  @Input() isActive: boolean;
+  @Input() isActive = false;
   @Input() title: string;
 
   @Output() onCtrlToggle = new EventEmitter();

@@ -108,7 +108,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
-    this.removeUserEditingStatus();
+    this.updateUserEditingStatus(false);
     this.state.set(ARTICLE_STATE_KEY, null);
   }
 
@@ -209,7 +209,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           if (isSignedIn) {
             this.setEditSessionTimeout();
             if (!this.isUserEditingArticle()) {
-              this.addUserEditingStatus();
+              this.updateUserEditingStatus(true);
             }
           } else {
             this.dialogSvc.openMessageDialog(
@@ -224,24 +224,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  addUserEditingStatus = () => {
+  updateUserEditingStatus = (status: boolean) => {
     this.articleSvc.updateArticleEditStatus(
       this.articleId,
       this.loggedInUser.uid,
-      true
-    );
-  };
-
-  removeUserEditingStatus = () => {
-    this.articleSvc.updateArticleEditStatus(
-      this.articleId,
-      this.loggedInUser.uid,
-      false
+      status
     );
   };
 
   resetEditStates = () => {
-    this.removeUserEditingStatus();
+    this.updateUserEditingStatus(false);
     // this.currentArticleEditors[this.loggedInUser.uid] = false;
     this.articleEditForm.markAsPristine();
     // this.coverImageFile = null;

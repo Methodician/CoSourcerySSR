@@ -91,6 +91,7 @@
     ></cos-body>
   </section>
 
+  <!-- TAGS UI -->
   <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
     <h3>Tags</h3>
     <p *ngIf="articleState.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
@@ -141,21 +142,23 @@
       }}</span>
     </button>
   </section>
+  <!-- end tags ui -->
 
-  <!-- <section class="save-undo-abs-position">
+  <!-- SAVE-UNDO UI -->
+  <section class="save-undo-abs-position">
     <div
       class="save-undo-sticky-position"
       [ngClass]="{
-        extended: articleHasUnsavedChanges(),
+        extended: isUserEditingArticle(),
         sticky: saveButtonIsSticky,
-        disabled: !articleEditForm.valid || !articleHasUnsavedChanges()
+        disabled: !articleEditForm.valid || !isUserEditingArticle()
       }"
     >
       <button
         class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
         type="button"
-        [disabled]="!articleEditForm.valid || !articleHasUnsavedChanges()"
-        (click)="authCheck() ? saveChanges() : null"
+        [disabled]="!articleEditForm.valid || !isUserEditingArticle()"
+        (click)="saveChanges()"
       >
         <mat-icon>done</mat-icon>
       </button>
@@ -163,13 +166,13 @@
       <div
         *ngIf="!isArticleNew"
         class="restore-control flag flag-axle flag-axle-90"
-        [ngClass]="{ 'flag-axle-90_active': articleHasUnsavedChanges() }"
+        [ngClass]="{ 'flag-axle-90_active': isUserEditingArticle() }"
       >
         <div class="flag flag-pole flag-pole_right">
           <button
             class="restore-button mat-icon-btn mat-icon-btn_no-shadow"
             type="button"
-            [disabled]="!articleHasUnsavedChanges()"
+            [disabled]="!isUserEditingArticle()"
             (click)="cancelChanges()"
           >
             <mat-icon>replay</mat-icon>
@@ -179,7 +182,7 @@
 
       <div
         class="flag flag-axle flag-axle-270"
-        [ngClass]="{ 'flag-axle-270_active': articleHasUnsavedChanges() }"
+        [ngClass]="{ 'flag-axle-270_active': isUserEditingArticle() }"
       >
         <div class="flag flag-pole flag-pole_left">
           <div class="flag flag-tooltip">
@@ -190,7 +193,8 @@
         </div>
       </div>
     </div>
-  </section> -->
+  </section>
+  <!-- end save-undo ui -->
 </form>
 
 <cos-comments

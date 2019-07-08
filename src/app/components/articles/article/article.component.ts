@@ -10,9 +10,18 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
 import { UserService } from '@services/user.service';
+import { DialogService } from '@services/dialog.service';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
-import { tap, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import {
+  tap,
+  map,
+  startWith,
+  switchMap,
+  takeUntil,
+  take,
+} from 'rxjs/operators';
+import { AuthService } from '@services/auth.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -40,12 +49,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
   // articleEditorSubscription: Subscription;
-  // currentArticleEditors = {};
+  currentArticleEditors = {};
 
   // Article Form State
   isFormInCreateView: boolean;
   // articleEditFormSubscription: Subscription;
-  // editSessionTimeout;
+  editSessionTimeout;
   // saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
@@ -79,7 +88,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private state: TransferState,
     private articleSvc: ArticleService,
-    private userSvc: UserService
+    private userSvc: UserService,
+    private authSvc: AuthService,
+    private dialogSvc: DialogService
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -90,15 +101,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeArticleIdAndState();
+    this.watchArticleEditors();
+    this.watchFormChanges();
   }
 
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+    this.updateUserEditingStatus(false);
     this.state.set(ARTICLE_STATE_KEY, null);
   }
 
-  // Form Setup & Breakdown
+  // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
@@ -119,9 +133,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
       )
     );
-    article$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(article => (this.articleState = article));
+    article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
+      this.articleState = article;
+      if (article) this.articleEditForm.patchValue(article);
+    });
   };
 
   watchArticleIdAndStatus$ = () => {
@@ -169,46 +184,199 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return article$;
   };
 
-  // watchFormChanges() {
-  //   this.articleEditFormSubscription = this.articleEditForm.valueChanges.subscribe(
-  //     change => {
-  //       this.articleState = change;
-  //       if (this.articleEditForm.dirty) {
-  //         this.setEditSessionTimeout();
-  //         if (!this.userIsEditingArticle()) {
-  //           this.addUserEditingStatus();
-  //         }
-  //       }
-  //     },
-  //   );
-  // }
+  watchArticleEditors = () => {
+    this.articleSvc
+      .currentEditorsRef(this.articleId)
+      .snapshotChanges()
+      .pipe(
+        map(snapList => snapList.map(snap => snap.key)),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe(keys => {
+        const currentEditors = {};
+        for (let key of keys) {
+          currentEditors[key] = true;
+        }
+        this.currentArticleEditors = currentEditors;
+      });
+  };
 
-  // UI Display
-  activateCtrl = async (ctrl: CtrlNames) => {
-    // if (ctrl === CtrlNames.none) {
-    //   this.ctrlBeingEdited = ctrl;
-    //   return;
+  watchFormChanges = () => {
+    this.articleEditForm.valueChanges.subscribe(change => {
+      this.articleState = change;
+      if (this.articleEditForm.dirty) {
+        this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+          if (isSignedIn) {
+            this.setEditSessionTimeout();
+            if (!this.isUserEditingArticle()) {
+              this.updateUserEditingStatus(true);
+            }
+          } else {
+            this.dialogSvc.openMessageDialog(
+              'Must be signed in',
+              'You can not save changes without signing in or registering'
+            );
+          }
+        });
+      }
+    });
+  };
+  // ===end form setup & breakdown
+
+  // ===EDITING STUFF
+  updateUserEditingStatus = (status: boolean) => {
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      status
+    );
+  };
+
+  resetEditStates = () => {
+    this.updateUserEditingStatus(false);
+    // this.currentArticleEditors[this.loggedInUser.uid] = false;
+    this.articleEditForm.markAsPristine();
+    // this.coverImageFile = null;
+
+    this.activateCtrl(CtrlNames.none);
+  };
+
+  saveChanges = async () => {
+    // if (this.coverImageFile) {
+    //   await this.saveCoverImage();
+    //   this.coverImageFile = null;
     // }
-    // // For now doesn't allow multiple editors. Will change later...
-    // if (!this.userIsEditingArticle() && this.articleHasEditors()) {
-    //   // Editors is an array so that we can later allow multilple collaborative editors.
-    //   // For now we'll just check the first (only) element in the array
-    //   const uid = Object.keys(this.currentArticleEditors)[0];
-    //   if (!this.userMap[uid]) {
-    //     await this.userSvc.addUserToMap(uid);
+    // if (!this.articleState.articleId) {
+    //   // Create New Article
+    //   try {
+    //     await this.articleSvc.createArticle(
+    //       this.loggedInUser,
+    //       this.articleState,
+    //       this.articleId,
+    //     );
+    //     this.articleIsNew = false;
+    //     clearTimeout(this.editSessionTimeout);
+    //     this.resetEditStates(); // Unsaved changes checked upon route change
+    //     this.router.navigate([`article/${this.articleId}`]);
+    //   } catch (error) {
+    //     this.openMessageDialog(
+    //       'Save Error',
+    //       'Oops! There was a problem saving your article.',
+    //       `Error: ${error}`,
+    //     );
     //   }
-    //   this.openMessageDialog(
-    //     'Edit Locked',
-    //     `The user "${this.userMap[
-    //       uid
-    //     ].displayName()}" is currently editing this article.`,
-    //     'Please try again later.',
-    //   );
-    // } else if (this.authCheck()) {
-    //   this.ctrlBeingEdited = ctrl;
+    // } else {
+    // Update Existing Article
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn) {
+        this.articleSvc.updateArticle(this.loggedInUser, this.articleState);
+        clearTimeout(this.editSessionTimeout);
+        this.resetEditStates();
+      } else
+        this.dialogSvc.openMessageDialog(
+          'Must be signed in',
+          'You can not save changes without signing in or registering'
+        );
+    });
     // }
   };
 
+  // ---Editor Session Management
+  setEditSessionTimeout = () => {
+    clearTimeout(this.editSessionTimeout);
+    this.editSessionTimeout = setTimeout(() => {
+      this.openTimeoutDialog();
+    }, 300000);
+  };
+
+  openTimeoutDialog = () => {
+    // this.dialogIsOpen.next(true);
+    // const dialogConfig = new MatDialogConfig();
+    // dialogConfig.disableClose = true;
+
+    // const dialogRef = this.dialog.open(
+    //   EditTimeoutDialogComponent,
+    //   dialogConfig
+    // );
+    // dialogRef.afterClosed().subscribe(res => {
+    //   this.dialogIsOpen.next(false);
+    //   const editorIsActive = res ? res : false;
+    //   if (editorIsActive) {
+    //     this.setEditSessionTimeout();
+    //   } else {
+    //     this.endEditSession();
+    //   }
+    // });
+    this.dialogSvc
+      .openTimeoutDialog()
+      .afterClosed()
+      .subscribe(res => {
+        console.log('after close timeout dialog', res);
+        if (res) this.setEditSessionTimeout();
+        else this.endEditSession();
+      });
+  };
+
+  endEditSession() {
+    // this.dialogIsOpen.next(true);
+    // const dialogRef = this.openMessageDialog(
+    //   'Session Timeout',
+    //   'Your changes have been discarded.'
+    // );
+    // dialogRef.afterClosed().subscribe(() => {
+    //   this.dialogIsOpen.next(false);
+    //   this.resetEditStates();
+    //   this.router.navigate(['home']);
+    // });
+    this.dialogSvc
+      .openMessageDialog(
+        'just for now',
+        'Have not implemented edit session dialogs',
+        'Do the thing and separate concerns'
+      )
+      .afterClosed()
+      .subscribe(() => {
+        console.log('closed the dialog');
+        this.resetEditStates();
+      });
+  }
+  // ===end editing stuff
+
+  // ===UI DISPLAY
+  activateCtrl = async (ctrl: CtrlNames) => {
+    console.log('activating', ctrl);
+    if (ctrl === CtrlNames.none) {
+      this.ctrlBeingEdited = ctrl;
+      return;
+    }
+    // For now doesn't allow multiple editors. Will change later...
+    if (!this.isUserEditingArticle() && this.isArticleBeingEdited()) {
+      // Editors is an array so that we can later allow multilple collaborative editors.
+      // For now we'll just check the first (only) element in the array
+      const uid = Object.keys(this.currentArticleEditors)[0];
+      this.userSvc
+        .userRef(uid)
+        .valueChanges()
+        .pipe(take(1))
+        .subscribe(user => {
+          user = new UserInfo(user);
+          this.dialogSvc.openMessageDialog(
+            'Edit Locked',
+            `The user "${user.displayName()}" is currently editing this article.`,
+            'Please try again later.'
+          );
+        });
+    } else {
+      this.authSvc.isSignedInOrPrompt().subscribe(isLoggedIn => {
+        if (isLoggedIn) {
+          this.ctrlBeingEdited = ctrl;
+        }
+      });
+    }
+  };
+  // ===end ui display
+
+  // ===CONTROL HELPERS
   toggleCtrl = (ctrl: CtrlNames) => {
     if (this.isCtrlActive(ctrl)) {
       this.activateCtrl(CtrlNames.none);
@@ -226,6 +394,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
   isCtrlActive = (ctrl: CtrlNames): boolean => {
     return this.ctrlBeingEdited === ctrl;
   };
+
+  isUserEditingArticle = () =>
+    !!this.currentArticleEditors[this.loggedInUser.uid];
+
+  isArticleBeingEdited = () =>
+    Object.keys(this.currentArticleEditors).length > 0;
 }
 
 // Types and Enums

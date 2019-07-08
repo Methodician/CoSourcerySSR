@@ -24,6 +24,7 @@
       "@models/*": ["src/app/models/*", "app/models/*"],
       "@guards/*": ["src/app/shared/guards/*", "app/shared/guards/*"],
       "@pipes/*": ["src/app/shared/pipes/*", "app/shared/pipes/*"],
+      "@helpers/*": ["src/app/shared/helpers/*", "app/shared/helpers/*"],
       "@env/*": ["src/environments/*", "../environments/*"]
     }
   }

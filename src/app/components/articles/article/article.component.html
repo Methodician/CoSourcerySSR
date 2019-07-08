@@ -158,7 +158,7 @@
         class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
         type="button"
         [disabled]="!articleEditForm.valid || !isUserEditingArticle()"
-        (click)="authCheck() ? saveChanges() : null"
+        (click)="saveChanges()"
       >
         <mat-icon>done</mat-icon>
       </button>

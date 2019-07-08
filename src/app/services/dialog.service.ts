@@ -10,16 +10,42 @@ import { Observable } from 'rxjs';
 export class DialogService {
   constructor(private dialog: MatDialog) {}
 
-  // Dialog Helpers
   openMessageDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
-    return this.dialog.open(MessageDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(MessageDialogComponent, dialogConfig);
+    return dialogRef;
   };
 
+  // TODO: DRY these up or justify their separation...
   openConfirmDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
-    return dialogRef.afterClosed();
+    return dialogRef;
+  };
+
+  openTimeoutDialog = () => {
+    // this.dialogIsOpen.next(true);
+    // const dialogConfig = new MatDialogConfig();
+    // dialogConfig.disableClose = true;
+
+    // const dialogRef = this.dialog.open(
+    //   EditTimeoutDialogComponent,
+    //   dialogConfig
+    // );
+    // dialogRef.afterClosed().subscribe(res => {
+    //   // this.dialogIsOpen.next(false);
+    //   const editorIsActive = res ? res : false;
+    //   if (editorIsActive) {
+    //     this.setEditSessionTimeout();
+    //   } else {
+    //     this.endEditSession();
+    //   }
+    // });
+    return this.openConfirmDialog(
+      'just for now',
+      'Have not implemented openTimeoutDialog yet',
+      'Need to separate concerns between component and service'
+    );
   };
 
   genericDialogConfig = (title: string, msg1: string, msg2: string = null) => {

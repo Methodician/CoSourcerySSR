@@ -29,7 +29,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from '@components/home/home.component';
 import { ArticlePreviewCardComponent } from '@components/articles/article-preview-card/article-preview-card.component';
 import { TopNavComponent } from '@components/top-nav/top-nav.component';
-import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterMenuComponent } from '@components/home/filter-menu/filter-menu.component';
@@ -51,6 +50,9 @@ import { CommentsComponent } from './components/articles/article/comments/commen
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
 import { CommentListComponent } from './components/articles/article/comments/comment-list/comment-list.component';
 import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
+
+// dialog components
+import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from './components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
 
@@ -61,7 +63,6 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     ArticlePreviewCardComponent,
     TruncateStringPipe,
     TopNavComponent,
-    LoginDialogComponent,
     FilterMenuComponent,
     ArticleComponent,
     CoverImageDisplayComponent,
@@ -81,10 +82,15 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     CommentComponent,
     CommentListComponent,
     ReverseArrayPipe,
+    LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
   ],
-  entryComponents: [LoginDialogComponent],
+  entryComponents: [
+    LoginDialogComponent,
+    MessageDialogComponent,
+    ConfirmDialogComponent,
+  ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,

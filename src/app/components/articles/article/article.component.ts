@@ -54,7 +54,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // Article Form State
   isFormInCreateView: boolean;
   // articleEditFormSubscription: Subscription;
-  // editSessionTimeout;
+  editSessionTimeout;
   // saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
@@ -112,7 +112,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.state.set(ARTICLE_STATE_KEY, null);
   }
 
-  // Form Setup & Breakdown
+  // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
@@ -203,19 +203,154 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
-      console.log('isFormDirty', this.articleEditForm.dirty);
-      console.log('isUserEditing', this.isUserEditingArticle());
       this.articleState = change;
       if (this.articleEditForm.dirty) {
-        // this.setEditSessionTimeout();
-        // if (!this.isUserEditingArticle()) {
-        this.addUserEditingStatus();
-        // }
+        this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+          if (isSignedIn) {
+            this.setEditSessionTimeout();
+            if (!this.isUserEditingArticle()) {
+              this.addUserEditingStatus();
+            }
+          } else {
+            this.dialogSvc.openMessageDialog(
+              'Must be signed in',
+              'You can not save changes without signing in or registering'
+            );
+          }
+        });
       }
     });
   };
+  // ===end form setup & breakdown
 
-  // UI Display
+  // ===EDITING STUFF
+  addUserEditingStatus = () => {
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      true
+    );
+  };
+
+  removeUserEditingStatus = () => {
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      false
+    );
+  };
+
+  resetEditStates = () => {
+    this.removeUserEditingStatus();
+    // this.currentArticleEditors[this.loggedInUser.uid] = false;
+    this.articleEditForm.markAsPristine();
+    // this.coverImageFile = null;
+
+    this.activateCtrl(CtrlNames.none);
+  };
+
+  saveChanges = async () => {
+    // if (this.coverImageFile) {
+    //   await this.saveCoverImage();
+    //   this.coverImageFile = null;
+    // }
+    // if (!this.articleState.articleId) {
+    //   // Create New Article
+    //   try {
+    //     await this.articleSvc.createArticle(
+    //       this.loggedInUser,
+    //       this.articleState,
+    //       this.articleId,
+    //     );
+    //     this.articleIsNew = false;
+    //     clearTimeout(this.editSessionTimeout);
+    //     this.resetEditStates(); // Unsaved changes checked upon route change
+    //     this.router.navigate([`article/${this.articleId}`]);
+    //   } catch (error) {
+    //     this.openMessageDialog(
+    //       'Save Error',
+    //       'Oops! There was a problem saving your article.',
+    //       `Error: ${error}`,
+    //     );
+    //   }
+    // } else {
+    // Update Existing Article
+    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      if (isSignedIn) {
+        this.articleSvc.updateArticle(this.loggedInUser, this.articleState);
+        clearTimeout(this.editSessionTimeout);
+        this.resetEditStates();
+      } else
+        this.dialogSvc.openMessageDialog(
+          'Must be signed in',
+          'You can not save changes without signing in or registering'
+        );
+    });
+    // }
+  };
+
+  // ---Editor Session Management
+  setEditSessionTimeout = () => {
+    clearTimeout(this.editSessionTimeout);
+    this.editSessionTimeout = setTimeout(() => {
+      this.openTimeoutDialog();
+    }, 300000);
+  };
+
+  openTimeoutDialog = () => {
+    // this.dialogIsOpen.next(true);
+    // const dialogConfig = new MatDialogConfig();
+    // dialogConfig.disableClose = true;
+
+    // const dialogRef = this.dialog.open(
+    //   EditTimeoutDialogComponent,
+    //   dialogConfig
+    // );
+    // dialogRef.afterClosed().subscribe(res => {
+    //   this.dialogIsOpen.next(false);
+    //   const editorIsActive = res ? res : false;
+    //   if (editorIsActive) {
+    //     this.setEditSessionTimeout();
+    //   } else {
+    //     this.endEditSession();
+    //   }
+    // });
+    this.dialogSvc
+      .openTimeoutDialog()
+      .afterClosed()
+      .subscribe(res => {
+        console.log('after close timeout dialog', res);
+        if (res) this.setEditSessionTimeout();
+        else this.endEditSession();
+      });
+  };
+
+  endEditSession() {
+    // this.dialogIsOpen.next(true);
+    // const dialogRef = this.openMessageDialog(
+    //   'Session Timeout',
+    //   'Your changes have been discarded.'
+    // );
+    // dialogRef.afterClosed().subscribe(() => {
+    //   this.dialogIsOpen.next(false);
+    //   this.resetEditStates();
+    //   this.router.navigate(['home']);
+    // });
+    this.dialogSvc
+      .openMessageDialog(
+        'just for now',
+        'Have not implemented edit session dialogs',
+        'Do the thing and separate concerns'
+      )
+      .afterClosed()
+      .subscribe(() => {
+        console.log('closed the dialog');
+        this.resetEditStates();
+      });
+  }
+  // ===end editing stuff
+
+  // ===UI DISPLAY
   activateCtrl = async (ctrl: CtrlNames) => {
     console.log('activating', ctrl);
     if (ctrl === CtrlNames.none) {
@@ -246,27 +381,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
       });
     }
   };
+  // ===end ui display
 
-  // EDITING HELPERS
-  addUserEditingStatus = () => {
-    this.articleSvc.updateArticleEditStatus(
-      this.articleId,
-      this.loggedInUser.uid,
-      true
-    );
-  };
-
-  removeUserEditingStatus = () => {
-    this.articleSvc.updateArticleEditStatus(
-      this.articleId,
-      this.loggedInUser.uid,
-      false
-    );
-  };
-
-  // end editing helpers
-
-  // CONTROL HELPERS
+  // ===CONTROL HELPERS
   toggleCtrl = (ctrl: CtrlNames) => {
     if (this.isCtrlActive(ctrl)) {
       this.activateCtrl(CtrlNames.none);

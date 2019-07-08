@@ -13,7 +13,11 @@ import { ArticlePreview, ArticleDetail } from '@models/interfaces/article-info';
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { rtServerTimestamp } from '../shared/helpers/firebase';
+import {
+  rtServerTimestamp,
+  fsServerTimestamp,
+} from '../shared/helpers/firebase';
+import { UserInfo } from '@models/interfaces/user-info';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +29,7 @@ export class ArticleService {
     private storage: AngularFireStorage
   ) {}
 
-  // Firestore Ref Builders
+  // FIRESTORE REF BUILDERS
   articleDetailRef = (id: string): AngularFirestoreDocument<ArticleDetail> =>
     this.afs.doc(`articleData/articles/articles/${id}`);
 
@@ -47,7 +51,9 @@ export class ArticleService {
 
   singleBookmarkRef = (uid: string, articleId: string) =>
     this.afd.object(`userInfo/articleBookmarksPerUser/${uid}/${articleId}`);
+  // end firestore ref builders
 
+  // BOOKMARK STUFF
   watchBookmarkedArticles = (uid: string) => {
     const bookmarks$ = this.afd
       .list(`userInfo/articleBookmarksPerUser/${uid}`)
@@ -84,25 +90,7 @@ export class ArticleService {
     ] = rtServerTimestamp;
     this.afd.database.ref().update(updates);
   };
-
-  setThumbnailImageUrl = async (articleId: string) => {
-    const storagePath = `articleCoverThumbnails/${articleId}`;
-    const storageRef = this.storage.ref(storagePath);
-    const url = await storageRef.getDownloadURL().toPromise();
-    const trackerDocRef = this.afs.doc(
-      `fileUploads/articleUploads/coverThumbnails/${articleId}`
-    );
-    const articleDocRef = this.afs.doc<ArticlePreview>(
-      `articleData/articles/previews/${articleId}`
-    );
-
-    const trackerSet = trackerDocRef.set({
-      downloadUrl: url,
-      path: storagePath,
-    });
-    const articleUpdate = articleDocRef.update({ imageUrl: url });
-    return await Promise.all([trackerSet, articleUpdate]);
-  };
+  // end bookmark stuff
 
   // EDITORS STUFF
   currentEditorsRef = (articleId: string) =>
@@ -130,6 +118,43 @@ export class ArticleService {
   };
 
   // end editors stuff
+
+  // UTILITY
+  updateArticle = (editor: UserInfo, article: ArticleDetail) => {
+    const articleRef = this.articleDetailRef(article.articleId);
+
+    // Avoids mutating original object
+    const articleToSave = { ...article };
+    const editors = articleToSave.editors || {};
+    const editCount = editors[editor.uid] || 0;
+    editors[editor.uid] = editCount + 1;
+    articleToSave.editors = editors;
+    articleToSave.lastEditorId = editor.uid;
+    articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.version++;
+    // articleToSave.bodyImages = this.cleanArticleImages(articleToSave);
+    return articleRef.update(articleToSave);
+  };
+
+  setThumbnailImageUrl = async (articleId: string) => {
+    const storagePath = `articleCoverThumbnails/${articleId}`;
+    const storageRef = this.storage.ref(storagePath);
+    const url = await storageRef.getDownloadURL().toPromise();
+    const trackerDocRef = this.afs.doc(
+      `fileUploads/articleUploads/coverThumbnails/${articleId}`
+    );
+    const articleDocRef = this.afs.doc<ArticlePreview>(
+      `articleData/articles/previews/${articleId}`
+    );
+
+    const trackerSet = trackerDocRef.set({
+      downloadUrl: url,
+      path: storagePath,
+    });
+    const articleUpdate = articleDocRef.update({ imageUrl: url });
+    return await Promise.all([trackerSet, articleUpdate]);
+  };
+  // end utility
 
   // HELPERS
   createArticleId = () => this.afs.createId();

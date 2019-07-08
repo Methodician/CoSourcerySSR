@@ -359,6 +359,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         .valueChanges()
         .pipe(take(1))
         .subscribe(user => {
+          user = new UserInfo(user);
           this.dialogSvc.openMessageDialog(
             'Edit Locked',
             `The user "${user.displayName()}" is currently editing this article.`,

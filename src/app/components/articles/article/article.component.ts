@@ -192,12 +192,19 @@ export class ArticleComponent implements OnInit, OnDestroy {
         map(snapList => snapList.map(snap => snap.key)),
         takeUntil(this.unsubscribe)
       )
-      .subscribe(keys => console.log(keys));
+      .subscribe(keys => {
+        const currentEditors = {};
+        for (let key of keys) {
+          currentEditors[key] = true;
+        }
+        this.currentArticleEditors = currentEditors;
+      });
   };
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
-      console.log(this.articleEditForm.dirty);
+      console.log('isFormDirty', this.articleEditForm.dirty);
+      console.log('isUserEditing', this.isUserEditingArticle());
       this.articleState = change;
       if (this.articleEditForm.dirty) {
         // this.setEditSessionTimeout();

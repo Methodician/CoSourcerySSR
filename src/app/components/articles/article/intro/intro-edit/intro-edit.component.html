@@ -1,4 +1,4 @@
-<!-- <mat-form-field *ngIf="isActive">
+<mat-form-field [formGroup]="parentForm">
   <p>
     <textarea
       #introduction
@@ -12,4 +12,4 @@
   </p>
   <mat-hint align="end">{{ introduction.value.length }} / 300</mat-hint>
   <mat-error>Please add an introduction.</mat-error>
-</mat-form-field> -->
+</mat-form-field>

@@ -37,7 +37,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   loggedInUser = new UserInfo({ fName: null, lName: null });
 
   //  // Cover Image State
-  //  coverImageFile: File;
+  coverImageFile: File;
   //  shouldAbortTempCoverImage = false;
   //  coverImageUploadTask: AngularFireUploadTask;
   //  coverImageUploadPercent$: Observable<number>;
@@ -239,6 +239,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // this.coverImageFile = null;
 
     this.activateCtrl(CtrlNames.none);
+  };
+
+  selectCoverImage = file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.articleEditForm.patchValue({ imageUrl: reader.result });
+    };
+    reader.readAsDataURL(file);
+    this.coverImageFile = file;
   };
 
   saveChanges = async () => {

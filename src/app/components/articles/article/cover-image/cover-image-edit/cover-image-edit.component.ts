@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -6,20 +6,12 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './cover-image-edit.component.html',
   styleUrls: ['./cover-image-edit.component.scss'],
 })
-export class CoverImageEditComponent implements OnInit {
+export class CoverImageEditComponent {
   @Input() parentForm: FormGroup;
-  imageUrl: string | ArrayBuffer;
-  constructor() {}
+  @Output() onCoverImageSelected = new EventEmitter<File>();
 
-  ngOnInit() {}
-
-  onSelectCoverImage = (e: HtmlInputEvent) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imageUrl = reader.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  };
+  onSelectCoverImage = (e: HtmlInputEvent) =>
+    this.onCoverImageSelected.emit(e.target.files[0]);
 }
 
 export interface HtmlInputEvent extends Event {

@@ -1,12 +1,12 @@
 <section (cosClickOut)="clickOut()">
   <cos-cover-image-display
-    *ngIf="!isActive"
     [imageAlt]="imageAlt"
     [imageUrl]="imageUrl"
   ></cos-cover-image-display>
   <cos-cover-image-edit
     *ngIf="isActive"
     [parentForm]="parentForm"
+    (onCoverImageSelected)="selectCoverImage($event)"
   ></cos-cover-image-edit>
   <button
     class="mat-icon-btn"

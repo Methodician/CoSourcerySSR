@@ -8,6 +8,7 @@
   <cos-cover-image
     (onClickOut)="clickoutCtrl(CtrlNames.coverImage)"
     (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
+    (onCoverImageSelected)="selectCoverImage($event)"
     [isActive]="isCtrlActive(CtrlNames.coverImage)"
     [imageUrl]="articleState.imageUrl"
     [imageAlt]="articleState.imageAlt"

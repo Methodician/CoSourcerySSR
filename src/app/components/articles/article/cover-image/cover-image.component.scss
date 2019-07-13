@@ -1,0 +1,18 @@
+section {
+  position: relative;
+  margin-bottom: 5px;
+
+  button {
+    visibility: hidden;
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+
+    &.active {
+      visibility: visible;
+    }
+  }
+  &:hover button {
+    visibility: visible;
+  }
+}

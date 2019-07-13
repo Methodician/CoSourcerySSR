@@ -1,17 +1,30 @@
-<section class="article-cover-image" (cosClickOut)="clickOut()">
+<section (cosClickOut)="clickOut()">
   <cos-cover-image-display
+    *ngIf="!isActive"
     [imageAlt]="imageAlt"
     [imageUrl]="imageUrl"
   ></cos-cover-image-display>
-  <cos-cover-image-edit></cos-cover-image-edit>
+  <cos-cover-image-edit *ngIf="isActive"></cos-cover-image-edit>
+  <button
+    class="mat-icon-btn"
+    [ngClass]="{ active: isActive }"
+    type="button"
+    (click)="toggleCtrl()"
+  >
+    <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
+    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+      isActive ? 'Close Image' : 'Edit
+      Image'
+    }}</span>
+  </button>
   <!-- <cos-cover-image-display
   [coverImageUrl]="articleState.imageUrl"
   [imageAlt]="articleState.imageAlt"
-  [isCtrlActive]="isCtrlActive(CtrlNames.coverImage)"
+  [isActive]="isActive(CtrlNames.coverImage)"
   (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
 ></cos-cover-image-display> -->
   <!-- <cos-cover-image-edit
-  [isCtrlActive]="isCtrlActive(CtrlNames.coverImage)"
+  [isActive]="isActive(CtrlNames.coverImage)"
   [shouldAbort]="shouldAbortTempCoverImage"
   [parentForm]="articleEditForm"
   (onCoverImageSelected)="onSelectCoverImage($event)"

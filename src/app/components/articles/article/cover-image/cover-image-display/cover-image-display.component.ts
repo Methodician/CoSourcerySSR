@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'cos-cover-image-display',
   templateUrl: './cover-image-display.component.html',
   styleUrls: ['./cover-image-display.component.scss'],
 })
-export class CoverImageDisplayComponent implements OnInit {
+export class CoverImageDisplayComponent {
   @Input() imageUrl;
   @Input() imageAlt;
 
@@ -14,8 +14,10 @@ export class CoverImageDisplayComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    if (this.imageUrl) this._imageUrl = this.imageUrl;
-    if (this.imageAlt) this._imageAlt = this.imageAlt;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.imageUrl || changes.imageAlt) {
+      if (this.imageUrl) this._imageUrl = this.imageUrl;
+      if (this.imageAlt) this._imageAlt = this.imageAlt;
+    }
   }
 }

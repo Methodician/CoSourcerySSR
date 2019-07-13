@@ -1,3 +1,22 @@
-<p>
-  cover-image-edit works!
-</p>
+<section [formGroup]="parentForm">
+  <cos-cover-image-display
+    [imageAlt]="imageAlt"
+    [imageUrl]="imageUrl"
+  ></cos-cover-image-display>
+  <p>Progress: 20% Complete</p>
+  <mat-form-field>
+    <label for="imageAlt">Image Alt Description</label>
+    <input
+      type="text"
+      name="imageAlt"
+      #imageAlt
+      matInput
+      formControlName="imageAlt"
+      maxLength="100"
+    />
+    <mat-hint align="and">{{ imageAlt.value.length }} / 100</mat-hint>
+  </mat-form-field>
+  <div class="file-input flex-center-align">
+    <input type="file" accept="image/*" (change)="onSelectCoverImage($event)" />
+  </div>
+</section>

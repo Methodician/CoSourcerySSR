@@ -4,7 +4,10 @@
     [imageAlt]="imageAlt"
     [imageUrl]="imageUrl"
   ></cos-cover-image-display>
-  <cos-cover-image-edit *ngIf="isActive"></cos-cover-image-edit>
+  <cos-cover-image-edit
+    *ngIf="isActive"
+    [parentForm]="parentForm"
+  ></cos-cover-image-edit>
   <button
     class="mat-icon-btn"
     [ngClass]="{ active: isActive }"

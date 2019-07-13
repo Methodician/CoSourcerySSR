@@ -14,11 +14,6 @@ export class TitleComponent {
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
 
-  toggleCtrl = () => {
-    this.onCtrlToggle.emit();
-  };
-
-  clickOut = () => {
-    this.onClickOut.emit();
-  };
+  toggleCtrl = () => this.onCtrlToggle.emit();
+  clickOut = () => this.onClickOut.emit();
 }

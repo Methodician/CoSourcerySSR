@@ -33,7 +33,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterMenuComponent } from '@components/home/filter-menu/filter-menu.component';
 import { ArticleComponent } from '@components/articles/article/article.component';
-import { CoverImageDisplayComponent } from './components/articles/article/cover-image-display/cover-image-display.component';
 import { TitleComponent } from './components/articles/article/title/title.component';
 import { TitleDisplayComponent } from './components/articles/article/title/title-display/title-display.component';
 import { TitleEditComponent } from './components/articles/article/title/title-edit/title-edit.component';
@@ -50,6 +49,9 @@ import { CommentsComponent } from './components/articles/article/comments/commen
 import { CommentComponent } from './components/articles/article/comments/comment/comment.component';
 import { CommentListComponent } from './components/articles/article/comments/comment-list/comment-list.component';
 import { ReverseArrayPipe } from './shared/pipes/reverse-array.pipe';
+import { CoverImageComponent } from './components/articles/article/cover-image/cover-image.component';
+import { CoverImageEditComponent } from './components/articles/article/cover-image/cover-image-edit/cover-image-edit.component';
+import { CoverImageDisplayComponent } from './components/articles/article/cover-image/cover-image-display/cover-image-display.component';
 
 // dialog components
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
@@ -85,6 +87,8 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
+    CoverImageComponent,
+    CoverImageEditComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

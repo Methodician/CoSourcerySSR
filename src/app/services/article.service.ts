@@ -136,6 +136,12 @@ export class ArticleService {
     return articleRef.update(articleToSave);
   };
 
+  uploadCoverImage = (articleId: string, file: File) => {
+    const storageRef = this.storage.ref(`articleCoverImages/${articleId}`);
+    const task = storageRef.put(file);
+    return { task, ref: storageRef };
+  };
+
   setThumbnailImageUrl = async (articleId: string) => {
     const storagePath = `articleCoverThumbnails/${articleId}`;
     const storageRef = this.storage.ref(storagePath);

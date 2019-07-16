@@ -10,7 +10,7 @@ export class CoverImageEditComponent {
   @Input() parentForm: FormGroup;
   @Output() onCoverImageSelected = new EventEmitter<File>();
 
-  onSelectCoverImage = (e: HtmlInputEvent) =>
+  selectCoverImage = (e: HtmlInputEvent) =>
     this.onCoverImageSelected.emit(e.target.files[0]);
 }
 

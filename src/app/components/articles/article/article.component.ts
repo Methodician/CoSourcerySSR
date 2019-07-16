@@ -5,12 +5,8 @@ import {
   StateKey,
 } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ArticleService } from '@services/article.service';
+import { AngularFireUploadTask } from '@angular/fire/storage';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ArticleDetail } from '@models/interfaces/article-info';
-import { UserInfo } from '@models/classes/user-info';
-import { UserService } from '@services/user.service';
-import { DialogService } from '@services/dialog.service';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
@@ -21,7 +17,16 @@ import {
   takeUntil,
   take,
 } from 'rxjs/operators';
+
+// SERVICES
+import { ArticleService } from '@services/article.service';
 import { AuthService } from '@services/auth.service';
+import { DialogService } from '@services/dialog.service';
+import { UserService } from '@services/user.service';
+
+// MODELS
+import { ArticleDetail } from '@models/interfaces/article-info';
+import { UserInfo } from '@models/classes/user-info';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -39,8 +44,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
   //  // Cover Image State
   coverImageFile: File;
   //  shouldAbortTempCoverImage = false;
-  //  coverImageUploadTask: AngularFireUploadTask;
-  //  coverImageUploadPercent$: Observable<number>;
+  coverImageUploadTask: AngularFireUploadTask;
+  // coverImageUploadPercent$: Observable<number>;
   //  coverImageUrl$ = new BehaviorSubject<string>(null);
 
   // Article State
@@ -110,7 +115,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
     this.state.set(ARTICLE_STATE_KEY, null);
+    this.cancelUpload(this.coverImageUploadTask);
   }
+
+  cancelUpload = (task: AngularFireUploadTask) => {
+    if (task) task.cancel();
+  };
 
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
@@ -278,16 +288,51 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // Update Existing Article
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
-        this.articleSvc.updateArticle(this.loggedInUser, this.articleState);
-        clearTimeout(this.editSessionTimeout);
-        this.resetEditStates();
+        if (this.coverImageFile) {
+          // save cover image because it was changed
+          this.saveCoverImage().subscribe(percentChanges => {
+            // TODO: Use mat-progress-bar in a new progress modal to show progress
+            console.log('cover image upload progress', percentChanges);
+          });
+        }
+        if (this.articleState.articleId) {
+          // It's not new so just update existing and return
+          try {
+            this.articleSvc.updateArticle(this.loggedInUser, this.articleState);
+            clearTimeout(this.editSessionTimeout);
+            this.resetEditStates();
+          } catch (error) {
+            this.dialogSvc.openMessageDialog(
+              'Error saving article',
+              'Attempting to save your changes returned the following error',
+              error.message || error
+            );
+          }
+          return;
+        }
+        // There wasn't an articleId so this is new...
+        // Create new article.
       } else
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
           'You can not save changes without signing in or registering'
         );
     });
-    // }
+  };
+
+  saveCoverImage = () => {
+    const { task, ref } = this.articleSvc.uploadCoverImage(
+      this.articleId,
+      this.coverImageFile
+    );
+    this.coverImageUploadTask = task;
+    task.then(() => {
+      ref.getDownloadURL().subscribe(url => {
+        this.articleEditForm.patchValue({ imageUrl: url });
+      });
+    });
+    return task.percentageChanges();
+    // In the original we did more such as keeping track of uploads in the database and
   };
 
   // ---Editor Session Management

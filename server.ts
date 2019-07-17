@@ -8,6 +8,11 @@ import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
 import * as express from 'express';
 import { join } from 'path';
 
+// Polyfills required for Firebase
+(global as any).XMLHttpRequest = require('xhr2');
+// may also come in handy
+// (global as any).WebSocket = require('ws');
+
 // Import gCloud debug-agent for Stackdriver debugging
 import * as debugAgent from '@google-cloud/debug-agent';
 // Enable gCould debug-agent

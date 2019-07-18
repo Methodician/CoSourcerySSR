@@ -51,9 +51,8 @@
       [commentCount]="articleState.commentCount"
       [editCount]="articleState.version"
       [tagsCount]="articleState.tags.length"
+      [articleId]="articleId"
       [isArticleNew]="isArticleNew"
-      [isBookmarked]="loggedInUser.uid && articleIsBookmarked"
-      (onBookmarkClicked)="authCheck() ? bookmarkToggle() : null"
     ></cos-stats>
 
     <!-- ATTRIBUTIONS -->

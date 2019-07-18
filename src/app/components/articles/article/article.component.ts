@@ -57,15 +57,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   //  // Cover Image State
   coverImageFile: File;
-  //  shouldAbortTempCoverImage = false;
+
   coverImageUploadTask: AngularFireUploadTask;
   // coverImageUploadPercent$: Observable<number>;
-  //  coverImageUrl$ = new BehaviorSubject<string>(null);
 
   // Article State
   articleId: string;
   isArticleNew: boolean;
-  // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
   currentArticleEditors = {};
 

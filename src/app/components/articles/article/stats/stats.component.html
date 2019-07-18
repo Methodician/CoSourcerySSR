@@ -28,16 +28,16 @@
   <div
     *ngIf="!isArticleNew"
     class="counters__item counters__item_clickable"
-    (click)="clickBookmark()"
+    (click)="onBookmarkClicked()"
   >
     <mat-icon class="counters__icon">{{
-      isBookmarked ? 'bookmark' : 'bookmark_border'
+      (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
     }}</mat-icon>
     <span
       class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
       style="right: 0;"
     >
-      {{ isBookmarked ? 'Remove Bookmark' : 'Bookmark' }}
+      {{ (isBookmarked$ | async) ? 'Remove Bookmark' : 'Bookmark' }}
     </span>
   </div>
 </section>

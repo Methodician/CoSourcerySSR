@@ -57,6 +57,7 @@ import { CoverImageDisplayComponent } from './components/articles/article/cover-
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from './components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
+import { SaveUndoFlagComponent } from './components/articles/article/save-undo-flag/save-undo-flag.component';
 
 @NgModule({
   declarations: [
@@ -89,6 +90,7 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     ConfirmDialogComponent,
     CoverImageComponent,
     CoverImageEditComponent,
+    SaveUndoFlagComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

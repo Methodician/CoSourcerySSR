@@ -67,12 +67,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
   isArticleNew: boolean;
   // articleIsBookmarked: boolean;
   articleSubscription: Subscription;
-  // articleEditorSubscription: Subscription;
   currentArticleEditors = {};
 
   // Article Form State
   isFormInCreateView: boolean;
-  // articleEditFormSubscription: Subscription;
   editSessionTimeout;
   saveButtonIsSticky = true;
 

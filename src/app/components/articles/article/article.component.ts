@@ -487,6 +487,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   setStickySaveButton = () => {
     // ToDo: Ask yourself: do we really want it to stick?
+    if (!this.formBoundingBox) return;
     const formBottomOffset = this.formBoundingBox.nativeElement.getBoundingClientRect()
       .bottom;
     const verticalOverflow = formBottomOffset - window.innerHeight;

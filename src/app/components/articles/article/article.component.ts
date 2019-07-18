@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  HostListener,
+} from '@angular/core';
 import {
   TransferState,
   makeStateKey,
@@ -38,6 +44,14 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
+  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
+  @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
+
+  @HostListener('window:scroll')
+  onScroll() {
+    this.setStickySaveButton();
+  }
+
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new UserInfo({ fName: null, lName: null });
 
@@ -60,7 +74,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   isFormInCreateView: boolean;
   // articleEditFormSubscription: Subscription;
   editSessionTimeout;
-  // saveButtonIsSticky = true;
+  saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
     articleId: '',
@@ -260,6 +274,22 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = file;
   };
 
+  cancelChanges = () => {
+    const response$ = this.dialogSvc
+      .openConfirmDialog(
+        'Undo Edits',
+        'Any unsaved changes will be discarded and the page will refresh.',
+        'Are you sure?'
+      )
+      .afterClosed();
+    response$.subscribe(shouldCancel => {
+      if (shouldCancel) {
+        this.resetEditStates();
+        location.reload();
+      }
+    });
+  };
+
   saveChanges = async () => {
     // if (this.coverImageFile) {
     //   await this.saveCoverImage();
@@ -454,6 +484,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
+
+  setStickySaveButton = () => {
+    // ToDo: Ask yourself: do we really want it to stick?
+    const formBottomOffset = this.formBoundingBox.nativeElement.getBoundingClientRect()
+      .bottom;
+    const verticalOverflow = formBottomOffset - window.innerHeight;
+    this.saveButtonIsSticky = verticalOverflow > 0 ? true : false;
+  };
 }
 
 // Types and Enums

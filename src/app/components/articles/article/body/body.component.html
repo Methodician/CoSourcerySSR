@@ -1,32 +1,18 @@
-<section
-  class="article-body__interior"
-  [ngClass]="{ border: isLoggedIn && isActive }"
->
+<section class="article-body__interior" [ngClass]="{ border: isActive }">
   <button
     class="mat-icon-btn"
-    [ngClass]="{ active: isLoggedIn && isActive }"
+    [ngClass]="{ active: isActive }"
     type="button"
     (click)="toggleCtrl()"
   >
-    <mat-icon>{{ isLoggedIn && isActive ? 'clear' : 'edit' }}</mat-icon>
+    <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
     <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-      isLoggedIn && isActive ? 'Close Body' : 'Edit Body'
+      isActive ? 'Close Body' : 'Edit Body'
     }}</span>
   </button>
-  <article *ngIf="!isActive" [innerHTML]="body"></article>
+  <!-- <article *ngIf="!isActive" [innerHTML]="body"></article> -->
   <cos-body-edit
-    *ngIf="isActive"
     (onBodyChange)="changeBody($event)"
     [body]="body"
   ></cos-body-edit>
-  <!-- <ckeditor
-        *ngIf="ckeditor.content"
-        (change)="onCKEditorChanged($event)"
-        (ready)="onCKEditorReady($event)"
-        [data]="ckeditor.content"
-        [editor]="ckeditor.build"
-        [config]="ckeditor.config"
-        [disabled]="!isLoggedIn || !isActive"
-      >
-      </ckeditor> -->
 </section>

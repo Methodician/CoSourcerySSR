@@ -7,10 +7,8 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./body.component.scss'],
 })
 export class BodyComponent {
-  @Input() parentForm: FormGroup;
   @Input() isActive: boolean;
   @Input() body: string;
-  @Input() isLoggedIn: boolean;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();

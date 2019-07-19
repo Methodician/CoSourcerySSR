@@ -74,10 +74,8 @@
     }"
   >
     <cos-body
-      [parentForm]="articleEditForm"
       [isActive]="isCtrlActive(CtrlNames.body)"
       [body]="articleState.body"
-      [isLoggedIn]="loggedInUser.uid"
       (onCtrlToggle)="toggleCtrl(CtrlNames.body)"
       (onClickOut)="clickoutCtrl(CtrlNames.body)"
       (onBodyChange)="changeBody($event)"

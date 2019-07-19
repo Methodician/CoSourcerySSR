@@ -6,6 +6,7 @@ import {
 } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+// MODULES
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -19,12 +20,15 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
+// Other
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
+// end modules
 
 // Pipes
 import { TruncateStringPipe } from './shared/pipes/truncate-string.pipe';
 
-// Components
+// COMPONENTS
 import { AppComponent } from './app.component';
 import { HomeComponent } from '@components/home/home.component';
 import { ArticlePreviewCardComponent } from '@components/articles/article-preview-card/article-preview-card.component';
@@ -53,11 +57,11 @@ import { CoverImageComponent } from './components/articles/article/cover-image/c
 import { CoverImageEditComponent } from './components/articles/article/cover-image/cover-image-edit/cover-image-edit.component';
 import { CoverImageDisplayComponent } from './components/articles/article/cover-image/cover-image-display/cover-image-display.component';
 
-// dialog components
+// Dialog components
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from './components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
-
+// end components
 @NgModule({
   declarations: [
     AppComponent,
@@ -111,6 +115,7 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     MatDialogModule,
     MatInputModule,
     MatChipsModule,
+    CKEditorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

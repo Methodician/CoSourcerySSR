@@ -13,7 +13,12 @@
       isLoggedIn && isActive ? 'Close Body' : 'Edit Body'
     }}</span>
   </button>
-  <article [innerHTML]="body"></article>
+  <article *ngIf="!isActive" [innerHTML]="body"></article>
+  <cos-body-edit
+    *ngIf="isActive"
+    (onBodyChange)="changeBody($event)"
+    [body]="body"
+  ></cos-body-edit>
   <!-- <ckeditor
         *ngIf="ckeditor.content"
         (change)="onCKEditorChanged($event)"

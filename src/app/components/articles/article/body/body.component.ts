@@ -14,12 +14,11 @@ export class BodyComponent {
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
+  @Output() onBodyChange = new EventEmitter<string>();
 
-  toggleCtrl = () => {
-    this.onCtrlToggle.emit();
-  };
+  toggleCtrl = () => this.onCtrlToggle.emit();
 
-  clickOut = () => {
-    this.onClickOut.emit();
-  };
+  clickOut = () => this.onClickOut.emit();
+
+  changeBody = body => this.onBodyChange.emit(body);
 }

@@ -59,7 +59,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
-  // coverImageUploadPercent$: Observable<number>;
 
   // Article State
   articleId: string;
@@ -268,6 +267,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
     };
     reader.readAsDataURL(file);
     this.coverImageFile = file;
+  };
+
+  changeBody = body => {
+    console.log('changing body to', body);
+    this.articleEditForm.markAsDirty();
+    this.articleEditForm.patchValue({ body });
   };
 
   cancelChanges = () => {

@@ -1,14 +1,9 @@
-<!-- <textarea
-  type="text"
-  [ngModel]="body"
-  (ngModelChange)="changeBody($event)"
-></textarea> -->
 <ckeditor
   #editor
   (change)="onCKEditorChange($event)"
   (ready)="onCKEditorReady($event)"
   [editor]="ckeditor.build"
   [config]="ckeditor.config"
+  [disabled]="!isActive"
 >
-  <!-- [disabled]="!isActive" -->
 </ckeditor>

@@ -5,14 +5,10 @@ import {
   ViewChild,
   HostListener,
 } from '@angular/core';
-import {
-  TransferState,
-  makeStateKey,
-  StateKey,
-} from '@angular/platform-browser';
+import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
@@ -270,7 +266,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   changeBody = body => {
-    console.log('changing body to', body);
     this.articleEditForm.markAsDirty();
     this.articleEditForm.patchValue({ body });
   };

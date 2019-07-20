@@ -10,8 +10,14 @@
       isActive ? 'Close Body' : 'Edit Body'
     }}</span>
   </button>
-  <!-- <article *ngIf="!isActive" [innerHTML]="body"></article> -->
+  <!-- Hacky: applying ckEditor classes to get styles -->
+  <article
+    class="ck ck-editor__editable_inline"
+    *ngIf="!isBrowser"
+    [innerHTML]="body"
+  ></article>
   <cos-body-edit
+    *ngIf="isBrowser"
     (onBodyChange)="changeBody($event)"
     [body]="body"
     [isActive]="isActive"

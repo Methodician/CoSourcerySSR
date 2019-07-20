@@ -1,5 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  PLATFORM_ID,
+  Inject,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'cos-body',
@@ -13,6 +20,12 @@ export class BodyComponent {
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
   @Output() onBodyChange = new EventEmitter<string>();
+
+  isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) platformId: string) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   toggleCtrl = () => this.onCtrlToggle.emit();
 

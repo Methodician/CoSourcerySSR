@@ -388,15 +388,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   endEditSession() {
     // this.dialogIsOpen.next(true);
-    // const dialogRef = this.openMessageDialog(
-    //   'Session Timeout',
-    //   'Your changes have been discarded.'
-    // );
-    // dialogRef.afterClosed().subscribe(() => {
-    //   this.dialogIsOpen.next(false);
-    //   this.resetEditStates();
-    //   this.router.navigate(['home']);
-    // });
     this.dialogSvc
       .openMessageDialog(
         'just for now',

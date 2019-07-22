@@ -161,12 +161,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         else return { id: this.articleSvc.createArticleId(), isNew: true };
       })
     );
-    //   // this.ckeditor.config.fbImageStorage = {
-    //   //   storageRef: this.articleSvc.createVanillaStorageRef(
-    //   //     `articleBodyImages/${this.articleId}/`
-    //   //   ),
-    //   // };
-    // });
   };
 
   watchArticle$ = id => {
@@ -287,10 +281,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   saveChanges = async () => {
-    // if (this.coverImageFile) {
-    //   await this.saveCoverImage();
-    //   this.coverImageFile = null;
-    // }
     // if (!this.articleState.articleId) {
     //   // Create New Article
     //   try {

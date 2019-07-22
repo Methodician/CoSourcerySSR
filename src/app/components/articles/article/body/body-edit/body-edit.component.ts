@@ -1,15 +1,9 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  Output,
-  EventEmitter,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 // import InlineEditor from '@ckeditor/ckeditor5-build-inline';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { createVanillaStorageRef } from '@helpers/firebase';
 
 @Component({
   selector: 'cos-body-edit',
@@ -60,6 +54,10 @@ export class BodyEditComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.articleId);
+    const storageRef = createVanillaStorageRef(
+      `articleBodyImages/${this.articleId}`
+    );
+    this.ckeditor.config.fbImageStorage = { storageRef };
     this.content$.pipe(debounceTime(750)).subscribe(content => {
       this.changeBody(content);
     });

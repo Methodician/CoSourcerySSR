@@ -17,7 +17,7 @@
     [innerHTML]="body"
   ></article>
   <cos-body-edit
-    *ngIf="isBrowser"
+    *ngIf="isBrowser && articleId"
     (onBodyChange)="changeBody($event)"
     [body]="body"
     [isActive]="isActive"

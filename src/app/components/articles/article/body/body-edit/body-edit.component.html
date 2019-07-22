@@ -1,5 +1,6 @@
 <ckeditor
   #editor
+  *ngIf="isEditorImported"
   (change)="onCKEditorChange($event)"
   (ready)="onCKEditorReady($event)"
   [editor]="ckeditor.build"

@@ -6,7 +6,7 @@ import {
   EventEmitter,
   ViewChild,
 } from '@angular/core';
-import InlineEditor from '@ckeditor/ckeditor5-build-inline';
+// import InlineEditor from '@ckeditor/ckeditor5-build-inline';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -24,12 +24,13 @@ export class BodyEditComponent implements OnInit {
   @Output() onBodyChange = new EventEmitter<string>();
 
   // CKEditor setup
+  isEditorImported = false;
   placeholder =
     "<h2>Creating a New Article</h2><ol><li>Add an eye-catching <strong>Cover Image</strong> above.</li><li>Choose a concise, meaningful, and interesting <strong>Title</strong>.</li><li>Write a brief <strong>Intro</strong> to outline the topic of your article and why it's so cool!</li><li>Add the <strong>Body</strong> of your article by editing this block of content.</li><li>Add some <strong>Tags</strong> below to help people find your article.</li><li>Click <strong>Save Article</strong> when you're done.</li></ol>";
   content$ = new Subject<string>();
 
   ckeditor = {
-    build: InlineEditor,
+    build: null,
     config: {
       toolbar: {
         items: [
@@ -53,13 +54,21 @@ export class BodyEditComponent implements OnInit {
     toggleBtnOffset: 0,
   };
 
-  constructor() {}
+  constructor() {
+    this.importEditor();
+  }
 
   ngOnInit() {
     this.content$.pipe(debounceTime(750)).subscribe(content => {
       this.changeBody(content);
     });
   }
+
+  importEditor = async () => {
+    const editor = await import('@ckeditor/ckeditor5-build-inline');
+    this.ckeditor.build = editor.default;
+    this.isEditorImported = true;
+  };
 
   onCKEditorReady = editor => {
     editor.setData(this.body ? this.body : this.placeholder);

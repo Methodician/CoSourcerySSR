@@ -10,7 +10,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute } from '@angular/router';
 
-import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
+import {
+  Subscription,
+  BehaviorSubject,
+  Observable,
+  Subject,
+  interval,
+} from 'rxjs';
 import {
   tap,
   map,
@@ -113,7 +119,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.initializeArticleIdAndState();
     this.watchArticleEditors();
     this.watchFormChanges();
+    this.testProgressDialog();
   }
+
+  testProgressDialog = () => {
+    this.dialogSvc.openProgressDialog(
+      'Testing Progress',
+      'This is just a test dude...',
+      interval(80)
+    );
+  };
 
   ngOnDestroy() {
     this.unsubscribe.next();

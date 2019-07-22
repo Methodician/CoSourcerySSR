@@ -17,8 +17,8 @@ import { debounceTime } from 'rxjs/operators';
   styleUrls: ['./body-edit.component.scss'],
 })
 export class BodyEditComponent implements OnInit {
-  @ViewChild('editor', { static: false }) editor;
   @Input() body: string;
+  @Input() articleId: string;
   @Input() isActive: boolean;
 
   @Output() onBodyChange = new EventEmitter<string>();
@@ -59,6 +59,7 @@ export class BodyEditComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.articleId);
     this.content$.pipe(debounceTime(750)).subscribe(content => {
       this.changeBody(content);
     });

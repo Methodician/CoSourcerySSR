@@ -16,6 +16,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class BodyComponent {
   @Input() isActive: boolean;
   @Input() body: string;
+  @Input() articleId: string;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();

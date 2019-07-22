@@ -53,7 +53,6 @@ export class BodyEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.articleId);
     const storageRef = createVanillaStorageRef(
       `articleBodyImages/${this.articleId}`
     );

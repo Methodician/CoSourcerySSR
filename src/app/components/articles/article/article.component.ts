@@ -381,7 +381,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .openTimeoutDialog()
       .afterClosed()
       .subscribe(res => {
-        console.log('after close timeout dialog', res);
         if (res) this.setEditSessionTimeout();
         else this.endEditSession();
       });
@@ -406,7 +405,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
       )
       .afterClosed()
       .subscribe(() => {
-        console.log('closed the dialog');
         this.resetEditStates();
       });
   }
@@ -414,7 +412,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ===UI DISPLAY
   activateCtrl = async (ctrl: CtrlNames) => {
-    console.log('activating', ctrl);
     if (ctrl === CtrlNames.none) {
       this.ctrlBeingEdited = ctrl;
       return;

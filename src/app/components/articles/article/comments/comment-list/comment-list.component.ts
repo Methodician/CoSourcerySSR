@@ -111,7 +111,6 @@ export class CommentListComponent implements OnInit, OnDestroy {
   isLoggedIn = () => !!this.loggedInUser$.value.uid;
 
   isCommentNew = () => {
-    // console.log(this.commentState$.value);
     return this.commentState$.value.parentKey && !this.commentState$.value.key;
   };
 

@@ -126,7 +126,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.dialogSvc.openProgressDialog(
       'Testing Progress',
       'This is just a test dude...',
-      interval(80)
+      interval(480)
     );
   };
 

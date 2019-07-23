@@ -13,6 +13,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 // Angular Material
 import { MatChipsModule } from '@angular/material/chips';
@@ -118,6 +119,7 @@ import { ProgressDialogComponent } from './components/modals/progress-dialog/pro
     MatDialogModule,
     MatInputModule,
     MatChipsModule,
+    MatProgressBarModule,
     CKEditorModule,
   ],
   providers: [],

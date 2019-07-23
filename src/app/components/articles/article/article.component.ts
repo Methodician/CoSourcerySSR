@@ -10,13 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute } from '@angular/router';
 
-import {
-  Subscription,
-  BehaviorSubject,
-  Observable,
-  Subject,
-  interval,
-} from 'rxjs';
+import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
   tap,
   map,
@@ -119,16 +113,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.initializeArticleIdAndState();
     this.watchArticleEditors();
     this.watchFormChanges();
-    this.testProgressDialog();
   }
-
-  testProgressDialog = () => {
-    this.dialogSvc.openProgressDialog(
-      'Testing Progress',
-      'This is just a test dude...',
-      interval(480)
-    );
-  };
 
   ngOnDestroy() {
     this.unsubscribe.next();
@@ -268,6 +253,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   selectCoverImage = file => {
     const reader = new FileReader();
     reader.onload = () => {
+      this.articleEditForm.markAsDirty();
       this.articleEditForm.patchValue({ imageUrl: reader.result });
     };
     reader.readAsDataURL(file);
@@ -296,73 +282,104 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   saveChanges = async () => {
-    // if (!this.articleState.articleId) {
-    //   // Create New Article
-    //   try {
-    //     await this.articleSvc.createArticle(
-    //       this.loggedInUser,
-    //       this.articleState,
-    //       this.articleId,
-    //     );
-    //     this.articleIsNew = false;
-    //     clearTimeout(this.editSessionTimeout);
-    //     this.resetEditStates(); // Unsaved changes checked upon route change
-    //     this.router.navigate([`article/${this.articleId}`]);
-    //   } catch (error) {
-    //     this.openMessageDialog(
-    //       'Save Error',
-    //       'Oops! There was a problem saving your article.',
-    //       `Error: ${error}`,
-    //     );
-    //   }
-    // } else {
-    // Update Existing Article
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-      if (isSignedIn) {
-        if (this.coverImageFile) {
-          // save cover image because it was changed
-          this.saveCoverImage().subscribe(percentChanges => {
-            // TODO: Use mat-progress-bar in a new progress modal to show progress
-            console.log('cover image upload progress', percentChanges);
-          });
-        }
-        if (this.articleState.articleId) {
-          // It's not new so just update existing and return
-          try {
-            this.articleSvc.updateArticle(this.loggedInUser, this.articleState);
-            clearTimeout(this.editSessionTimeout);
-            this.resetEditStates();
-          } catch (error) {
-            this.dialogSvc.openMessageDialog(
-              'Error saving article',
-              'Attempting to save your changes returned the following error',
-              error.message || error
-            );
-          }
-          return;
-        }
-        // There wasn't an articleId so this is new...
-        // Create new article.
-      } else
+      if (!isSignedIn) {
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
           'You can not save changes without signing in or registering'
         );
+      }
+      this.saveCoverImage().subscribe(isReady => {
+        if (isReady) {
+          if (this.articleState.articleId) {
+            // It's not new so just update existing and return
+            try {
+              this.articleSvc.updateArticle(
+                this.loggedInUser,
+                this.articleState
+              );
+              clearTimeout(this.editSessionTimeout);
+              this.resetEditStates();
+            } catch (error) {
+              this.dialogSvc.openMessageDialog(
+                'Error saving article',
+                'Attempting to save your changes returned the following error',
+                error.message || error
+              );
+            }
+          }
+        }
+        // There wasn't an articleId so this is new...
+        // Create new article.
+        // TODO: Implement new article stuff
+        // if (!this.articleState.articleId) {
+        //   // Create New Article
+        //   try {
+        //     await this.articleSvc.createArticle(
+        //       this.loggedInUser,
+        //       this.articleState,
+        //       this.articleId,
+        //     );
+        //     this.articleIsNew = false;
+        //     clearTimeout(this.editSessionTimeout);
+        //     this.resetEditStates(); // Unsaved changes checked upon route change
+        //     this.router.navigate([`article/${this.articleId}`]);
+        //   } catch (error) {
+        //     this.openMessageDialog(
+        //       'Save Error',
+        //       'Oops! There was a problem saving your article.',
+        //       `Error: ${error}`,
+        //     );
+        //   }
+        // } else {
+      });
     });
   };
 
+  /**
+   * Emits true if the process is complete (either the image was saved or there was nothing to save)
+   * Emits false if it's incomplete or cancelled or errors out
+   */
   saveCoverImage = () => {
-    const { task, ref } = this.articleSvc.uploadCoverImage(
-      this.articleId,
-      this.coverImageFile
-    );
-    this.coverImageUploadTask = task;
-    task.then(() => {
-      ref.getDownloadURL().subscribe(url => {
-        this.articleEditForm.patchValue({ imageUrl: url });
+    const isComplete$ = new BehaviorSubject(false);
+    if (!this.coverImageFile) {
+      isComplete$.next(true);
+    }
+
+    try {
+      const { task, ref } = this.articleSvc.uploadCoverImage(
+        this.articleId,
+        this.coverImageFile
+      );
+
+      this.coverImageUploadTask = task;
+      task.then(() => {
+        ref.getDownloadURL().subscribe(url => {
+          this.articleEditForm.patchValue({ imageUrl: url });
+          isComplete$.next(true);
+        });
       });
-    });
-    return task.percentageChanges();
+
+      this.dialogSvc
+        .openProgressDialog(
+          'Uploading new cover image',
+          'You can hide this dialog while you wait, or cancel the upload to go back to editing',
+          task.percentageChanges()
+        )
+        .afterClosed()
+        .subscribe(shouldCancel => {
+          if (shouldCancel) {
+            this.cancelUpload(this.coverImageUploadTask);
+            this.articleEditForm.markAsDirty();
+            isComplete$.next(false);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      isComplete$.next(false);
+    }
+
+    return isComplete$;
     // In the original we did more such as keeping track of uploads in the database and
   };
 

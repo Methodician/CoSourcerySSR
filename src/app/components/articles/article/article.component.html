@@ -139,10 +139,9 @@
   <!-- SAVE-UNDO UI -->
   <section class="save-undo-abs-position">
     <div
-      class="save-undo-sticky-position"
+      class="save-undo-sticky-position sticky"
       [ngClass]="{
         extended: isUserEditingArticle(),
-        sticky: saveButtonIsSticky,
         disabled: !articleEditForm.valid || !isUserEditingArticle()
       }"
     >

@@ -3,8 +3,10 @@
 section {
   position: relative;
   margin-bottom: 5px;
+  border: 1px solid #fff;
 
-  &:hover {
+  &:hover,
+  &.border {
     border: 1px solid $accent-color-1;
     border-radius: 5px;
   }

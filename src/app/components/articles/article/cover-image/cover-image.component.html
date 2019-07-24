@@ -1,4 +1,4 @@
-<section (cosClickOut)="clickOut()">
+<section [ngClass]="{ border: isActive }" (cosClickOut)="clickOut()">
   <cos-cover-image-display
     [imageAlt]="imageAlt"
     [imageUrl]="imageUrl"
@@ -20,16 +20,4 @@
       Image'
     }}</span>
   </button>
-  <!-- <cos-cover-image-display
-  [coverImageUrl]="articleState.imageUrl"
-  [imageAlt]="articleState.imageAlt"
-  [isActive]="isActive(CtrlNames.coverImage)"
-  (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
-></cos-cover-image-display> -->
-  <!-- <cos-cover-image-edit
-  [isActive]="isActive(CtrlNames.coverImage)"
-  [shouldAbort]="shouldAbortTempCoverImage"
-  [parentForm]="articleEditForm"
-  (onCoverImageSelected)="onSelectCoverImage($event)"
-></cos-cover-image-edit> -->
 </section>

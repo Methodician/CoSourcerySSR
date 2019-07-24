@@ -290,7 +290,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         );
         return;
       }
-      this.saveCoverImage().subscribe(async isReady => {
+      const coverImageSub = this.saveCoverImage().subscribe(async isReady => {
         if (!isReady) return;
 
         if (this.articleState.articleId) {
@@ -308,6 +308,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
               'Attempting to save your changes returned the following error',
               error.message || error
             );
+          } finally {
+            coverImageSub.unsubscribe();
           }
         }
 

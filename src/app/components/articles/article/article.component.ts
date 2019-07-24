@@ -310,6 +310,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
             );
           } finally {
             coverImageSub.unsubscribe();
+            return;
           }
         }
 

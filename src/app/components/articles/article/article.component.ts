@@ -288,27 +288,29 @@ export class ArticleComponent implements OnInit, OnDestroy {
           'Must be signed in',
           'You can not save changes without signing in or registering'
         );
+        return;
       }
-      this.saveCoverImage().subscribe(isReady => {
-        if (isReady) {
-          if (this.articleState.articleId) {
-            // It's not new so just update existing and return
-            try {
-              this.articleSvc.updateArticle(
-                this.loggedInUser,
-                this.articleState
-              );
-              clearTimeout(this.editSessionTimeout);
-              this.resetEditStates();
-            } catch (error) {
-              this.dialogSvc.openMessageDialog(
-                'Error saving article',
-                'Attempting to save your changes returned the following error',
-                error.message || error
-              );
-            }
+      this.saveCoverImage().subscribe(async isReady => {
+        if (!isReady) return;
+
+        if (this.articleState.articleId) {
+          // It's not new so just update existing and return
+          try {
+            await this.articleSvc.updateArticle(
+              this.loggedInUser,
+              this.articleState
+            );
+            clearTimeout(this.editSessionTimeout);
+            this.resetEditStates();
+          } catch (error) {
+            this.dialogSvc.openMessageDialog(
+              'Error saving article',
+              'Attempting to save your changes returned the following error',
+              error.message || error
+            );
           }
         }
+
         // There wasn't an articleId so this is new...
         // Create new article.
         // TODO: Implement new article stuff

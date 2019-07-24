@@ -1,4 +1,8 @@
-<section class="article-title" (cosClickOut)="clickOut()">
+<section
+  class="article-title"
+  [ngClass]="{ border: isActive }"
+  (cosClickOut)="clickOut()"
+>
   <cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
   <cos-title-edit *ngIf="isActive" [parentForm]="parentForm"></cos-title-edit>
   <!-- ToDo: Abstract below out into shared component -->

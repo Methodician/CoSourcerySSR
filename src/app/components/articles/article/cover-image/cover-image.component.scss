@@ -1,6 +1,13 @@
+@import '../../../../sass/vars.scss';
+
 section {
   position: relative;
   margin-bottom: 5px;
+
+  &:hover {
+    border: 1px solid $accent-color-1;
+    border-radius: 5px;
+  }
 
   button {
     visibility: hidden;

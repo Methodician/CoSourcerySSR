@@ -1,4 +1,8 @@
-<section class="article-intro" (cosClickOut)="clickOut()">
+<section
+  class="article-intro"
+  [ngClass]="{ border: isActive }"
+  (cosClickOut)="clickOut()"
+>
   <cos-intro-display
     *ngIf="!isActive"
     [introduction]="introduction"

@@ -1,6 +1,14 @@
+@import '../../../sass//vars.scss';
+
 :host ::ng-deep .article-title,
 .article-intro {
   position: relative;
+  border-radius: 5px;
+
+  &:hover,
+  &.border {
+    border: 1px solid $accent-color-1;
+  }
 
   mat-form-field {
     width: 100%;

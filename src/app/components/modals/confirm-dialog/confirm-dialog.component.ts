@@ -25,11 +25,7 @@ export class ConfirmDialogComponent {
     this.dialogLine2 = data.dialogLine2 ? data.dialogLine2 : null;
   }
 
-  onSelectNo = () => {
-    this.dialogRef.close(false);
-  };
+  onSelectNo = () => this.dialogRef.close(false);
 
-  onSelectYes = () => {
-    this.dialogRef.close(true);
-  };
+  onSelectYes = () => this.dialogRef.close(true);
 }

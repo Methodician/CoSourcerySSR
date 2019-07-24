@@ -137,9 +137,13 @@ export class ArticleService {
   };
 
   uploadCoverImage = (articleId: string, file: File) => {
-    const storageRef = this.storage.ref(`articleCoverImages/${articleId}`);
-    const task = storageRef.put(file);
-    return { task, ref: storageRef };
+    try {
+      const storageRef = this.storage.ref(`articleCoverImages/${articleId}`);
+      const task = storageRef.put(file);
+      return { task, ref: storageRef };
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   setThumbnailImageUrl = async (articleId: string) => {

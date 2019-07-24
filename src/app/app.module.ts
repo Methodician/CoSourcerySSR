@@ -13,6 +13,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 // Angular Material
 import { MatChipsModule } from '@angular/material/chips';
@@ -61,6 +62,7 @@ import { CoverImageDisplayComponent } from './components/articles/article/cover-
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from './components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
+import { ProgressDialogComponent } from './components/modals/progress-dialog/progress-dialog.component';
 // end components
 @NgModule({
   declarations: [
@@ -93,11 +95,13 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     ConfirmDialogComponent,
     CoverImageComponent,
     CoverImageEditComponent,
+    ProgressDialogComponent,
   ],
   entryComponents: [
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
+    ProgressDialogComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
@@ -115,6 +119,7 @@ import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confi
     MatDialogModule,
     MatInputModule,
     MatChipsModule,
+    MatProgressBarModule,
     CKEditorModule,
   ],
   providers: [],

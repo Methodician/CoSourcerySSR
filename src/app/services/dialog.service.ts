@@ -3,6 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material';
 import { ConfirmDialogComponent } from '@modals/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from '@modals/message-dialog/message-dialog.component';
 import { Observable } from 'rxjs';
+import { ProgressDialogComponent } from '@modals/progress-dialog/progress-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -46,6 +47,26 @@ export class DialogService {
       'Have not implemented openTimeoutDialog yet',
       'Need to separate concerns between component and service'
     );
+  };
+
+  /**
+   * Progress must be supplied and its value should always be between 0 and 100
+   */
+  openProgressDialog = (
+    title: string,
+    msg1: string,
+    progress$: Observable<number>
+  ) => {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {
+      dialogTitle: title,
+      dialogLine1: msg1,
+      progress$,
+    };
+
+    const dialogRef = this.dialog.open(ProgressDialogComponent, dialogConfig);
+    return dialogRef;
   };
 
   genericDialogConfig = (title: string, msg1: string, msg2: string = null) => {

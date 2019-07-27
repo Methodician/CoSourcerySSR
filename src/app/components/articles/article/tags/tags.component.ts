@@ -19,6 +19,7 @@ export class TagsComponent implements OnInit {
   @Input() isActive: boolean;
 
   @Output() onCtrlToggle = new EventEmitter();
+  @Output() onTagSubmitted = new EventEmitter<string>();
 
   readonly separatorKeyCodes = [ENTER, COMMA];
 
@@ -38,9 +39,10 @@ export class TagsComponent implements OnInit {
 
   onRemoveClicked = (tag: string) => console.log(tag, 'removed clicked');
 
-  onTagSubmitted = (tag: string) => {
-    if (!this.hasInputChanged || tag.length === 0) return;
-    if (!this.isInputValid(tag)) {
+  submitTag = $event => {
+    const { value, input }: { value: string; input: HTMLInputElement } = $event;
+    if (!this.hasInputChanged || value.length === 0) return;
+    if (!this.isInputValid(value)) {
       this.dialogSvc.openMessageDialog(
         'Invalid Tag',
         'Tags must consist only of letters, numbers, and spaces.',
@@ -49,7 +51,11 @@ export class TagsComponent implements OnInit {
       return;
     }
 
-    console.log('go ahead and submit the tag:', tag);
+    const tag = value.trim().toUpperCase();
+    if (this.isTagDuplicate(tag)) return (input.value = '');
+
+    this.onTagSubmitted.emit(tag);
+    input.value = '';
     this.hasInputChanged = false;
   };
 
@@ -57,6 +63,10 @@ export class TagsComponent implements OnInit {
 
   isInputValid = (value: string) => {
     const nonLetterNumberSpace = new RegExp('[^a-zA-Z0-9 ]');
-    return !nonLetterNumberSpace.test(value) && !(value.length <= 3);
+    return !nonLetterNumberSpace.test(value) && !(value.length < 3);
+  };
+
+  isTagDuplicate = (tag: string) => {
+    return this.tags.includes(tag);
   };
 }

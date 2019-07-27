@@ -21,7 +21,7 @@
         [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
         [matChipInputAddOnBlur]="true"
-        (matChipInputTokenEnd)="onTagSubmitted($event.value)"
+        (matChipInputTokenEnd)="submitTag($event)"
         (input)="onInputChange()"
       />
     </mat-chip-list>

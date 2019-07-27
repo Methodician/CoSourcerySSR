@@ -84,7 +84,12 @@
   </section>
 
   <!-- TAGS UI -->
-  <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
+  <cos-tags
+    [tags]="articleState.tags"
+    [isActive]="isCtrlActive(CtrlNames.tags)"
+    (onCtrlToggle)="toggleCtrl(CtrlNames.tags)"
+  ></cos-tags>
+  <!-- <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
     <h3>Tags</h3>
     <p *ngIf="articleState.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
       This article has no tags. Click the edit icon, enter a tag, and press
@@ -133,7 +138,7 @@
         isCtrlActive(CtrlNames.tags) ? 'Close Tags' : 'Edit Tags'
       }}</span>
     </button>
-  </section>
+  </section> -->
   <!-- end tags ui -->
 
   <!-- SAVE-UNDO UI -->

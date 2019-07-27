@@ -11,6 +11,11 @@ import { ProgressDialogComponent } from '@modals/progress-dialog/progress-dialog
 export class DialogService {
   constructor(private dialog: MatDialog) {}
 
+  /**
+   * Opens a dialog modal with the given title and messages.
+   *
+   * Emits generic event to the onClose() method's subscriber
+   */
   openMessageDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
     const dialogRef = this.dialog.open(MessageDialogComponent, dialogConfig);
@@ -18,6 +23,11 @@ export class DialogService {
   };
 
   // TODO: DRY these up or justify their separation...
+  /**
+   * Opens a dialog modal with the given title and messages.
+   *
+   * Emits boolean event to the onClose() method's subscriber.
+   */
   openConfirmDialog = (title: string, msg1: string, msg2: string = null) => {
     const dialogConfig = this.genericDialogConfig(title, msg1, msg2);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
@@ -50,7 +60,11 @@ export class DialogService {
   };
 
   /**
-   * Progress must be supplied and its value should always be between 0 and 100
+   * Displays the title and message, along with a progress bar.
+   *
+   * Progress$ must be supplied and its value should always be between 0 and 100
+   *
+   * Emits a boolean event to the onClose() method's subscriber (intended to determine whether to cancel the in-progress event or simply hide progress)
    */
   openProgressDialog = (
     title: string,

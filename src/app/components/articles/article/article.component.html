@@ -84,56 +84,13 @@
   </section>
 
   <!-- TAGS UI -->
-  <section class="article-tags" (cosClickOut)="clickoutCtrl(CtrlNames.tags)">
-    <h3>Tags</h3>
-    <p *ngIf="articleState.tags.length === 0 && !isCtrlActive(CtrlNames.tags)">
-      This article has no tags. Click the edit icon, enter a tag, and press
-      enter.
-    </p>
-    <mat-chip-list *ngIf="!isCtrlActive(CtrlNames.tags)">
-      <mat-chip *ngFor="let articleTag of articleState.tags">{{
-        articleTag
-      }}</mat-chip>
-    </mat-chip-list>
-
-    <mat-form-field *ngIf="isCtrlActive(CtrlNames.tags)">
-      <mat-chip-list #chipList>
-        <mat-chip
-          *ngFor="let articleTag of articleState.tags"
-          (removed)="removeTag(articleTag)"
-        >
-          {{ articleTag }}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input
-          #tagInput
-          [ngClass]="{ error: isInvalidTagInput(tagInput.value) }"
-          maxlength="25"
-          [matChipInputFor]="chipList"
-          [matChipInputSeparatorKeyCodes]="matChipInputSeparatorKeyCodes"
-          [matChipInputAddOnBlur]="true"
-          (matChipInputTokenEnd)="
-            isInvalidTagInput(tagInput.value) ? null : addTag($event)
-          "
-        />
-      </mat-chip-list>
-      <mat-hint [ngClass]="{ error: isInvalidTagInput(tagInput.value) }">
-        No special characters. Type, then press enter to submit each tag.
-      </mat-hint>
-      <mat-hint align="end">{{ tagInput.value.length }} / 25</mat-hint>
-    </mat-form-field>
-    <button
-      class="mat-icon-btn"
-      [ngClass]="{ active: isCtrlActive(CtrlNames.tags) }"
-      type="button"
-      (click)="toggleCtrl(CtrlNames.tags)"
-    >
-      <mat-icon>{{ isCtrlActive(CtrlNames.tags) ? 'clear' : 'edit' }}</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
-        isCtrlActive(CtrlNames.tags) ? 'Close Tags' : 'Edit Tags'
-      }}</span>
-    </button>
-  </section>
+  <cos-tags
+    [tags]="articleState.tags"
+    [isActive]="isCtrlActive(CtrlNames.tags)"
+    (onCtrlToggle)="toggleCtrl(CtrlNames.tags)"
+    (onTagSubmitted)="addTag($event)"
+    (onTagRemoved)="removeTag($event)"
+  ></cos-tags>
   <!-- end tags ui -->
 
   <!-- SAVE-UNDO UI -->

@@ -1,0 +1,45 @@
+<section class="container" (cosClickOut)="clickOut()">
+  <!-- <section class="container" (cosClickOut)="clickoutCtrl(CtrlNames.tags)"> -->
+  <h3>Tags</h3>
+  <p *ngIf="tags.length === 0 && !isActive">
+    This article has no tags. Click the edit icon, enter a tag, and press enter.
+  </p>
+  <mat-chip-list *ngIf="!isActive">
+    <mat-chip *ngFor="let tag of tags">{{ tag }}</mat-chip>
+  </mat-chip-list>
+
+  <mat-form-field *ngIf="isActive">
+    <mat-chip-list #chipList>
+      <mat-chip *ngFor="let tag of tags" (removed)="removeTag(tag)">
+        {{ tag }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <input
+        #tagInput
+        [ngClass]="{ error: !isInputValid(tagInput.value) }"
+        maxlength="25"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+        [matChipInputAddOnBlur]="true"
+        (matChipInputTokenEnd)="submitTag($event)"
+        (input)="onInputChange()"
+      />
+    </mat-chip-list>
+    <mat-hint [ngClass]="{ error: !isInputValid(tagInput.value) }">
+      At least three non-special characters. Type, then press enter or comma to
+      submit each tag.
+    </mat-hint>
+    <mat-hint align="end">{{ tagInput.value.length }} / 25</mat-hint>
+  </mat-form-field>
+  <button
+    class="mat-icon-btn"
+    [ngClass]="{ active: isActive }"
+    type="button"
+    (click)="toggleCtrl()"
+  >
+    <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
+    <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">{{
+      isActive ? 'Close Tags' : 'Edit Tags'
+    }}</span>
+  </button>
+</section>

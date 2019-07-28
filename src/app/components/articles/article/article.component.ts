@@ -245,6 +245,24 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.activateCtrl(CtrlNames.none);
   };
 
+  addTag = (tag: string) => {
+    this.articleState.tags.push(tag);
+    this.articleEditForm.markAsDirty();
+    this.articleEditForm.patchValue({ tags: this.articleState.tags });
+  };
+
+  /**
+   * Expects the index of an article tag.
+   *
+   * Removes that tag, patches the form, marks form as dirty
+   */
+  removeTag = (tagIndex: number) => {
+    const tags = this.articleState.tags;
+    tags.splice(tagIndex, 1);
+    this.articleEditForm.markAsDirty();
+    this.articleEditForm.patchValue({ tags });
+  };
+
   selectCoverImage = file => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -344,39 +362,39 @@ export class ArticleComponent implements OnInit, OnDestroy {
     const isComplete$ = new BehaviorSubject(false);
     if (!this.coverImageFile) {
       isComplete$.next(true);
-    }
+    } else {
+      try {
+        const { task, ref } = this.articleSvc.uploadCoverImage(
+          this.articleId,
+          this.coverImageFile
+        );
 
-    try {
-      const { task, ref } = this.articleSvc.uploadCoverImage(
-        this.articleId,
-        this.coverImageFile
-      );
-
-      this.coverImageUploadTask = task;
-      task.then(() => {
-        ref.getDownloadURL().subscribe(url => {
-          this.articleEditForm.patchValue({ imageUrl: url });
-          isComplete$.next(true);
+        this.coverImageUploadTask = task;
+        task.then(() => {
+          ref.getDownloadURL().subscribe(url => {
+            this.articleEditForm.patchValue({ imageUrl: url });
+            isComplete$.next(true);
+          });
         });
-      });
 
-      this.dialogSvc
-        .openProgressDialog(
-          'Uploading new cover image',
-          'You can hide this dialog while you wait, or cancel the upload to go back to editing',
-          task.percentageChanges()
-        )
-        .afterClosed()
-        .subscribe(shouldCancel => {
-          if (shouldCancel) {
-            this.cancelUpload(this.coverImageUploadTask);
-            this.articleEditForm.markAsDirty();
-            isComplete$.next(false);
-          }
-        });
-    } catch (error) {
-      console.error(error);
-      isComplete$.next(false);
+        this.dialogSvc
+          .openProgressDialog(
+            'Uploading new cover image',
+            'You can hide this dialog while you wait, or cancel the upload to go back to editing',
+            task.percentageChanges()
+          )
+          .afterClosed()
+          .subscribe(shouldCancel => {
+            if (shouldCancel) {
+              this.cancelUpload(this.coverImageUploadTask);
+              this.articleEditForm.markAsDirty();
+              isComplete$.next(false);
+            }
+          });
+      } catch (error) {
+        console.error(error);
+        isComplete$.next(false);
+      }
     }
 
     return isComplete$;

@@ -29,10 +29,15 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       .subscribe(val => {
         this.isArticleBookmarked$.next(val);
       });
-    const url = this.articleData.imageUrl;
-    if (url === 'unset') {
-      this.articleSvc.setThumbnailImageUrl(this.articleData.articleId);
-    }
+    this.authSvc
+      .isSignedIn()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(isLoggedIn => {
+        const url = this.articleData.imageUrl;
+        if (url === 'unset') {
+          this.articleSvc.setThumbnailImageUrl(this.articleData.articleId);
+        }
+      });
   }
 
   ngOnDestroy() {

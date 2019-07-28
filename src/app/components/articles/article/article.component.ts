@@ -26,6 +26,8 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
+import { fsTimestampNow } from '@helpers/firebase';
+
 // MODELS
 import { ArticleDetail } from '@models/interfaces/article-info';
 import { UserInfo } from '@models/classes/user-info';
@@ -58,7 +60,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   currentArticleEditors = {};
 
   // Article Form State
-  isFormInCreateView: boolean;
   editSessionTimeout;
   saveButtonIsSticky = true;
 
@@ -129,7 +130,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         if (id) this.articleId = id;
         if (isNew) {
           this.isArticleNew = true;
-          this.isFormInCreateView = true;
         } else this.isArticleNew = false;
       }),
       switchMap(
@@ -484,6 +484,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
   // ===end ui display
 
+  tempTimestamp = () => fsTimestampNow;
   // ===CONTROL HELPERS
   toggleCtrl = (ctrl: CtrlNames) => {
     if (this.isCtrlActive(ctrl)) {

@@ -8,6 +8,13 @@ const createVanillaStorageRef = (path: string) => {
 };
 
 const fsServerTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+const fsTimestampNow = firebase.firestore.Timestamp.now();
+
 const rtServerTimestamp = firebase.database.ServerValue.TIMESTAMP;
 
-export { createVanillaStorageRef, fsServerTimestamp, rtServerTimestamp };
+export {
+  createVanillaStorageRef,
+  fsServerTimestamp,
+  fsTimestampNow,
+  rtServerTimestamp,
+};

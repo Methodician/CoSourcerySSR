@@ -89,6 +89,7 @@
     [isActive]="isCtrlActive(CtrlNames.tags)"
     (onCtrlToggle)="toggleCtrl(CtrlNames.tags)"
     (onTagSubmitted)="addTag($event)"
+    (onTagRemoved)="removeTag($event)"
   ></cos-tags>
   <!-- end tags ui -->
 

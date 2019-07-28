@@ -20,6 +20,7 @@ export class TagsComponent implements OnInit {
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onTagSubmitted = new EventEmitter<string>();
+  @Output() onTagRemoved = new EventEmitter<number>();
 
   readonly separatorKeyCodes = [ENTER, COMMA];
 
@@ -37,7 +38,12 @@ export class TagsComponent implements OnInit {
 
   toggleCtrl = () => this.onCtrlToggle.emit();
 
-  onRemoveClicked = (tag: string) => console.log(tag, 'removed clicked');
+  removeTag = (tag: string) => {
+    const index = this.tags.indexOf(tag);
+    if (index >= 0) {
+      this.onTagRemoved.emit(index);
+    }
+  };
 
   submitTag = $event => {
     const { value, input }: { value: string; input: HTMLInputElement } = $event;

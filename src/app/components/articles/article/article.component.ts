@@ -251,6 +251,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.patchValue({ tags: this.articleState.tags });
   };
 
+  /**
+   * Expects the index of an article tag.
+   *
+   * Removes that tag, patches the form, marks form as dirty
+   */
+  removeTag = (tagIndex: number) => {
+    const tags = this.articleState.tags;
+    tags.splice(tagIndex, 1);
+    this.articleEditForm.markAsDirty();
+    this.articleEditForm.patchValue({ tags });
+  };
+
   selectCoverImage = file => {
     const reader = new FileReader();
     reader.onload = () => {

@@ -10,7 +10,7 @@
 
   <mat-form-field *ngIf="isActive">
     <mat-chip-list #chipList>
-      <mat-chip *ngFor="let tag of tags" (removed)="onRemoveClicked(tag)">
+      <mat-chip *ngFor="let tag of tags" (removed)="removeTag(tag)">
         {{ tag }}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>

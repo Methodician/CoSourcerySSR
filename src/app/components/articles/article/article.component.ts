@@ -485,7 +485,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
   // ===end ui display
 
-  tempTimestamp = () => fsTimestampNow;
+  tempTimestamp = () => fsTimestampNow();
   // ===CONTROL HELPERS
   toggleCtrl = (ctrl: CtrlNames) => {
     if (this.isCtrlActive(ctrl)) {

@@ -29,10 +29,10 @@
 
     <!-- DATE -->
     <p class="article-date">
-      <span *ngIf="isFormInCreateView"
-        >Current Date: {{ articleSvc.tempTimestamp().toDate() | date }}</span
+      <span *ngIf="isArticleNew"
+        >Current Date: {{ tempTimestamp().toDate() | date }}</span
       >
-      <span *ngIf="!isFormInCreateView"
+      <span *ngIf="!isArticleNew"
         >Last Updated: {{ articleState.lastUpdated | date }}</span
       >
     </p>
@@ -146,7 +146,6 @@
 </form>
 
 <cos-comments
-  *ngIf="articleState"
+  *ngIf="articleState && !isArticleNew"
   [articleId]="articleState.articleId"
-  [isArticleNew]="isArticleNew"
 ></cos-comments>

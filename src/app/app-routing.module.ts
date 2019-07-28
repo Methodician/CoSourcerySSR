@@ -7,6 +7,7 @@ import { ArticleComponent } from '@components/articles/article/article.component
 const routes: Routes = [
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: 'article/:id', component: ArticleComponent },
+  { path: 'createarticle', component: ArticleComponent },
   { path: '', component: HomeComponent, pathMatch: 'full' },
 ];
 

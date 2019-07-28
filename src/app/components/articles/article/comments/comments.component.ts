@@ -14,7 +14,6 @@ import { AuthService } from '@services/auth.service';
 })
 export class CommentsComponent implements OnInit {
   @Input() articleId: string;
-  @Input() isArticleNew: boolean;
 
   constructor(
     private commentSvc: CommentService,

@@ -132,8 +132,34 @@ export class ArticleService {
     articleToSave.lastEditorId = editor.uid;
     articleToSave.lastUpdated = fsServerTimestamp;
     articleToSave.version++;
+    // TODO: Deterimine if we still need the cleanArticleImages action
     // articleToSave.bodyImages = this.cleanArticleImages(articleToSave);
     return articleRef.update(articleToSave);
+  };
+
+  createArticle = (
+    author: UserInfo,
+    article: ArticleDetail,
+    articleId: string
+  ) => {
+    if (article.articleId || !articleId)
+      throw "we can't create an article without an ID, and the ArticleDetail should lack an ID";
+    if (!author || !author.uid)
+      throw 'New articles must have an author with an ID';
+
+    const articleRef = this.articleDetailRef(articleId);
+    const newArticle = { ...article };
+    newArticle.editors = {};
+    newArticle.editors[author.uid] = 1;
+    newArticle.authorId = author.uid;
+    newArticle.articleId = articleId;
+    newArticle.lastUpdated = fsServerTimestamp;
+    newArticle.timestamp = fsServerTimestamp;
+    newArticle.lastEditorId = author.uid;
+    newArticle.authorImageUrl =
+      author.imageUrl || '../../assets/images/logo.svg';
+
+    return articleRef.set(newArticle, { merge: true });
   };
 
   uploadCoverImage = (articleId: string, file: File) => {

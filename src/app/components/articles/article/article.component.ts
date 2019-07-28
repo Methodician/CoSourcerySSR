@@ -8,7 +8,7 @@ import {
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
@@ -92,6 +92,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private router: Router,
     private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService,
@@ -325,31 +326,28 @@ export class ArticleComponent implements OnInit, OnDestroy {
             coverImageSub.unsubscribe();
             return;
           }
+        } else {
+          // It's a new article!
+          try {
+            await this.articleSvc.createArticle(
+              this.loggedInUser,
+              this.articleState,
+              this.articleId
+            );
+            clearTimeout(this.editSessionTimeout);
+            // TODO: Ensure unsaved chanes are actually being checked upon route change
+            this.resetEditStates(); // Unsaved chagnes checked upon route change
+            this.router.navigate([`article/${this.articleId}`]);
+          } catch (error) {
+            this.dialogSvc.openMessageDialog(
+              'Error creating article',
+              'Attempting to create the article returned the following error. If this persists, please let us know...',
+              `Error: ${error.message || error}`
+            );
+          } finally {
+            coverImageSub.unsubscribe();
+          }
         }
-
-        // There wasn't an articleId so this is new...
-        // Create new article.
-        // TODO: Implement new article stuff
-        // if (!this.articleState.articleId) {
-        //   // Create New Article
-        //   try {
-        //     await this.articleSvc.createArticle(
-        //       this.loggedInUser,
-        //       this.articleState,
-        //       this.articleId,
-        //     );
-        //     this.articleIsNew = false;
-        //     clearTimeout(this.editSessionTimeout);
-        //     this.resetEditStates(); // Unsaved changes checked upon route change
-        //     this.router.navigate([`article/${this.articleId}`]);
-        //   } catch (error) {
-        //     this.openMessageDialog(
-        //       'Save Error',
-        //       'Oops! There was a problem saving your article.',
-        //       `Error: ${error}`,
-        //     );
-        //   }
-        // } else {
       });
     });
   };
@@ -439,6 +437,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   endEditSession() {
     // this.dialogIsOpen.next(true);
     this.dialogSvc
+      // TODO: Implement edit session dialogs
       .openMessageDialog(
         'just for now',
         'Have not implemented edit session dialogs',
@@ -446,7 +445,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
       )
       .afterClosed()
       .subscribe(() => {
+        // this.dialogIsOpen.next(false);
         this.resetEditStates();
+        this.router.navigate(['home']);
       });
   }
   // ===end editing stuff

@@ -5,7 +5,7 @@
 >
   <cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
   <cos-title-edit *ngIf="isActive" [parentForm]="parentForm"></cos-title-edit>
-  <!-- ToDo: Abstract below out into shared component -->
+  <!-- TODO: Abstract below out into shared component -->
   <button
     class="mat-icon-btn"
     [ngClass]="{ active: isActive }"

@@ -3,12 +3,14 @@
 section {
   position: relative;
   margin-bottom: 5px;
+  border-radius: 5px;
   border: 1px solid #fff;
+  transition: border 0.5s;
+  padding: 2px;
 
   &:hover,
   &.border {
     border: 1px solid $accent-color-1;
-    border-radius: 5px;
   }
 
   button {

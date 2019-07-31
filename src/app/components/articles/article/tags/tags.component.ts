@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  Output,
-  EventEmitter,
-  ViewChild,
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { DialogService } from '@services/dialog.service';
 
@@ -14,7 +7,7 @@ import { DialogService } from '@services/dialog.service';
   templateUrl: './tags.component.html',
   styleUrls: ['./tags.component.scss'],
 })
-export class TagsComponent implements OnInit {
+export class TagsComponent {
   @Input() tags: string[] = [];
   @Input() isActive: boolean;
 
@@ -26,13 +19,7 @@ export class TagsComponent implements OnInit {
 
   hasInputChanged = false;
 
-  constructor(private dialogSvc: DialogService) {
-    for (let tag of this.tags) console.log(tag);
-  }
-
-  ngOnInit() {
-    for (let tag of this.tags) console.log(tag);
-  }
+  constructor(private dialogSvc: DialogService) {}
 
   clickOut = () => console.log('clicked outside tags');
 

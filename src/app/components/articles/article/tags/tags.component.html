@@ -1,5 +1,8 @@
-<section class="container" (cosClickOut)="clickOut()">
-  <!-- <section class="container" (cosClickOut)="clickoutCtrl(CtrlNames.tags)"> -->
+<section
+  class="container"
+  [ngClass]="{ border: isActive }"
+  (cosClickOut)="clickOut()"
+>
   <h3>Tags</h3>
   <p *ngIf="tags.length === 0 && !isActive">
     This article has no tags. Click the edit icon, enter a tag, and press enter.

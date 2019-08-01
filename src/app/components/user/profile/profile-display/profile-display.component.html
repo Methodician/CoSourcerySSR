@@ -1,50 +1,68 @@
-<form *ngIf="user" class="profile-card">
-  <div class="profile-card__input-group">
-    <section class="profile-image">
-      <img
-        class="profile-image__src"
-        [src]="user.imageUrl ? user.imageUrl : '../../assets/images/logo.svg'"
-        alt="Profile Image"
-      />
-    </section>
+<section class="profile">
+  <h2 class="profile__title">Profile</h2>
+  <div class="profile__info-wrapper">
+    <div class="top-btn-wrapper">
+      <button class="cos-btn" type="button" (click)="edit()">
+        Edit
+      </button>
+    </div>
+    <form *ngIf="user" class="profile-card">
+      <div class="profile-card__input-group">
+        <section class="profile-image">
+          <img
+            class="profile-image__src"
+            [src]="
+              user.imageUrl ? user.imageUrl : '../../assets/images/logo.svg'
+            "
+            alt="Profile Image"
+          />
+        </section>
 
-    <div>
-      <div class="profile-card__input">
-        <h6>First Name</h6>
-        <p>{{ user.fName }}</p>
+        <div>
+          <div class="profile-card__input">
+            <h5>First Name</h5>
+            <p>{{ user.fName }}</p>
+          </div>
+
+          <div class="profile-card__input">
+            <h5>Last Name</h5>
+            <p>{{ user.lName }}</p>
+          </div>
+
+          <div class="profile-card__input">
+            <h5>Alias</h5>
+            <p>{{ user.alias }}</p>
+          </div>
+        </div>
       </div>
 
       <div class="profile-card__input">
-        <h6>Last Name</h6>
-        <p>{{ user.lName }}</p>
+        <h5>Bio</h5>
+        <p>{{ user.bio }}</p>
       </div>
 
-      <div class="profile-card__input">
-        <h6>Alias</h6>
-        <p>{{ user.alias }}</p>
+      <div class="profile-card__input-group">
+        <div class="profile-card__input">
+          <h5>City</h5>
+          <p>{{ user.city }}</p>
+        </div>
+
+        <div class="profile-card__input">
+          <h5>State</h5>
+          <p>{{ user.state }}</p>
+        </div>
+
+        <div class="profile-card__input">
+          <h5>Zip Code</h5>
+          <p>{{ user.zipCode }}</p>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
-
-  <div class="profile-card__input">
-    <h6>Bio</h6>
-    <p>{{ user.bio }}</p>
-  </div>
-
-  <div class="profile-card__input-group">
-    <div class="profile-card__input">
-      <h6>City</h6>
-      <p>{{ user.city }}</p>
-    </div>
-
-    <div class="profile-card__input">
-      <h6>State</h6>
-      <p>{{ user.state }}</p>
-    </div>
-
-    <div class="profile-card__input">
-      <h6>Zip Code</h6>
-      <p>{{ user.zipCode }}</p>
-    </div>
-  </div>
-</form>
+  <!-- Profile Contributions -->
+  <!-- <div class="profile__contributions-wrapper">
+          <cos-profile-contributions [loggedInUserId]="loggedInUserId"
+                                     [profileId]="profileId"
+                                     [minDisplayNum]="minArticleDisplayNum"></cos-profile-contributions>
+        </div> -->
+</section>

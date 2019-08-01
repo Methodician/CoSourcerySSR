@@ -3,7 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/articles/article/article.component';
-import { ProfileComponent } from '@components/user/profile/profile.component';
+import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
+import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -13,9 +14,9 @@ const routes: Routes = [
   {
     path: 'profile',
     children: [
-      { path: ':uid', component: ProfileComponent },
+      { path: ':uid', component: ProfileDisplayComponent },
       // ToDo: implement AuthGuard for this guy
-      { path: '', component: ProfileComponent },
+      { path: '', component: ProfileEditComponent },
     ],
   },
 ];

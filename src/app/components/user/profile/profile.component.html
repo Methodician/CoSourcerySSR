@@ -1,34 +1,10 @@
 <section class="profile">
   <h2 class="profile__title">Profile</h2>
 
-  <!-- View only Profile -->
-  <div>
-    <div class="profile__info-wrapper">
-      <div class="top-btn-wrapper">
-        <button
-          *ngIf="isDisplayingLoggedInUser"
-          class="cos-btn"
-          type="button"
-          (click)="edit()"
-        >
-          Edit
-        </button>
-      </div>
-      <cos-profile-display [user]="user$ | async"></cos-profile-display>
-    </div>
-    <!-- Profile Contributions -->
-    <!-- <div class="profile__contributions-wrapper">
-        <cos-profile-contributions [loggedInUserId]="loggedInUserId"
-                                   [profileId]="profileId"
-                                   [minDisplayNum]="minArticleDisplayNum"></cos-profile-contributions>
-      </div> -->
-  </div>
-
   <!-- Editable Profile Form -->
-  <div class="profile__form-wrapper" *ngIf="profileId && editMode">
+  <div class="profile__form-wrapper" *ngIf="isEditing">
     <div class="top-btn-wrapper">
       <button
-        *ngIf="loggedInUserId"
         class="cos-btn"
         type="button"
         [disabled]="!formComponent.valid || formComponent.pristine"
@@ -45,7 +21,6 @@
     ></cos-profile-edit>
 
     <button
-      *ngIf="loggedInUserId"
       class="cos-btn"
       type="button"
       [disabled]="!formComponent.valid || formComponent.pristine"

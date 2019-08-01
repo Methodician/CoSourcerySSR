@@ -12,38 +12,30 @@ import { AuthService } from '@services/auth.service';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
-  uid: string;
-  loggedInUid: string;
-  user$: Observable<UserInfo>;
+  canEdit = false;
+  isEditing = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userSvc: UserService,
     private authSvc: AuthService
   ) {}
 
   ngOnInit() {
     // TODO: This can be SSR too...
-    this.authSvc.authInfo$.subscribe(auth => {
-      this.loggedInUid = auth.uid;
-      if (!this.uid) this.uid = auth.uid;
-    });
     this.route.params.subscribe(params => {
       if (params['uid']) {
-        this.uid = params['uid'];
-        this.watchUser();
+        this.authSvc.authInfo$.subscribe(auth => {
+          if (params['uid'] === auth.uid) this.canEdit = true;
+          else this.canEdit = false;
+        });
+      } else {
+        this.isEditing = true;
       }
     });
   }
 
-  watchUser = () => {
-    this.user$ = this.userSvc.userRef(this.uid).valueChanges();
-  };
-
   edit = () => {
     this.router.navigate(['profile']);
   };
-
-  isDisplayingLoggedInUser = () => this.loggedInUid === this.uid;
 }

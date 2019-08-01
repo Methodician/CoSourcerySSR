@@ -64,6 +64,9 @@ import { MessageDialogComponent } from '@components/modals/message-dialog/messag
 import { ConfirmDialogComponent } from '@components/modals/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@components/modals/progress-dialog/progress-dialog.component';
 import { TagsComponent } from '@components/articles/article/tags/tags.component';
+import { ProfileComponent } from './components/user/profile/profile.component';
+import { ProfileDisplayComponent } from './components/user/profile/profile-display/profile-display.component';
+import { ProfileEditComponent } from './components/user/profile/profile-edit/profile-edit.component';
 // end components
 @NgModule({
   declarations: [
@@ -98,6 +101,9 @@ import { TagsComponent } from '@components/articles/article/tags/tags.component'
     CoverImageEditComponent,
     ProgressDialogComponent,
     TagsComponent,
+    ProfileComponent,
+    ProfileDisplayComponent,
+    ProfileEditComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

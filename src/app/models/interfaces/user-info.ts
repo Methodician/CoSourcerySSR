@@ -10,3 +10,5 @@ export interface UserInfo {
   city?: string;
   state?: string;
 }
+
+// TODO: Implement good naming convention for models like I did for Threadbare

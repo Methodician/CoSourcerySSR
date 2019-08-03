@@ -16,7 +16,6 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./profile-card.component.scss'],
 })
 export class ProfileCardComponent implements OnInit, OnDestroy {
-  private unsubscribe: Subject<void> = new Subject();
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.checkWindowSize();
@@ -30,6 +29,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   userSubscription: Subscription;
   user: UserInfo;
 
+  private unsubscribe: Subject<void> = new Subject();
   constructor(private userSvc: UserService) {}
 
   ngOnInit() {

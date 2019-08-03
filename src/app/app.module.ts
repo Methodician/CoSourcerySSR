@@ -57,13 +57,15 @@ import { ReverseArrayPipe } from '@pipes/reverse-array.pipe';
 import { CoverImageComponent } from '@components/articles/article/cover-image/cover-image.component';
 import { CoverImageEditComponent } from '@components/articles/article/cover-image/cover-image-edit/cover-image-edit.component';
 import { CoverImageDisplayComponent } from '@components/articles/article/cover-image/cover-image-display/cover-image-display.component';
+import { TagsComponent } from '@components/articles/article/tags/tags.component';
+import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
+import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 
 // Dialog components
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from '@components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from '@components/modals/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@components/modals/progress-dialog/progress-dialog.component';
-import { TagsComponent } from '@components/articles/article/tags/tags.component';
 // end components
 @NgModule({
   declarations: [
@@ -91,13 +93,15 @@ import { TagsComponent } from '@components/articles/article/tags/tags.component'
     CommentComponent,
     CommentListComponent,
     ReverseArrayPipe,
+    CoverImageComponent,
+    TagsComponent,
+    ProfileDisplayComponent,
+    ProfileEditComponent,
+    CoverImageEditComponent,
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
-    CoverImageComponent,
-    CoverImageEditComponent,
     ProgressDialogComponent,
-    TagsComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

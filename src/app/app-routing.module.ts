@@ -3,12 +3,22 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/articles/article/article.component';
+import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
+import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: 'article/:id', component: ArticleComponent },
   { path: 'createarticle', component: ArticleComponent },
-  { path: '', component: HomeComponent, pathMatch: 'full' },
+  {
+    path: 'profile',
+    children: [
+      { path: ':uid', component: ProfileDisplayComponent },
+      // TODO: implement AuthGuard for this guy
+      { path: '', component: ProfileEditComponent },
+    ],
+  },
 ];
 
 @NgModule({

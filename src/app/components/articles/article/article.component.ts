@@ -264,7 +264,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.patchValue({ tags });
   };
 
-  selectCoverImage = file => {
+  selectCoverImage = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
       this.articleEditForm.markAsDirty();
@@ -345,7 +345,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
               `Error: ${error.message || error}`
             );
           } finally {
-            coverImageSub.unsubscribe();
+            if (coverImageSub) coverImageSub.unsubscribe();
+            return;
           }
         }
       });
@@ -369,8 +370,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
         this.coverImageUploadTask = task;
         task.then(() => {
-          ref.getDownloadURL().subscribe(url => {
-            this.articleEditForm.patchValue({ imageUrl: url });
+          ref.getDownloadURL().subscribe(imageUrl => {
+            this.articleEditForm.patchValue({ imageUrl });
             isComplete$.next(true);
           });
         });

@@ -7,7 +7,7 @@
         class="cos-btn"
         type="button"
         [disabled]="!form || !form.valid || form.pristine"
-        (click)="onSaveProfileChanges()"
+        (click)="saveChanges()"
       >
         Update
       </button>
@@ -30,9 +30,6 @@
             type="file"
             (change)="onSelectProfileImage($event)"
           />
-          <div *ngIf="imageUploadPercent$">
-            upload%: {{ imageUploadPercent$ | async }}
-          </div>
         </section>
 
         <div>
@@ -159,7 +156,7 @@
       class="cos-btn"
       type="button"
       [disabled]="!form || !form.valid || form.pristine"
-      (click)="onSaveProfileChanges()"
+      (click)="saveChanges()"
     >
       Update
     </button>

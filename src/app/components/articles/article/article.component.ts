@@ -86,8 +86,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   articleState: IArticleDetail;
 
-  CtrlNames = CtrlNames; // Enum Availability in HTML Template
-  ctrlBeingEdited: CtrlNames = CtrlNames.none;
+  ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
+  ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
 
   constructor(
     private fb: FormBuilder,
@@ -243,7 +243,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.markAsPristine();
     // this.coverImageFile = null;
 
-    this.activateCtrl(CtrlNames.none);
+    this.activateCtrl(ECtrlNames.none);
   };
 
   addTag = (tag: string) => {
@@ -454,8 +454,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end editing stuff
 
   // ===UI DISPLAY
-  activateCtrl = async (ctrl: CtrlNames) => {
-    if (ctrl === CtrlNames.none) {
+  activateCtrl = async (ctrl: ECtrlNames) => {
+    if (ctrl === ECtrlNames.none) {
       this.ctrlBeingEdited = ctrl;
       return;
     }
@@ -488,21 +488,21 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   tempTimestamp = () => fsTimestampNow();
   // ===CONTROL HELPERS
-  toggleCtrl = (ctrl: CtrlNames) => {
+  toggleCtrl = (ctrl: ECtrlNames) => {
     if (this.isCtrlActive(ctrl)) {
-      this.activateCtrl(CtrlNames.none);
+      this.activateCtrl(ECtrlNames.none);
       return;
     }
     this.activateCtrl(ctrl);
   };
 
-  clickoutCtrl = (ctrl: CtrlNames) => {
+  clickoutCtrl = (ctrl: ECtrlNames) => {
     if (ctrl === this.ctrlBeingEdited) {
-      this.activateCtrl(CtrlNames.none);
+      this.activateCtrl(ECtrlNames.none);
     }
   };
 
-  isCtrlActive = (ctrl: CtrlNames): boolean => {
+  isCtrlActive = (ctrl: ECtrlNames): boolean => {
     return this.ctrlBeingEdited === ctrl;
   };
 
@@ -514,7 +514,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 }
 
 // Types and Enums
-export enum CtrlNames {
+export enum ECtrlNames {
   coverImage = 'coverImage',
   title = 'title',
   intro = 'intro',

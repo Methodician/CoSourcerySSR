@@ -6,10 +6,10 @@
 >
   <!-- MAIN IMAGE -->
   <cos-cover-image
-    (onClickOut)="clickoutCtrl(CtrlNames.coverImage)"
-    (onCtrlToggle)="toggleCtrl(CtrlNames.coverImage)"
+    (onClickOut)="clickoutCtrl(ECtrlNames.coverImage)"
+    (onCtrlToggle)="toggleCtrl(ECtrlNames.coverImage)"
     (onCoverImageSelected)="selectCoverImage($event)"
-    [isActive]="isCtrlActive(CtrlNames.coverImage)"
+    [isActive]="isCtrlActive(ECtrlNames.coverImage)"
     [imageUrl]="articleState.imageUrl"
     [imageAlt]="articleState.imageAlt"
     [parentForm]="articleEditForm"
@@ -21,10 +21,10 @@
     <!-- TITLE -->
     <cos-title
       [parentForm]="articleEditForm"
-      [isActive]="isCtrlActive(CtrlNames.title)"
+      [isActive]="isCtrlActive(ECtrlNames.title)"
       [title]="articleState.title"
-      (onCtrlToggle)="toggleCtrl(CtrlNames.title)"
-      (onClickOut)="clickoutCtrl(CtrlNames.title)"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.title)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.title)"
     ></cos-title>
 
     <!-- DATE -->
@@ -40,10 +40,10 @@
     <!-- INTRO -->
     <cos-intro
       [parentForm]="articleEditForm"
-      [isActive]="isCtrlActive(CtrlNames.intro)"
+      [isActive]="isCtrlActive(ECtrlNames.intro)"
       [introduction]="articleState.introduction"
-      (onCtrlToggle)="toggleCtrl(CtrlNames.intro)"
-      (onClickOut)="clickoutCtrl(CtrlNames.intro)"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.intro)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.intro)"
     ></cos-intro>
 
     <!-- STATS -->
@@ -70,15 +70,15 @@
     #ckeditorBoundingBox
     class="article-body"
     [ngClass]="{
-      'not-editable': !loggedInUser.uid || !isCtrlActive(CtrlNames.body)
+      'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
     }"
   >
     <cos-body
-      [isActive]="isCtrlActive(CtrlNames.body)"
+      [isActive]="isCtrlActive(ECtrlNames.body)"
       [body]="articleState.body"
       [articleId]="articleId"
-      (onCtrlToggle)="toggleCtrl(CtrlNames.body)"
-      (onClickOut)="clickoutCtrl(CtrlNames.body)"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.body)"
       (onBodyChange)="changeBody($event)"
     ></cos-body>
   </section>
@@ -86,8 +86,8 @@
   <!-- TAGS UI -->
   <cos-tags
     [tags]="articleState.tags"
-    [isActive]="isCtrlActive(CtrlNames.tags)"
-    (onCtrlToggle)="toggleCtrl(CtrlNames.tags)"
+    [isActive]="isCtrlActive(ECtrlNames.tags)"
+    (onCtrlToggle)="toggleCtrl(ECtrlNames.tags)"
     (onTagSubmitted)="addTag($event)"
     (onTagRemoved)="removeTag($event)"
   ></cos-tags>

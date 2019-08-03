@@ -1,21 +1,21 @@
-export interface Comment {
+export interface IComment {
   authorId: string;
   parentKey: string;
   text: string;
   replyCount: number;
-  parentType: ParentTypes;
+  parentType: EParentTypes;
   voteCount: number;
   key?: string;
   timestamp?: number;
   lastUpdated?: number;
 }
 
-export enum ParentTypes {
+export enum EParentTypes {
   article = 'article',
   comment = 'comment',
 }
 
-export enum VoteDirections {
+export enum EVoteDirections {
   up = 1,
   down = -1,
 }

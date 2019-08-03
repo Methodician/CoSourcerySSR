@@ -5,7 +5,7 @@ import { AuthService } from '@services/auth.service';
 import { UserService } from '@services/user.service';
 import { switchMap, take, takeUntil, map } from 'rxjs/operators';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { HtmlInputEvent } from '@components/articles/article/cover-image/cover-image-edit/cover-image-edit.component';
+import { IHtmlInputEvent } from '@models/interfaces/shared';
 import { DialogService } from '@services/dialog.service';
 import { Router } from '@angular/router';
 
@@ -69,7 +69,7 @@ export class ProfileEditComponent implements OnInit {
     });
   };
 
-  onSelectProfileImage = (e: HtmlInputEvent) => {
+  onSelectProfileImage = (e: IHtmlInputEvent) => {
     const reader = new FileReader();
     reader.onload = () => {
       this.form.markAsDirty();

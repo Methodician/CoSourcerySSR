@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
 import {
-  Comment,
-  ParentTypes,
-  VoteDirections,
+  IComment,
+  EParentTypes,
+  EVoteDirections,
 } from '@models/interfaces/comment';
 import { rtServerTimestamp } from '../shared/helpers/firebase';
 import { switchMap, map } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
   providedIn: 'root',
 })
 export class CommentService {
-  NULL_COMMENT: Comment = {
+  NULL_COMMENT: IComment = {
     authorId: null,
     parentKey: null,
     text: null,
@@ -21,19 +21,19 @@ export class CommentService {
     parentType: null,
     voteCount: null,
   };
-  commentState$: BehaviorSubject<Comment> = new BehaviorSubject(
+  commentState$: BehaviorSubject<IComment> = new BehaviorSubject(
     this.NULL_COMMENT
   );
 
   constructor(private afd: AngularFireDatabase) {}
 
-  enterEditCommentMode = (comment: Comment) =>
+  enterEditCommentMode = (comment: IComment) =>
     this.commentState$.next({ ...comment });
 
   enterNewCommentMode = (
     authorId: string,
     parentKey: string,
-    parentType: ParentTypes
+    parentType: EParentTypes
   ) => {
     const newComment = this.createCommentStub(authorId, parentKey, parentType);
     this.commentState$.next(newComment);
@@ -56,9 +56,9 @@ export class CommentService {
   createCommentStub = (
     authorId: string,
     parentKey: string,
-    parentType: ParentTypes
+    parentType: EParentTypes
   ) => {
-    const newComment: Comment = {
+    const newComment: IComment = {
       authorId: authorId,
       parentKey: parentKey,
       text: '',
@@ -70,16 +70,16 @@ export class CommentService {
   };
 
   userVotesRef(userId: string) {
-    return this.afd.list<VoteDirections>(this.userVotesPath(userId));
+    return this.afd.list<EVoteDirections>(this.userVotesPath(userId));
   }
 
   getVoteRef(voterId: string, commentKey: string) {
-    return this.afd.object<VoteDirections>(
+    return this.afd.object<EVoteDirections>(
       `${this.userVotesPath(voterId)}/${commentKey}`
     );
   }
 
-  async getExistingVote(voteRef: AngularFireObject<VoteDirections>) {
+  async getExistingVote(voteRef: AngularFireObject<EVoteDirections>) {
     const existingVoteSnap = await voteRef.query.once('value');
     return existingVoteSnap.val();
   }
@@ -87,29 +87,29 @@ export class CommentService {
   async upvoteComment(voterId: string, commentKey: string) {
     const voteRef = this.getVoteRef(voterId, commentKey);
     const oldVote = await this.getExistingVote(voteRef);
-    if (oldVote && oldVote === VoteDirections.up) {
+    if (oldVote && oldVote === EVoteDirections.up) {
       return voteRef.set(null);
     }
-    return voteRef.set(VoteDirections.up);
+    return voteRef.set(EVoteDirections.up);
   }
 
   async downvoteComment(voterId: string, commentKey: string) {
     const voteRef = this.getVoteRef(voterId, commentKey);
     const oldVote = await this.getExistingVote(voteRef);
-    if (oldVote && oldVote === VoteDirections.down) {
+    if (oldVote && oldVote === EVoteDirections.down) {
       return voteRef.set(null);
     }
-    return voteRef.set(VoteDirections.down);
+    return voteRef.set(EVoteDirections.down);
   }
 
-  createComment = (comment: Comment) =>
+  createComment = (comment: IComment) =>
     this.afd.list('commentData/comments').push({
       ...comment,
       lastUpdated: rtServerTimestamp,
       timestamp: rtServerTimestamp,
     }).key;
 
-  updateComment = (comment: Comment) =>
+  updateComment = (comment: IComment) =>
     this.afd.object(this.singleCommentPath(comment.key)).update({
       lastUpdated: rtServerTimestamp,
       text: comment.text,
@@ -147,7 +147,7 @@ export class CommentService {
     return commentList$.pipe(map(keySnaps => keySnaps.map(snap => snap.key)));
   };
 
-  watchCommentByKey(key: string): AngularFireObject<Comment> {
+  watchCommentByKey(key: string): AngularFireObject<IComment> {
     return this.afd.object(this.singleCommentPath(key));
   }
 

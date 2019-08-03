@@ -6,7 +6,7 @@ import {
 } from '@angular/platform-browser';
 
 import { IArticlePreview } from '@models/interfaces/article-info';
-import { TabItem, TabList } from './filter-menu/filter-menu.component';
+import { ITabItem, ITabList } from './filter-menu/filter-menu.component';
 
 import { ArticleService } from '@services/article.service';
 import { SeoService } from '@services/seo.service';
@@ -118,13 +118,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   //end article stuff
 
   // HOME FILTER FUNCTIONALITY
-  addFilterTab = (tab: TabItem) => {
+  addFilterTab = (tab: ITabItem) => {
     if (!this.filterMenu.getTabByName(tab.name)) {
       this.filterTabs.push(tab);
     }
   };
 
-  onFilterTabAdded = ($event: TabList) => {
+  onFilterTabAdded = ($event: ITabList) => {
     const lastTabIndex = $event.length - 1;
     const newestTabName = $event[lastTabIndex].name;
     if (newestTabName === 'Search Results') {

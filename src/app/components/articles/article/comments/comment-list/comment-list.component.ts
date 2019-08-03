@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
 import {
-  Comment,
-  VoteDirections,
-  ParentTypes,
+  IComment,
+  EVoteDirections,
+  EParentTypes,
 } from '@models/interfaces/comment';
 import { IKeyMap } from '@models/interfaces/shared';
 import { Subject } from 'rxjs';
@@ -19,8 +19,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   @Input() isUnderComment = true;
   @Input() parentKey: string;
-  comments: Array<Comment>;
-  votesMap: IKeyMap<VoteDirections> = {};
+  comments: Array<IComment>;
+  votesMap: IKeyMap<EVoteDirections> = {};
   unfurlMap: IKeyMap<boolean> = {};
 
   constructor(
@@ -53,7 +53,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
     this.commentSvc.enterNewCommentMode(
       this.loggedInUser$.value.uid,
       parentKey,
-      ParentTypes.comment
+      EParentTypes.comment
     );
 
   onAddComment = () => this.commentSvc.saveNewComment();
@@ -105,7 +105,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
       });
   };
 
-  wasVoteCast = (parentKey: string, direction: VoteDirections) =>
+  wasVoteCast = (parentKey: string, direction: EVoteDirections) =>
     this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
   isLoggedIn = () => !!this.loggedInUser$.value.uid;

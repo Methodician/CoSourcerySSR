@@ -29,10 +29,10 @@ import { UserService } from '@services/user.service';
 import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
-import { ArticleDetail } from '@models/interfaces/article-info';
+import { IArticleDetail } from '@models/interfaces/article-info';
 import { CUserInfo } from '@models/classes/user-info';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleState'
 );
 
@@ -84,7 +84,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     editors: {},
   });
 
-  articleState: ArticleDetail;
+  articleState: IArticleDetail;
 
   CtrlNames = CtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: CtrlNames = CtrlNames.none;
@@ -134,7 +134,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<ArticleDetail> => {
+        ({ id, isNew }): Observable<IArticleDetail> => {
           if (isNew) {
             return Observable.create(observer => {
               observer.next(this.articleEditForm.value);
@@ -160,7 +160,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   watchArticle$ = id => {
-    const preExisting: ArticleDetail = this.state.get(
+    const preExisting: IArticleDetail = this.state.get(
       ARTICLE_STATE_KEY,
       null as any
     );
@@ -172,7 +172,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           article
             ? (this.articleSvc.processArticleTimestamps(
                 article
-              ) as ArticleDetail)
+              ) as IArticleDetail)
             : null
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),

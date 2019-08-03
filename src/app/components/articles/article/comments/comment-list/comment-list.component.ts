@@ -6,7 +6,7 @@ import {
   VoteDirections,
   ParentTypes,
 } from '@models/interfaces/comment';
-import { KeyMap } from '@models/interfaces/article-info';
+import { IKeyMap } from '@models/interfaces/shared';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
@@ -20,8 +20,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
   @Input() isUnderComment = true;
   @Input() parentKey: string;
   comments: Array<Comment>;
-  votesMap: KeyMap<VoteDirections> = {};
-  unfurlMap: KeyMap<boolean> = {};
+  votesMap: IKeyMap<VoteDirections> = {};
+  unfurlMap: IKeyMap<boolean> = {};
 
   constructor(
     private commentSvc: CommentService,

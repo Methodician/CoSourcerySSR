@@ -5,7 +5,7 @@ import {
   StateKey,
 } from '@angular/platform-browser';
 
-import { ArticlePreview } from '@models/interfaces/article-info';
+import { IArticlePreview } from '@models/interfaces/article-info';
 import { TabItem, TabList } from './filter-menu/filter-menu.component';
 
 import { ArticleService } from '@services/article.service';
@@ -15,10 +15,10 @@ import { Observable, Subject } from 'rxjs';
 import { map, tap, startWith, takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 
-const ALL_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
+const ALL_ARTICLES_KEY = makeStateKey<Observable<IArticlePreview[]>>(
   'allArticles'
 );
-const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreview[]>>(
+const LATEST_ARTICLES_KEY = makeStateKey<Observable<IArticlePreview[]>>(
   'latestArticles'
 );
 
@@ -37,9 +37,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     { name: 'All', selected: false },
   ];
 
-  allArticles$: Observable<ArticlePreview[]>;
-  latestArticles$: Observable<ArticlePreview[]>;
-  bookmarkedArticles$: Observable<ArticlePreview[]>;
+  allArticles$: Observable<IArticlePreview[]>;
+  latestArticles$: Observable<IArticlePreview[]>;
+  bookmarkedArticles$: Observable<IArticlePreview[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -102,8 +102,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   };
 
   ssrArticleCollection = (
-    articles$: Observable<ArticlePreview[]>,
-    stateKey: StateKey<Observable<ArticlePreview[]>>
+    articles$: Observable<IArticlePreview[]>,
+    stateKey: StateKey<Observable<IArticlePreview[]>>
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(

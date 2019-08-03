@@ -3,7 +3,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { map, switchMap, tap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
-import { ArticlePreview } from '@models/interfaces/article-info';
+import { IArticlePreview } from '@models/interfaces/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./article-preview-card.component.scss'],
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
-  @Input() articleData: ArticlePreview;
+  @Input() articleData: IArticlePreview;
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private unsubscribe: Subject<void> = new Subject();
 

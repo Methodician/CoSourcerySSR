@@ -15,7 +15,7 @@ const routes: Routes = [
     path: 'profile',
     children: [
       { path: ':uid', component: ProfileDisplayComponent },
-      // ToDo: implement AuthGuard for this guy
+      // TODO: implement AuthGuard for this guy
       { path: '', component: ProfileEditComponent },
     ],
   },

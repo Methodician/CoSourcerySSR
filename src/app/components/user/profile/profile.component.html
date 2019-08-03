@@ -13,12 +13,6 @@
         Update
       </button>
     </div>
-    <cos-profile-edit
-      #formComponent
-      [formUser]="user$ | async"
-      [imageUploadPercent$]="imageUploadPercent$"
-      (profileImageSelected)="onSelectProfileImage($event)"
-    ></cos-profile-edit>
 
     <button
       class="cos-btn"

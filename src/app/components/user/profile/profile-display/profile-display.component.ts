@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { UserInfo } from '@models/interfaces/user-info';
+import { IUserInfo } from '@models/interfaces/user-info';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '@services/user.service';
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./profile-display.component.scss'],
 })
 export class ProfileDisplayComponent implements OnInit {
-  user: UserInfo;
+  user: IUserInfo;
   canEdit = false;
 
   private unsubscribe: Subject<void> = new Subject();

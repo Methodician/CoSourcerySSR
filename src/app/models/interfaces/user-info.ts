@@ -1,4 +1,4 @@
-export interface UserInfo {
+export interface IUserInfo {
   fName: string;
   lName: string;
   alias?: string;

@@ -30,7 +30,7 @@ import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
 import { ArticleDetail } from '@models/interfaces/article-info';
-import { UserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/classes/user-info';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetail>>(
   'articleState'
@@ -46,7 +46,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
 
   private unsubscribe: Subject<void> = new Subject();
-  loggedInUser = new UserInfo({ fName: null, lName: null });
+  loggedInUser = new CUserInfo({ fName: null, lName: null });
 
   //  // Cover Image State
   coverImageFile: File;
@@ -469,7 +469,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         .valueChanges()
         .pipe(take(1))
         .subscribe(user => {
-          user = new UserInfo(user);
+          user = new CUserInfo(user);
           this.dialogSvc.openMessageDialog(
             'Edit Locked',
             `The user "${user.displayName()}" is currently editing this article.`,

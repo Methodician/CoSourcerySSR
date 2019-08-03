@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/classes/user-info';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -9,8 +9,8 @@ import { AngularFireStorage } from '@angular/fire/storage';
   providedIn: 'root',
 })
 export class UserService {
-  private NULL_USER = new UserInfo({ fName: null, lName: null });
-  loggedInUser$: BehaviorSubject<UserInfo> = new BehaviorSubject(
+  private NULL_USER = new CUserInfo({ fName: null, lName: null });
+  loggedInUser$: BehaviorSubject<CUserInfo> = new BehaviorSubject(
     this.NULL_USER
   );
 
@@ -25,7 +25,7 @@ export class UserService {
       } else {
         this.userRef(authInfo.uid)
           .valueChanges()
-          .subscribe((val: UserInfo) => {
+          .subscribe((val: CUserInfo) => {
             this.loggedInUser$.next(val);
           });
       }
@@ -33,14 +33,14 @@ export class UserService {
   }
 
   // REFS
-  userRef = uid => this.afd.object<UserInfo>(`userInfo/open/${uid}`);
+  userRef = uid => this.afd.object<CUserInfo>(`userInfo/open/${uid}`);
   // end refs
 
   // WATCHERS
   // end watchers
 
   // UTILITY
-  updateUser = (user: UserInfo) => {
+  updateUser = (user: CUserInfo) => {
     return this.userRef(user.uid).update(user);
   };
 

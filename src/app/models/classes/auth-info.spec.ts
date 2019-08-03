@@ -1,7 +1,7 @@
-import { AuthInfo } from './auth-info';
+import { CAuthInfo } from './auth-info';
 
-describe('AuthInfo', () => {
+describe('CAuthInfo', () => {
   it('should create an instance', () => {
-    expect(new AuthInfo(null, false, null, null)).toBeTruthy();
+    expect(new CAuthInfo(null, false, null, null)).toBeTruthy();
   });
 });

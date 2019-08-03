@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UserService } from '@services/user.service';
-import { UserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/classes/user-info';
 import { Comment } from '@models/interfaces/comment';
 import { Subscription } from 'rxjs';
 @Component({
@@ -14,7 +14,7 @@ export class CommentComponent implements OnInit, OnDestroy {
 
   authorSubscription: Subscription;
 
-  authorInfo: UserInfo;
+  authorInfo: CUserInfo;
   constructor(private userSvc: UserService) {}
 
   ngOnInit() {
@@ -29,6 +29,6 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.authorSubscription = this.userSvc
       .userRef(this.comment.authorId)
       .valueChanges()
-      .subscribe(user => (this.authorInfo = new UserInfo(user)));
+      .subscribe(user => (this.authorInfo = new CUserInfo(user)));
   };
 }

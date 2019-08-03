@@ -17,7 +17,7 @@ import {
   rtServerTimestamp,
   fsServerTimestamp,
 } from '../shared/helpers/firebase';
-import { UserInfo } from '@models/interfaces/user-info';
+import { IUserInfo } from '@models/interfaces/user-info';
 
 @Injectable({
   providedIn: 'root',
@@ -120,7 +120,7 @@ export class ArticleService {
   // end editors stuff
 
   // UTILITY
-  updateArticle = (editor: UserInfo, article: ArticleDetail) => {
+  updateArticle = (editor: IUserInfo, article: ArticleDetail) => {
     const articleRef = this.articleDetailRef(article.articleId);
 
     // Avoids mutating original object
@@ -138,7 +138,7 @@ export class ArticleService {
   };
 
   createArticle = (
-    author: UserInfo,
+    author: IUserInfo,
     article: ArticleDetail,
     articleId: string
   ) => {

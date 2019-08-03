@@ -1,5 +1,5 @@
-import { UserInfo as IUserInfo } from '../interfaces/user-info';
-export class UserInfo implements IUserInfo {
+import { IUserInfo } from '../interfaces/user-info';
+export class CUserInfo implements IUserInfo {
   public alias: string;
   public fName: string;
   public lName: string;

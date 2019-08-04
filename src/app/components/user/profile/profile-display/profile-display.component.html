@@ -60,9 +60,9 @@
     </form>
   </div>
   <!-- Profile Contributions -->
-  <!-- <div class="profile__contributions-wrapper">
-          <cos-profile-contributions [loggedInUserId]="loggedInUserId"
-                                     [profileId]="profileId"
-                                     [minDisplayNum]="minArticleDisplayNum"></cos-profile-contributions>
-        </div> -->
+  <div *ngIf="user" class="profile__contributions-wrapper">
+    <cos-profile-contributions
+      [profileId]="user.uid"
+    ></cos-profile-contributions>
+  </div>
 </section>

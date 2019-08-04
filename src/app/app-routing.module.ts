@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from '@components/home/home.component';
-import { ArticleComponent } from '@components/articles/article/article.component';
+import { ArticleComponent } from '@components/article/article.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 

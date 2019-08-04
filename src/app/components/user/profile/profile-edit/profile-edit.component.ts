@@ -30,14 +30,7 @@ export class ProfileEditComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authSvc
-      .isSignedInOrPrompt()
-      .pipe(
-        switchMap(isSignedIn => {
-          if (!isSignedIn) return of(null);
-          return this.userSvc.loggedInUser$;
-        })
-      )
+    this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(user => {
         this.form = this.fb.group({

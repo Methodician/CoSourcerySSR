@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IUserInfo } from '@models/interfaces/user-info';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';

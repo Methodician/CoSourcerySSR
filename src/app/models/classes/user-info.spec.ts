@@ -1,7 +1,7 @@
-import { UserInfo } from './user-info';
+import { CUserInfo } from './user-info';
 
-describe('UserInfo', () => {
+describe('CUserInfo', () => {
   it('should create an instance', () => {
-    expect(new UserInfo({ fName: 'Jack', lName: 'Sparrow' })).toBeTruthy();
+    expect(new CUserInfo({ fName: 'Jack', lName: 'Sparrow' })).toBeTruthy();
   });
 });

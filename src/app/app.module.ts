@@ -32,38 +32,40 @@ import { TruncateStringPipe } from '@pipes/truncate-string.pipe';
 // COMPONENTS
 import { AppComponent } from './app.component';
 import { HomeComponent } from '@components/home/home.component';
-import { ArticlePreviewCardComponent } from '@components/articles/article-preview-card/article-preview-card.component';
+import { ArticlePreviewCardComponent } from '@components/shared/article-preview-card/article-preview-card.component';
 import { TopNavComponent } from '@components/top-nav/top-nav.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterMenuComponent } from '@components/home/filter-menu/filter-menu.component';
-import { ArticleComponent } from '@components/articles/article/article.component';
-import { TitleComponent } from '@components/articles/article/title/title.component';
-import { TitleDisplayComponent } from '@components/articles/article/title/title-display/title-display.component';
-import { TitleEditComponent } from '@components/articles/article/title/title-edit/title-edit.component';
-import { IntroComponent } from '@components/articles/article/intro/intro.component';
-import { IntroDisplayComponent } from '@components/articles/article/intro/intro-display/intro-display.component';
-import { IntroEditComponent } from '@components/articles/article/intro/intro-edit/intro-edit.component';
-import { StatsComponent } from '@components/articles/article/stats/stats.component';
-import { ContributorsComponent } from '@components/articles/article/contributors/contributors.component';
+import { ArticleComponent } from '@components/article/article.component';
+import { TitleComponent } from '@components/article/title/title.component';
+import { TitleDisplayComponent } from '@components/article/title/title-display/title-display.component';
+import { TitleEditComponent } from '@components/article/title/title-edit/title-edit.component';
+import { IntroComponent } from '@components/article/intro/intro.component';
+import { IntroDisplayComponent } from '@components/article/intro/intro-display/intro-display.component';
+import { IntroEditComponent } from '@components/article/intro/intro-edit/intro-edit.component';
+import { StatsComponent } from '@components/article/stats/stats.component';
+import { ContributorsComponent } from '@components/article/contributors/contributors.component';
 import { ProfileCardComponent } from '@components/shared/profile-card/profile-card.component';
-import { BodyComponent } from '@components/articles/article/body/body.component';
-import { BodyDisplayComponent } from '@components/articles/article/body/body-display/body-display.component';
-import { BodyEditComponent } from '@components/articles/article/body/body-edit/body-edit.component';
-import { CommentsComponent } from '@components/articles/article/comments/comments.component';
-import { CommentComponent } from '@components/articles/article/comments/comment/comment.component';
-import { CommentListComponent } from '@components/articles/article/comments/comment-list/comment-list.component';
+import { BodyComponent } from '@components/article/body/body.component';
+import { BodyDisplayComponent } from '@components/article/body/body-display/body-display.component';
+import { BodyEditComponent } from '@components/article/body/body-edit/body-edit.component';
+import { CommentsComponent } from '@components/article/comments/comments.component';
+import { CommentComponent } from '@components/article/comments/comment/comment.component';
+import { CommentListComponent } from '@components/article/comments/comment-list/comment-list.component';
 import { ReverseArrayPipe } from '@pipes/reverse-array.pipe';
-import { CoverImageComponent } from '@components/articles/article/cover-image/cover-image.component';
-import { CoverImageEditComponent } from '@components/articles/article/cover-image/cover-image-edit/cover-image-edit.component';
-import { CoverImageDisplayComponent } from '@components/articles/article/cover-image/cover-image-display/cover-image-display.component';
+import { CoverImageComponent } from '@components/article/cover-image/cover-image.component';
+import { CoverImageEditComponent } from '@components/article/cover-image/cover-image-edit/cover-image-edit.component';
+import { CoverImageDisplayComponent } from '@components/article/cover-image/cover-image-display/cover-image-display.component';
+import { TagsComponent } from '@components/article/tags/tags.component';
+import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
+import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 
 // Dialog components
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from '@components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from '@components/modals/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@components/modals/progress-dialog/progress-dialog.component';
-import { TagsComponent } from '@components/articles/article/tags/tags.component';
 // end components
 @NgModule({
   declarations: [
@@ -91,13 +93,15 @@ import { TagsComponent } from '@components/articles/article/tags/tags.component'
     CommentComponent,
     CommentListComponent,
     ReverseArrayPipe,
+    CoverImageComponent,
+    TagsComponent,
+    ProfileDisplayComponent,
+    ProfileEditComponent,
+    CoverImageEditComponent,
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
-    CoverImageComponent,
-    CoverImageEditComponent,
     ProgressDialogComponent,
-    TagsComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

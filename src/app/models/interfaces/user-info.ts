@@ -1,4 +1,4 @@
-export interface UserInfo {
+export interface IUserInfo {
   fName: string;
   lName: string;
   alias?: string;
@@ -10,3 +10,5 @@ export interface UserInfo {
   city?: string;
   state?: string;
 }
+
+// TODO: Implement good naming convention for models like I did for Threadbare

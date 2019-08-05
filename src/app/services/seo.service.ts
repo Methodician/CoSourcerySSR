@@ -12,7 +12,7 @@ export class SeoService {
     private title: Title
   ) {}
 
-  generateTags = (tags?: SEOtags) => {
+  generateTags = (tags?: ISEOtags) => {
     /**default values */
     tags = {
       title: 'CoSourcery - Discover neat stuff!',
@@ -40,7 +40,7 @@ export class SeoService {
   };
 }
 
-export interface SEOtags {
+export interface ISEOtags {
   title?: string;
   description?: string;
   imageUrl?: string;

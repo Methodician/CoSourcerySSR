@@ -5,8 +5,8 @@ import {
   HostListener,
   OnDestroy,
 } from '@angular/core';
-import { UserInfo } from '@models/classes/user-info';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { CUserInfo } from '@models/classes/user-info';
+import { Subscription, Subject } from 'rxjs';
 import { UserService } from '@services/user.service';
 import { takeUntil } from 'rxjs/operators';
 
@@ -16,7 +16,6 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./profile-card.component.scss'],
 })
 export class ProfileCardComponent implements OnInit, OnDestroy {
-  private unsubscribe: Subject<void> = new Subject();
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.checkWindowSize();
@@ -28,8 +27,9 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   windowMaxWidth = 435;
   maxUsernameLength;
   userSubscription: Subscription;
-  user: UserInfo;
+  user: CUserInfo;
 
+  private unsubscribe: Subject<void> = new Subject();
   constructor(private userSvc: UserService) {}
 
   ngOnInit() {
@@ -37,7 +37,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
       .userRef(this.userKey)
       .valueChanges()
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(user => (this.user = new UserInfo(user)));
+      .subscribe(user => (this.user = new CUserInfo(user)));
   }
 
   ngOnDestroy(): void {

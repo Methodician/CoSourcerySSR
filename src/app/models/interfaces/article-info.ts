@@ -1,4 +1,6 @@
-export interface ArticlePreview {
+import { IKeyMap } from '@models/interfaces/shared';
+
+export interface IArticlePreview {
   articleId: string;
   authorId: string;
   title: string;
@@ -8,14 +10,14 @@ export interface ArticlePreview {
   lastUpdated: any;
   timestamp: any;
   version: number;
-  editors: KeyMap<number>;
+  editors: IKeyMap<number>;
   commentCount?: number;
   viewCount?: number;
   tags?: string[];
   isFlagged?: boolean;
 }
 
-export interface ArticleDetail {
+export interface IArticleDetail {
   articleId: string;
   authorId: string;
   title: string;
@@ -28,21 +30,18 @@ export interface ArticleDetail {
   timestamp: any;
   lastEditorId: string;
   version: number;
-  editors: KeyMap<number>;
+  editors: IKeyMap<number>;
   commentCount?: number;
   viewCount?: number;
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
-  bodyImages?: BodyImageMap;
+  bodyImages?: IBodyImageMap;
 }
 
-export interface KeyMap<T> {
-  [key: string]: T;
-}
-export interface BodyImageMeta {
+export interface IBodyImageMeta {
   orientation: number;
   path: string;
 }
 
-export interface BodyImageMap extends KeyMap<BodyImageMeta> {}
+export interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}

@@ -1,0 +1,27 @@
+@import '../../../sass/vars.scss';
+// Uses Modified CKEditor Styles
+@import '../../../sass/ckeditor.scss';
+section {
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid #fff;
+  transition: border 0.5s;
+
+  &:hover,
+  &.border {
+    border: 1px solid $accent-color-1;
+  }
+
+  button {
+    visibility: hidden;
+    position: sticky;
+    float: right;
+    top: calc(#{$navbar-height} + 10px);
+    right: 10px;
+  }
+
+  &:hover button,
+  button.active {
+    visibility: visible;
+  }
+}

@@ -8,7 +8,7 @@ import {
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { ArticlePreview, ArticleDetail } from '@models/interfaces/article-info';
+import { IArticlePreview, IArticleDetail } from '@models/interfaces/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
@@ -17,7 +17,7 @@ import {
   rtServerTimestamp,
   fsServerTimestamp,
 } from '../shared/helpers/firebase';
-import { UserInfo } from '@models/interfaces/user-info';
+import { IUserInfo } from '@models/interfaces/user-info';
 
 @Injectable({
   providedIn: 'root',
@@ -30,18 +30,18 @@ export class ArticleService {
   ) {}
 
   // FIRESTORE REF BUILDERS
-  articleDetailRef = (id: string): AngularFirestoreDocument<ArticleDetail> =>
+  articleDetailRef = (id: string): AngularFirestoreDocument<IArticleDetail> =>
     this.afs.doc(`articleData/articles/articles/${id}`);
 
-  articlePreviewRef = (id: string): AngularFirestoreDocument<ArticlePreview> =>
+  articlePreviewRef = (id: string): AngularFirestoreDocument<IArticlePreview> =>
     this.afs.doc(`articleData/articles/previews/${id}`);
 
-  allArticlesRef = (): AngularFirestoreCollection<ArticlePreview> =>
+  allArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
     this.afs.collection('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
 
-  latestArticlesRef = (): AngularFirestoreCollection<ArticlePreview> =>
+  latestArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
     this.afs.collection('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
@@ -120,7 +120,7 @@ export class ArticleService {
   // end editors stuff
 
   // UTILITY
-  updateArticle = (editor: UserInfo, article: ArticleDetail) => {
+  updateArticle = (editor: IUserInfo, article: IArticleDetail) => {
     const articleRef = this.articleDetailRef(article.articleId);
 
     // Avoids mutating original object
@@ -138,12 +138,12 @@ export class ArticleService {
   };
 
   createArticle = (
-    author: UserInfo,
-    article: ArticleDetail,
+    author: IUserInfo,
+    article: IArticleDetail,
     articleId: string
   ) => {
     if (article.articleId || !articleId)
-      throw "we can't create an article without an ID, and the ArticleDetail should lack an ID";
+      throw "we can't create an article without an ID, and the IArticleDetail should lack an ID";
     if (!author || !author.uid)
       throw 'New articles must have an author with an ID';
 
@@ -179,7 +179,7 @@ export class ArticleService {
     const trackerDocRef = this.afs.doc(
       `fileUploads/articleUploads/coverThumbnails/${articleId}`
     );
-    const articleDocRef = this.afs.doc<ArticlePreview>(
+    const articleDocRef = this.afs.doc<IArticlePreview>(
       `articleData/articles/previews/${articleId}`
     );
 
@@ -195,7 +195,7 @@ export class ArticleService {
   // HELPERS
   createArticleId = () => this.afs.createId();
 
-  processArticleTimestamps = (article: ArticlePreview | ArticleDetail) => {
+  processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {
     const { timestamp, lastUpdated } = article;
     if (timestamp) article.timestamp = timestamp.toDate();
     if (lastUpdated) article.lastUpdated = lastUpdated.toDate();

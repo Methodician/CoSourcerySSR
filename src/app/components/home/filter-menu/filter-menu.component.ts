@@ -17,13 +17,13 @@ export class FilterMenuComponent implements OnChanges {
   // ViewChild may not be needed if we go with accordion
   // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
   @ViewChild('filterMenu', { static: true }) filterMenu;
-  @Input() tabList: TabList = [
+  @Input() tabList: ITabList = [
     { name: 'Tab 1', selected: true },
     { name: 'Tab 2', selected: false },
   ];
 
   @Output() onTabSelected = new EventEmitter<number>();
-  @Output() onTabAdded = new EventEmitter<TabList>();
+  @Output() onTabAdded = new EventEmitter<ITabList>();
 
   filterContainerHeight: number;
   filterMenuIsSticky: boolean;
@@ -44,7 +44,7 @@ export class FilterMenuComponent implements OnChanges {
   };
 
   // HELPFUL SELECTORS
-  getSelectedTab = (): TabItem => {
+  getSelectedTab = (): ITabItem => {
     const matchignTabs = this.tabList.filter(item => {
       return item.selected;
     });
@@ -52,7 +52,7 @@ export class FilterMenuComponent implements OnChanges {
     return matchignTabs[0];
   };
 
-  getTabByName = (name: string): TabItem => {
+  getTabByName = (name: string): ITabItem => {
     const matchignTabs = this.tabList.filter(item => {
       return item.name === name;
     });
@@ -61,7 +61,7 @@ export class FilterMenuComponent implements OnChanges {
   };
 
   isTabSelected = (tabName: string): boolean => {
-    const tab: TabItem = this.getTabByName(tabName);
+    const tab: ITabItem = this.getTabByName(tabName);
     return tab && tab.selected;
   };
 
@@ -85,9 +85,9 @@ export class FilterMenuComponent implements OnChanges {
   };
 }
 
-export interface TabItem {
+export interface ITabItem {
   name: string;
   selected: boolean;
 }
 
-export interface TabList extends Array<TabItem> {}
+export interface ITabList extends Array<ITabItem> {}

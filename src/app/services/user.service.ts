@@ -1,35 +1,58 @@
 import { Injectable } from '@angular/core';
-import { UserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/classes/user-info';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private NULL_USER = new UserInfo({ fName: null, lName: null });
-  loggedInUser$: BehaviorSubject<UserInfo> = new BehaviorSubject(
+  private NULL_USER = new CUserInfo({ fName: null, lName: null });
+  loggedInUser$: BehaviorSubject<CUserInfo> = new BehaviorSubject(
     this.NULL_USER
   );
 
-  constructor(private afd: AngularFireDatabase, private authSvc: AuthService) {
+  constructor(
+    private afd: AngularFireDatabase,
+    private authSvc: AuthService,
+    private storage: AngularFireStorage
+  ) {
     this.authSvc.authInfo$.subscribe(authInfo => {
       if (!authInfo.isLoggedIn()) {
         this.loggedInUser$.next(this.NULL_USER);
       } else {
         this.userRef(authInfo.uid)
           .valueChanges()
-          .subscribe((val: UserInfo) => {
+          .subscribe((val: CUserInfo) => {
             this.loggedInUser$.next(val);
           });
       }
     });
   }
 
-  // refs
-  userRef = uid => this.afd.object<UserInfo>(`userInfo/open/${uid}`);
+  // REFS
+  userRef = uid => this.afd.object<CUserInfo>(`userInfo/open/${uid}`);
+  // end refs
 
-  // watchers
+  // WATCHERS
+  // end watchers
+
+  // UTILITY
+  updateUser = (user: CUserInfo) => {
+    return this.userRef(user.uid).update(user);
+  };
+
+  uploadProfileImage = (uid: string, image: File) => {
+    // TODO: set up thumbnail production system for this too...
+    try {
+      const storageRef = this.storage.ref(`profileImages/${uid}`);
+      const task = storageRef.put(image);
+      return { task, ref: storageRef };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  // end utility
 }

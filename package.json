@@ -5,7 +5,6 @@
     "ng": "ng",
     "start": "npm run serve:ssr",
     "local-ssr": "npm run build:ssr && npm run serve:ssr",
-    "gcp-build": "npm run build:ssr",
     "gcloud-deploy": "gcloud app deploy --version dev",
     "gcloud-deploy-beta": "gcloud beta app deploy --version dev",
     "gcloud-stop": "gcloud app versions stop dev",
@@ -21,6 +20,7 @@
   },
   "private": true,
   "dependencies": {
+    "@ckeditor/ckeditor5-angular": "^1.1.0",
     "@angular/animations": "~8.1.2",
     "@angular/cdk": "^8.1.1",
     "@angular/common": "~8.1.2",
@@ -49,7 +49,6 @@
     "@angular/cli": "^8.1.2",
     "@angular/compiler-cli": "~8.1.2",
     "@angular/language-service": "~8.1.2",
-    "@ckeditor/ckeditor5-angular": "^1.1.0",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",

@@ -16,8 +16,8 @@
 # Node.js dependencies:
 node_modules/
 
-# compiled output (build runs on server)
-dist/
+# compiled output (if build runs on server)
+#dist/
 
 #general
 .vscode/

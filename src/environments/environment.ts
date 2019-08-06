@@ -12,6 +12,14 @@ export const environment = {
     storageBucket: 'cosourcerytest.appspot.com',
     messagingSenderId: '146479623747',
     appId: '1:146479623747:web:048a48804bbfcc9b',
+    // PROD:
+    // apiKey: 'AIzaSyD-0e29imJ2TI3N0Wen2njZdBESwOxI6kM',
+    // authDomain: 'cosourcery.firebaseapp.com',
+    // databaseURL: 'https://cosourcery.firebaseio.com',
+    // projectId: 'cosourcery',
+    // storageBucket: 'cosourcery.appspot.com',
+    // messagingSenderId: '141292210727',
+    // appId: '1:141292210727:web:56e5572ac2307685',
   },
 };
 
@@ -22,4 +30,4 @@ export const environment = {
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+// import 'zone.js/dist/zone-error'; // Included with Angular CLI.

@@ -26,7 +26,7 @@ export class ProfileContributionsComponent implements OnInit {
 
   watchEditedArticles = () => {
     this.articleSvc
-      .articlesByEditorQuery(this.profileId)
+      .articlesByEditorRef(this.profileId)
       .valueChanges()
       .subscribe(val => console.log(val));
   };

@@ -31,43 +31,32 @@ export class ArticleService {
   ) {}
 
   // FIRESTORE REF BUILDERS
-  articleDetailRef = (
-    articleId: string
-  ): AngularFirestoreDocument<IArticleDetail> =>
-    this.afs.doc(`articleData/articles/articles/${articleId}`);
+  articleDetailRef = (articleId: string) =>
+    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
 
-  articlePreviewRef = (
-    articleId: string
-  ): AngularFirestoreDocument<IArticlePreview> =>
-    this.afs.doc(`articleData/articles/previews/${articleId}`);
+  articlePreviewRef = (articleId: string) =>
+    this.afs.doc<IArticlePreview>(`articleData/articles/previews/${articleId}`);
 
-  allArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
-    this.afs.collection('articleData/articles/previews', ref =>
+  allArticlesRef = () =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
 
-  latestArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
-    this.afs.collection('articleData/articles/previews', ref =>
+  latestArticlesRef = () =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
         .limit(12)
     );
 
-  // TODO: Figure out if an approach like this could allow for better composition with above queries
-  articlesByEditorQuery = (editorId: string) =>
-    this.articlesRef(ref =>
+  articlesByEditorRef = (editorId: string) =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref
         .orderBy(`editors.${editorId}`)
         .where(`editors.${editorId}`, '>', 0)
         .orderBy('lastUpdated', 'desc')
         .where('isFlagged', '==', false)
-    );
-
-  articlesRef = (queryFn: QueryFn) =>
-    this.afs.collection<IArticlePreview>(
-      'articleData/articles/previews',
-      queryFn
     );
 
   singleBookmarkRef = (uid: string, articleId: string) =>

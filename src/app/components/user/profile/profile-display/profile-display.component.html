@@ -2,7 +2,7 @@
   <h2 class="profile__title">Profile</h2>
   <div class="profile__info-wrapper">
     <div class="top-btn-wrapper">
-      <button class="cos-btn" type="button" (click)="edit()">
+      <button *ngIf="canEdit" class="cos-btn" type="button" (click)="edit()">
         Edit
       </button>
     </div>

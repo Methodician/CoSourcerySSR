@@ -59,10 +59,7 @@ export class ArticleService {
 
   articlesByAuthorRef = (authorId: string) =>
     this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
-      ref
-        .where('authorId', '==', authorId)
-        .orderBy('lastUpdated', 'desc')
-        .where('isFlagged', '==', false)
+      ref.where('authorId', '==', authorId).orderBy('lastUpdated', 'desc')
     );
 
   singleBookmarkRef = (uid: string, articleId: string) =>

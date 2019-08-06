@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CUserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/user-info';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';

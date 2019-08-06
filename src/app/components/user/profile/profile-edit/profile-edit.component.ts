@@ -5,7 +5,7 @@ import { AuthService } from '@services/auth.service';
 import { UserService } from '@services/user.service';
 import { switchMap, take, takeUntil, map } from 'rxjs/operators';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { IHtmlInputEvent } from '@models/interfaces/shared';
+import { IHtmlInputEvent } from '@models/shared';
 import { DialogService } from '@services/dialog.service';
 import { Router } from '@angular/router';
 

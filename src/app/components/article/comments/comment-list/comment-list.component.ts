@@ -1,12 +1,8 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import {
-  IComment,
-  EVoteDirections,
-  EParentTypes,
-} from '@models/interfaces/comment';
-import { IKeyMap } from '@models/interfaces/shared';
+import { IComment, EVoteDirections, EParentTypes } from '@models/comment';
+import { IKeyMap } from '@models/shared';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';

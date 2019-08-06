@@ -3,7 +3,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { map, switchMap, tap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/interfaces/article-info';
+import { IArticlePreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

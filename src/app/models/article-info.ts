@@ -1,4 +1,4 @@
-import { IKeyMap } from '@models/interfaces/shared';
+import { IKeyMap } from '@models/shared';
 
 export interface IArticlePreview {
   articleId: string;

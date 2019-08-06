@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import { EParentTypes, IComment } from '@models/interfaces/comment';
+import { EParentTypes, IComment } from '@models/comment';
 import { AuthService } from '@services/auth.service';
 
 @Component({

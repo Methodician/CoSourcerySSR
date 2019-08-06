@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { IHtmlInputEvent } from '@models/interfaces/shared';
+import { IHtmlInputEvent } from '@models/shared';
 
 @Component({
   selector: 'cos-cover-image-edit',

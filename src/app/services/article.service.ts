@@ -5,10 +5,14 @@ import {
   AngularFirestore,
   AngularFirestoreDocument,
   AngularFirestoreCollection,
+  QueryFn,
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { IArticlePreview, IArticleDetail } from '@models/interfaces/article-info';
+import {
+  IArticlePreview,
+  IArticleDetail,
+} from '@models/interfaces/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
@@ -30,11 +34,15 @@ export class ArticleService {
   ) {}
 
   // FIRESTORE REF BUILDERS
-  articleDetailRef = (id: string): AngularFirestoreDocument<IArticleDetail> =>
-    this.afs.doc(`articleData/articles/articles/${id}`);
+  articleDetailRef = (
+    articleId: string
+  ): AngularFirestoreDocument<IArticleDetail> =>
+    this.afs.doc(`articleData/articles/articles/${articleId}`);
 
-  articlePreviewRef = (id: string): AngularFirestoreDocument<IArticlePreview> =>
-    this.afs.doc(`articleData/articles/previews/${id}`);
+  articlePreviewRef = (
+    articleId: string
+  ): AngularFirestoreDocument<IArticlePreview> =>
+    this.afs.doc(`articleData/articles/previews/${articleId}`);
 
   allArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
     this.afs.collection('articleData/articles/previews', ref =>
@@ -47,6 +55,22 @@ export class ArticleService {
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
         .limit(12)
+    );
+
+  // TODO: Figure out if an approach like this could allow for better composition with above queries
+  articlesByEditorQuery = (editorId: string) =>
+    this.articlesRef(ref =>
+      ref
+        .orderBy(`editors.${editorId}`)
+        .where(`editors.${editorId}`, '>', 0)
+        .orderBy('lastUpdated', 'desc')
+        .where('isFlagged', '==', false)
+    );
+
+  articlesRef = (queryFn: QueryFn) =>
+    this.afs.collection<IArticlePreview>(
+      'articleData/articles/previews',
+      queryFn
     );
 
   singleBookmarkRef = (uid: string, articleId: string) =>

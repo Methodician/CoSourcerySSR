@@ -6,6 +6,8 @@
   box-shadow: 0 2px 5px $light-gray-50;
   transition: box-shadow 0.25s;
 
+  // TODO: Add some better background, shadow, or other to help connect the bottom banner to the card content on mobile.
+
   &:hover {
     box-shadow: 0 4px 10px $dark-gray-50;
 

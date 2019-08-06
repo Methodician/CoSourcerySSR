@@ -10,7 +10,8 @@
     </a>
 
     <ul class="menu">
-      <li class="menu__item">
+      <!-- TODO: Implement Algolia Search -->
+      <!-- <li class="menu__item">
         <form class="search-bar">
           <input
             #searchInput
@@ -29,10 +30,19 @@
             >
           </button>
         </form>
+      </li> -->
+
+      <!-- TODO: Hide login, logout, register in drop-down from profile icon -->
+      <li *ngIf="authInfo.uid" class="menu__item">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
+        <button class="cos-btn navbar__cos-btn" (click)="onLogout()">
+          Logout
+        </button>
       </li>
 
-      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
-      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
+      <!-- TODO: Make the post button always available, but isSignedInOrPrompt when it is clicked. -->
+      <li *ngIf="authInfo.uid" class="menu__item">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
         <button class="mat-icon-btn" routerLink="createarticle">
           <mat-icon>edit</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
@@ -41,9 +51,9 @@
         </button>
       </li>
 
-      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
-      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
-        <!-- <button class="mat-icon-btn" [routerLink]="['/profile', 'uid123']"> -->
+      <!-- TODO: Make this collapsable again when adding back in search -->
+      <li *ngIf="authInfo.uid" class="menu__item">
+        <!-- <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse"> -->
         <button class="mat-icon-btn" [routerLink]="['/profile', authInfo.uid]">
           <mat-icon>person</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
@@ -52,22 +62,15 @@
         </button>
       </li>
 
-      <!-- <li *ngIf="false" class="menu__item menu__item_collapse"> -->
-      <li *ngIf="authInfo.uid" class="menu__item menu__item_collapse">
-        <button class="cos-btn navbar__cos-btn" (click)="onLogout()">
-          Logout
-        </button>
-      </li>
-
-      <!-- <li *ngIf="true" class="menu__item menu__item_collapse"> -->
-      <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse">
+      <li *ngIf="!authInfo.uid" class="menu__item">
+        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
         <button class="cos-btn navbar__cos-btn" (click)="onLogin()">
           Login
         </button>
       </li>
 
-      <!-- <li *ngIf="true" class="menu__item menu__item_collapse"> -->
-      <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse">
+      <li *ngIf="!authInfo.uid" class="menu__item">
+        <!-- <li *ngIf="!authInfo.uid" class="menu__item menu__item_collapse"> -->
         <button
           class="cos-btn cos-btn_color_primary navbar__cos-btn"
           routerLink="register"
@@ -77,7 +80,8 @@
       </li>
 
       <!-- Mobile Menus  -->
-      <li
+      <!-- TODO: Don't forget, this is needed when menu collapse for mobile -->
+      <!-- <li
         class="menu__item menu__item_mobile"
         (cosClickOut)="showMobileMenu = false"
       >
@@ -86,11 +90,10 @@
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_below"
             >Menu</span
           >
-        </button>
+        </button> -->
 
-        <!-- Authenticated Mobile Menu -->
-        <!-- <ul *ngIf="showMobileMenu && false" class="mobile-menu"> -->
-        <ul *ngIf="showMobileMenu && authInfo.uid" class="mobile-menu">
+      <!-- Authenticated Mobile Menu -->
+      <!-- <ul *ngIf="showMobileMenu && authInfo.uid" class="mobile-menu">
           <li class="mobile-menu__item">
             <a
               routerLink="createarticle"
@@ -101,11 +104,6 @@
             </a>
           </li>
           <li class="mobile-menu__item">
-            <!-- <a
-              [routerLink]="['/profile', 'uid123']"
-              class="mobile-menu__link"
-              (click)="showMobileMenu = false"
-            > -->
             <a
               [routerLink]="['/profile', authInfo.uid]"
               class="mobile-menu__link"
@@ -122,11 +120,10 @@
               Logout
             </a>
           </li>
-        </ul>
+        </ul> -->
 
-        <!-- Un-Authenticated Mobile Menu -->
-        <!-- <ul *ngIf="showMobileMenu && true" class="mobile-menu"> -->
-        <ul *ngIf="showMobileMenu && !authInfo.uid" class="mobile-menu">
+      <!-- Un-Authenticated Mobile Menu -->
+      <!-- <ul *ngIf="showMobileMenu && !authInfo.uid" class="mobile-menu">
           <li class="mobile-menu__item">
             <a
               class="mobile-menu__link"
@@ -145,7 +142,7 @@
             </a>
           </li>
         </ul>
-      </li>
+      </li> -->
     </ul>
   </nav>
 </section>

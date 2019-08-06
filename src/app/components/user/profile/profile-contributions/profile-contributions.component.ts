@@ -31,6 +31,7 @@ export class ProfileContributionsComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    // TODO: Remove this unsubscriber if the component does not use it.
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }

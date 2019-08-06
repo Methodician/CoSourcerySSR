@@ -1,0 +1,11 @@
+@import '../../../home/home.component.scss';
+
+h3 {
+  margin: 0;
+}
+
+.article-grid {
+  @media screen and (min-width: 1350px) {
+    grid-template-columns: repeat(3, 300px);
+  }
+}

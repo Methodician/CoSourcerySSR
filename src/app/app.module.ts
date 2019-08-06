@@ -60,6 +60,7 @@ import { CoverImageDisplayComponent } from '@components/article/cover-image/cove
 import { TagsComponent } from '@components/article/tags/tags.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
+import { ProfileContributionsComponent } from '@components/user/profile/profile-contributions/profile-contributions.component';
 
 // Dialog components
 import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
@@ -98,6 +99,7 @@ import { ProgressDialogComponent } from '@components/modals/progress-dialog/prog
     ProfileDisplayComponent,
     ProfileEditComponent,
     CoverImageEditComponent,
+    ProfileContributionsComponent,
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,

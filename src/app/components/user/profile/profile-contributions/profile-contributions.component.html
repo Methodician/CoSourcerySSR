@@ -1,0 +1,31 @@
+<div>
+  <h3>
+    Recent Authored Articles
+    <a (click)="toggleAllAuthored()"
+      >({{ isAuthoredExpanded ? 'collapse' : 'show all' }})</a
+    >
+  </h3>
+  <div class="article-grid">
+    <cos-article-preview-card
+      *ngFor="let article of authoredArticles$ | async"
+      [articleData]="article"
+    >
+    </cos-article-preview-card>
+  </div>
+</div>
+
+<div>
+  <h3>
+    Recent Edited Articles
+    <a (click)="toggleAllEdited()"
+      >({{ isEditedExpanded ? 'collapse' : 'show all' }})</a
+    >
+  </h3>
+  <div class="article-grid">
+    <cos-article-preview-card
+      *ngFor="let article of editedArticles$ | async"
+      [articleData]="article"
+    >
+    </cos-article-preview-card>
+  </div>
+</div>

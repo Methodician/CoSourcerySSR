@@ -2,7 +2,7 @@
   <h2 class="profile__title">Profile</h2>
   <div class="profile__info-wrapper">
     <div class="top-btn-wrapper">
-      <button class="cos-btn" type="button" (click)="edit()">
+      <button *ngIf="canEdit" class="cos-btn" type="button" (click)="edit()">
         Edit
       </button>
     </div>
@@ -60,9 +60,9 @@
     </form>
   </div>
   <!-- Profile Contributions -->
-  <!-- <div class="profile__contributions-wrapper">
-          <cos-profile-contributions [loggedInUserId]="loggedInUserId"
-                                     [profileId]="profileId"
-                                     [minDisplayNum]="minArticleDisplayNum"></cos-profile-contributions>
-        </div> -->
+  <div *ngIf="user" class="profile__contributions-wrapper">
+    <cos-profile-contributions
+      [profileId]="user.uid"
+    ></cos-profile-contributions>
+  </div>
 </section>

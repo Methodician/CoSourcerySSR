@@ -5,6 +5,7 @@ import {
   AngularFirestore,
   AngularFirestoreDocument,
   AngularFirestoreCollection,
+  QueryFn,
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -30,23 +31,35 @@ export class ArticleService {
   ) {}
 
   // FIRESTORE REF BUILDERS
-  articleDetailRef = (id: string): AngularFirestoreDocument<IArticleDetail> =>
-    this.afs.doc(`articleData/articles/articles/${id}`);
+  articleDetailRef = (articleId: string) =>
+    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
 
-  articlePreviewRef = (id: string): AngularFirestoreDocument<IArticlePreview> =>
-    this.afs.doc(`articleData/articles/previews/${id}`);
+  articlePreviewRef = (articleId: string) =>
+    this.afs.doc<IArticlePreview>(`articleData/articles/previews/${articleId}`);
 
-  allArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
-    this.afs.collection('articleData/articles/previews', ref =>
+  allArticlesRef = () =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
 
-  latestArticlesRef = (): AngularFirestoreCollection<IArticlePreview> =>
-    this.afs.collection('articleData/articles/previews', ref =>
+  latestArticlesRef = () =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
         .limit(12)
+    );
+
+  // TODO: Either re-structure data to duplicate editors (array of IDs and map of edit counts) or store edit counts in RTDB or other doc?
+  // Explanation: Copound queries still seem not to work. I can not do .where(`editors.${editorId}`) in addition to ordering by lastUpdated and filtering out flagged content...
+  articlesByEditorRef = (editorId: string) =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+      ref.where(`editors.${editorId}`, '>', 0)
+    );
+
+  articlesByAuthorRef = (authorId: string) =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+      ref.where('authorId', '==', authorId).orderBy('lastUpdated', 'desc')
     );
 
   singleBookmarkRef = (uid: string, articleId: string) =>

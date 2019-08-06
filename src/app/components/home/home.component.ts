@@ -5,8 +5,11 @@ import {
   StateKey,
 } from '@angular/platform-browser';
 
-import { IArticlePreview } from '@models/interfaces/article-info';
-import { ITabItem, ITabList } from './filter-menu/filter-menu.component';
+import { IArticlePreview } from '@models/article-info';
+import {
+  ITabItem,
+  ITabList,
+} from '@components/home/filter-menu/filter-menu.component';
 
 import { ArticleService } from '@services/article.service';
 import { SeoService } from '@services/seo.service';

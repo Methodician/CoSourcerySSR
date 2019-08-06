@@ -4,7 +4,7 @@ import {
   IComment,
   EParentTypes,
   EVoteDirections,
-} from '@models/interfaces/comment';
+} from '@models/comment';
 import { rtServerTimestamp } from '../shared/helpers/firebase';
 import { switchMap, map } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';

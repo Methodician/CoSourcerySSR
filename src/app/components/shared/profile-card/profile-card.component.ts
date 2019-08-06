@@ -5,7 +5,7 @@ import {
   HostListener,
   OnDestroy,
 } from '@angular/core';
-import { CUserInfo } from '@models/classes/user-info';
+import { CUserInfo } from '@models/user-info';
 import { Subscription, Subject } from 'rxjs';
 import { UserService } from '@services/user.service';
 import { takeUntil } from 'rxjs/operators';

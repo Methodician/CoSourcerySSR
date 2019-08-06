@@ -1,4 +1,15 @@
-import { IUserInfo } from '../interfaces/user-info';
+export interface IUserInfo {
+  fName: string;
+  lName: string;
+  alias?: string;
+  uid?: string;
+  imageUrl?: string;
+  email?: string;
+  zipCode?: string;
+  bio?: string;
+  city?: string;
+  state?: string;
+}
 export class CUserInfo implements IUserInfo {
   public alias: string;
   public fName: string;

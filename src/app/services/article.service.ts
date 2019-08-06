@@ -9,10 +9,7 @@ import {
 } from '@angular/fire/firestore';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import {
-  IArticlePreview,
-  IArticleDetail,
-} from '@models/interfaces/article-info';
+import { IArticlePreview, IArticleDetail } from '@models/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
@@ -21,7 +18,7 @@ import {
   rtServerTimestamp,
   fsServerTimestamp,
 } from '../shared/helpers/firebase';
-import { IUserInfo } from '@models/interfaces/user-info';
+import { IUserInfo } from '@models/user-info';
 
 @Injectable({
   providedIn: 'root',

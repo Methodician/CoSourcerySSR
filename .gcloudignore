@@ -17,7 +17,7 @@
 node_modules/
 
 # compiled output (if build runs on server)
-# dist/
+#dist/
 
 #general
 .vscode/

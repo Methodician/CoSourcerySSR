@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { take, map, tap } from 'rxjs/operators';
-import { CAuthInfo } from '@models/classes/auth-info';
+import { CAuthInfo } from '@models/auth-info';
 import { MatDialog } from '@angular/material/dialog';
 // import { AngularFireDatabase } from '@angular/fire/database';
 

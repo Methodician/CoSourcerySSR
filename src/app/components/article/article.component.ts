@@ -29,8 +29,8 @@ import { UserService } from '@services/user.service';
 import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
-import { IArticleDetail } from '@models/interfaces/article-info';
-import { CUserInfo } from '@models/classes/user-info';
+import { IArticleDetail } from '@models/article-info';
+import { CUserInfo } from '@models/user-info';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleState'

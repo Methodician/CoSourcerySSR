@@ -1,4 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { ArticleService } from '@services/article.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -9,7 +16,8 @@ import { IArticlePreview } from '@models/article-info';
   templateUrl: './profile-contributions.component.html',
   styleUrls: ['./profile-contributions.component.scss'],
 })
-export class ProfileContributionsComponent implements OnInit {
+export class ProfileContributionsComponent
+  implements OnInit, OnDestroy, OnChanges {
   @Input() profileId: string;
 
   isAuthoredExpanded = false;
@@ -34,6 +42,13 @@ export class ProfileContributionsComponent implements OnInit {
     // TODO: Remove this unsubscriber if the component does not use it.
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.profileId) {
+      this.watchAuthoredArticles();
+      this.watchEditedArticles();
+    }
   }
 
   toggleAllAuthored = () => {

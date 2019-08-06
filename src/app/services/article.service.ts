@@ -17,7 +17,7 @@ import {
   rtServerTimestamp,
   fsServerTimestamp,
 } from '../shared/helpers/firebase';
-import { IUserInfo } from '@models/interfaces/user-info';
+import { IUserInfo } from '@models/user-info';
 
 @Injectable({
   providedIn: 'root',

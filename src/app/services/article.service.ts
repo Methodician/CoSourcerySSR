@@ -50,11 +50,17 @@ export class ArticleService {
         .limit(12)
     );
 
+  // TODO: Either re-structure data to duplicate editors (array of IDs and map of edit counts) or store edit counts in RTDB or other doc?
+  // Explanation: Copound queries still seem not to work. I can not do .where(`editors.${editorId}`) in addition to ordering by lastUpdated and filtering out flagged content...
   articlesByEditorRef = (editorId: string) =>
     this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+      ref.where(`editors.${editorId}`, '>', 0)
+    );
+
+  articlesByAuthorRef = (authorId: string) =>
+    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref
-        .orderBy(`editors.${editorId}`)
-        .where(`editors.${editorId}`, '>', 0)
+        .where('authorId', '==', authorId)
         .orderBy('lastUpdated', 'desc')
         .where('isFlagged', '==', false)
     );

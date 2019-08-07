@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  HostListener,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
@@ -31,6 +25,7 @@ import { fsTimestampNow } from '@helpers/firebase';
 // MODELS
 import { IArticleDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
+import { SeoService } from '@services/seo.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleState'
@@ -97,7 +92,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private authSvc: AuthService,
-    private dialogSvc: DialogService
+    private dialogSvc: DialogService,
+    private seoSvc: SeoService
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -146,7 +142,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleState = article;
-      if (article) this.articleEditForm.patchValue(article);
+      if (article) {
+        this.articleEditForm.patchValue(article);
+        this.updateMetaTags(article);
+      }
     });
   };
 
@@ -486,7 +485,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
   // ===end ui display
 
-  tempTimestamp = () => fsTimestampNow();
   // ===CONTROL HELPERS
   toggleCtrl = (ctrl: ECtrlNames) => {
     if (this.isCtrlActive(ctrl)) {
@@ -511,6 +509,31 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
+
+  // ===OTHER
+  tempTimestamp = () => fsTimestampNow();
+
+  updateMetaTags = (article: IArticleDetail) => {
+    const { title, introduction, body, tags, imageUrl } = article;
+    const description = this.createMetaDescription(introduction, body);
+    const keywords = tags.join(', ').toLowerCase();
+    this.seoSvc.generateTags({ title, imageUrl, description, keywords });
+  };
+
+  createMetaDescription = (intro: string, body: string) => {
+    const introLength = intro.length;
+    if (introLength > 325) return intro.substr(0, 325).concat('...');
+    const lengthToFill = 346 - introLength;
+    const cleanBody = body
+      .replace(/<\/?[^>]+(>|$)/g, ' ')
+      .replace('&nbsp;', '')
+      .replace(/\s+/g, ' ');
+    return intro
+      .concat(' - ')
+      .concat(cleanBody.substr(0, lengthToFill))
+      .concat('...');
+  };
+  // ===end other
 }
 
 // Types and Enums

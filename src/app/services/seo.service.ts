@@ -17,17 +17,21 @@ export class SeoService {
     tags = {
       title: 'CoSourcery - Discover neat stuff!',
       description:
-        'CoSourcewry is empowering the makers and hackers of the world to discover and share actionable information',
+        'CoSourcery is empowering the makers and hackers of the world to discover and share actionable information',
       imageUrl: 'http://cosourcery.com/assets/images/logo.svg',
-      keywords: 'CoSourcery, learning, teaching, open source, plants',
+      keywords: null,
       ...tags,
     };
+
+    const coreKeys =
+      'cosourcery, learning, teaching, open source, plants, gardening, house plants';
+    const keywords = tags.keywords ? `${tags.keywords}, ${coreKeys}` : coreKeys;
 
     this.title.setTitle(tags.title);
 
     this.meta.updateTag({ name: 'description', content: tags.description });
     this.meta.updateTag({ name: 'image', content: tags.imageUrl });
-    this.meta.updateTag({ name: 'keywords', content: tags.keywords });
+    this.meta.updateTag({ name: 'keywords', content: keywords });
 
     if (tags.canonicalUrl) {
       this.addCanonicalUrlLink(tags.canonicalUrl);

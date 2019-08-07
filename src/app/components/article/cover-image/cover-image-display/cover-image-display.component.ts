@@ -12,8 +12,6 @@ export class CoverImageDisplayComponent {
   _imageUrl = 'assets/images/logo.svg';
   _imageAlt = 'Cover Image';
 
-  constructor() {}
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.imageUrl || changes.imageAlt) {
       if (this.imageUrl) this._imageUrl = this.imageUrl;

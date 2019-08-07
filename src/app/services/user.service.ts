@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CUserInfo } from '@models/user-info';
+import { CUserInfo, IUserInfo } from '@models/user-info';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -25,22 +25,23 @@ export class UserService {
       } else {
         this.userRef(authInfo.uid)
           .valueChanges()
-          .subscribe((val: CUserInfo) => {
-            this.loggedInUser$.next(val);
+          .subscribe((val: IUserInfo) => {
+            const user = new CUserInfo(val);
+            this.loggedInUser$.next(user);
           });
       }
     });
   }
 
   // REFS
-  userRef = uid => this.afd.object<CUserInfo>(`userInfo/open/${uid}`);
+  userRef = uid => this.afd.object<IUserInfo>(`userInfo/open/${uid}`);
   // end refs
 
   // WATCHERS
   // end watchers
 
   // UTILITY
-  updateUser = (user: CUserInfo) => {
+  updateUser = (user: IUserInfo) => {
     return this.userRef(user.uid).update(user);
   };
 

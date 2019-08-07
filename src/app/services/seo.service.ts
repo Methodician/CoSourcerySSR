@@ -19,6 +19,7 @@ export class SeoService {
       description:
         'CoSourcewry is empowering the makers and hackers of the world to discover and share actionable information',
       imageUrl: 'http://cosourcery.com/assets/images/logo.svg',
+      keywords: 'CoSourcery, learning, teaching, open source, plants',
       ...tags,
     };
 
@@ -26,6 +27,7 @@ export class SeoService {
 
     this.meta.updateTag({ name: 'description', content: tags.description });
     this.meta.updateTag({ name: 'image', content: tags.imageUrl });
+    this.meta.updateTag({ name: 'keywords', content: tags.keywords });
 
     if (tags.canonicalUrl) {
       this.addCanonicalUrlLink(tags.canonicalUrl);
@@ -44,6 +46,7 @@ export interface ISEOtags {
   title?: string;
   description?: string;
   imageUrl?: string;
+  keywords?: string;
   canonicalUrl?: string;
   slug?: string;
   tags?: string[];

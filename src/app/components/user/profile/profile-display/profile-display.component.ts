@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IUserInfo } from '@models/user-info';
+import { IUserInfo, CUserInfo } from '@models/user-info';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '@services/user.service';
 import { AuthService } from '@services/auth.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
+import { SeoService, ISEOtags } from '@services/seo.service';
 
 @Component({
   selector: 'cos-profile-display',
@@ -12,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./profile-display.component.scss'],
 })
 export class ProfileDisplayComponent implements OnInit {
-  user: IUserInfo;
+  user: CUserInfo;
   canEdit = false;
 
   private unsubscribe: Subject<void> = new Subject();
@@ -21,7 +22,8 @@ export class ProfileDisplayComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userSvc: UserService,
-    private authSvc: AuthService
+    private authSvc: AuthService,
+    private seoSvc: SeoService
   ) {}
 
   ngOnInit() {
@@ -49,7 +51,40 @@ export class ProfileDisplayComponent implements OnInit {
       .userRef(uid)
       .valueChanges()
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(user => (this.user = user));
+      .subscribe(user => {
+        if (!user) return;
+        const cUser = new CUserInfo(user);
+        this.addUserTags(cUser);
+        this.user = cUser;
+      });
+  };
+
+  addUserTags = (user: CUserInfo) => {
+    const name = user.displayName();
+    const imageUrl = user.displayImageUrl();
+    const { bio, city, state, alias, fName, lName } = user;
+    const title = `CoSourcery - ${name}'s Profile`;
+    let description = name;
+    let fromPlace = '';
+    if (city || state) fromPlace += ' from';
+    if (city) {
+      fromPlace += ` ${city}`;
+      if (state) fromPlace += ',';
+    }
+    if (state) fromPlace += ` ${state}`;
+    description += fromPlace;
+    if (bio) {
+      description += ` | ${bio}`;
+    }
+    let keywords = name;
+    if (alias && name !== alias) keywords += `, ${alias}`;
+    if (fName && name !== fName) keywords += `, ${fName}`;
+    if (lName) keywords += `, ${lName}`;
+    if (city) keywords += `, ${city}`;
+    if (state) keywords += `, ${state}`;
+    const tags: ISEOtags = { title, description, imageUrl, keywords };
+
+    this.seoSvc.generateTags(tags);
   };
 
   edit = () => {

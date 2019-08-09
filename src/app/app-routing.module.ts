@@ -5,12 +5,14 @@ import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/article/article.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
+import { RegisterComponent } from '@components/user/register/register.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: 'article/:id', component: ArticleComponent },
   { path: 'createarticle', component: ArticleComponent },
+  { path: 'register', component: RegisterComponent },
   {
     path: 'profile',
     children: [

@@ -48,6 +48,11 @@ export class ProfileEditComponent implements OnInit {
           city: [user.city, Validators.maxLength(30)],
           state: [user.state, Validators.maxLength(2)],
         });
+        this.authSvc.authInfo$
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(auth => {
+            this.form.patchValue({ uid: auth.uid });
+          });
       });
   }
 

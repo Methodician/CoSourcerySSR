@@ -67,6 +67,7 @@ import { LoginDialogComponent } from '@components/modals/login-dialog/login-dial
 import { MessageDialogComponent } from '@components/modals/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from '@components/modals/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@components/modals/progress-dialog/progress-dialog.component';
+import { RegisterComponent } from './components/user/register/register.component';
 // end components
 @NgModule({
   declarations: [
@@ -104,6 +105,7 @@ import { ProgressDialogComponent } from '@components/modals/progress-dialog/prog
     MessageDialogComponent,
     ConfirmDialogComponent,
     ProgressDialogComponent,
+    RegisterComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

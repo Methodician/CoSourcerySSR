@@ -1,0 +1,130 @@
+<form [formGroup]="registerForm" class="register-form">
+  <h2 class="register-form__title">Create New Account</h2>
+
+  <section *ngIf="!currentLogin" class="register-card">
+    <div class="register-card__input-group">
+      <mat-form-field class="register-card__input">
+        <mat-label>First Name</mat-label>
+        <input
+          #firstName
+          matInput
+          type="text"
+          formControlName="fName"
+          maxlength="30"
+          (blur)="trimInput('fName')"
+          required
+        />
+        <mat-error>Please provide your first name.</mat-error>
+        <mat-hint align="end">{{ firstName.value.length }} / 30</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="register-card__input">
+        <mat-label>Last Name</mat-label>
+        <input
+          #lastName
+          matInput
+          type="text"
+          formControlName="lName"
+          maxlength="30"
+          (blur)="trimInput('lName')"
+          required
+        />
+        <mat-error>Please provide your last name.</mat-error>
+        <mat-hint align="end">{{ lastName.value.length }} / 30</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="register-card__input">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        type="email"
+        formControlName="email"
+        maxlength="50"
+        (blur)="trimInput('email')"
+        required
+      />
+      <mat-error>Please provide a valid email address.</mat-error>
+    </mat-form-field>
+
+    <div class="register-card__input-group">
+      <mat-form-field class="register-card__input">
+        <mat-label>Password</mat-label>
+        <input
+          #password
+          matInput
+          type="password"
+          formControlName="password"
+          maxlength="30"
+          required
+        />
+        <mat-error *ngIf="password.value.length === 0"
+          >Please create a password.</mat-error
+        >
+        <mat-error *ngIf="password.value.length > 0"
+          >Password must be at least 6 characters in length.</mat-error
+        >
+      </mat-form-field>
+
+      <mat-form-field class="register-card__input">
+        <mat-label>Confirm Password</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="confirmPass"
+          maxlength="30"
+          required
+        />
+        <mat-error>Please confirm your password.</mat-error>
+        <mat-hint
+          *ngIf="
+            registerForm.errors?.passwordMismatch &&
+            registerForm.controls.confirmPass.touched
+          "
+          class="error"
+        >
+          Your password does not match.
+        </mat-hint>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="register-card__input">
+      <mat-label>Alias (Optional)</mat-label>
+      <input
+        #alias
+        matInput
+        type="text"
+        formControlName="alias"
+        maxlength="30"
+        (blur)="trimInput('alias')"
+      />
+      <mat-hint>Used as your publicly displayed name.</mat-hint>
+      <mat-hint align="end">{{ alias.value.length }} / 30</mat-hint>
+    </mat-form-field>
+
+    <button
+      class="cos-btn register-form__submit-btn"
+      type="button"
+      [disabled]="!registerForm.valid"
+      (click)="register()"
+    >
+      Create User
+    </button>
+
+    <mat-hint *ngIf="registerError" class="error" align="center">{{
+      registerError
+    }}</mat-hint>
+  </section>
+
+  <section *ngIf="currentLogin" class="logout-message">
+    <p class="logout-message__text">
+      Current Login:<br /><strong>{{ currentLogin }}</strong>
+    </p>
+    <p class="logout-message__text">
+      Please logout first, before creating a new account.
+    </p>
+    <button class="cos-btn" (click)="onLogOut()">
+      Logout
+    </button>
+  </section>
+</form>

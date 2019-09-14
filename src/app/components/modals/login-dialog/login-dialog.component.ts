@@ -15,7 +15,7 @@ export class LoginDialogComponent {
   constructor(
     private authSvc: AuthService,
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<LoginDialogComponent>,
+    private dialogRef: MatDialogRef<LoginDialogComponent>
   ) {
     this.loginForm = this.fb.group({
       email: ['', Validators.required],
@@ -29,7 +29,7 @@ export class LoginDialogComponent {
     this.authSvc
       .login(val.email, val.password)
       .then(() => {
-        this.dialogRef.close();
+        this.dialogRef.close(true);
       })
       .catch(err => {
         this.handleLoginError(err);
@@ -58,6 +58,6 @@ export class LoginDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 }

@@ -5,12 +5,20 @@ import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/article/article.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
+import { RegisterComponent } from '@components/user/register/register.component';
+import { AuthGuard } from '@guards/auth.guard';
+import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: 'article/:id', component: ArticleComponent },
-  { path: 'createarticle', component: ArticleComponent },
+  {
+    path: 'createarticle',
+    component: ArticleComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: 'register', component: RegisterComponent },
   {
     path: 'profile',
     children: [
@@ -19,6 +27,14 @@ const routes: Routes = [
       { path: '', component: ProfileEditComponent },
     ],
   },
+  {
+    path: 'notloggedin',
+    children: [
+      { path: ':redirectPath', component: NotLoggedInComponent },
+      { path: '', component: NotLoggedInComponent },
+    ],
+  },
+  { path: '**', redirectTo: 'home' },
 ];
 
 @NgModule({

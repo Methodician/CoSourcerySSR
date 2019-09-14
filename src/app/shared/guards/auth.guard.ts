@@ -4,6 +4,7 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   UrlTree,
+  Router,
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '@services/auth.service';
@@ -12,7 +13,7 @@ import { AuthService } from '@services/auth.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authSvc: AuthService) {}
+  constructor(private authSvc: AuthService, private router: Router) {}
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -21,6 +22,13 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return !!this.authSvc.authInfo$.value.uid;
+    const auth = this.authSvc.authInfo$.value;
+    if (auth.isLoggedIn()) return true;
+    if (state.url) {
+      this.router.navigate(['/notloggedin', state.url]);
+      return false;
+    }
+    this.router.navigate(['/notloggedin']);
+    return false;
   }
 }

@@ -7,6 +7,7 @@ import { ProfileDisplayComponent } from '@components/user/profile/profile-displa
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { RegisterComponent } from '@components/user/register/register.component';
 import { AuthGuard } from '@guards/auth.guard';
+import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -26,6 +27,14 @@ const routes: Routes = [
       { path: '', component: ProfileEditComponent },
     ],
   },
+  {
+    path: 'notloggedin',
+    children: [
+      { path: ':redirectPath', component: NotLoggedInComponent },
+      { path: '', component: NotLoggedInComponent },
+    ],
+  },
+  { path: '**', redirectTo: 'home' },
 ];
 
 @NgModule({

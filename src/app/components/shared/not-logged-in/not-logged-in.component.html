@@ -1,0 +1,28 @@
+<section class="unauth">
+  <h2 class="unauth__title">Unauthorized Access</h2>
+
+  <section *ngIf="authInfo.isLoggedIn()" class="unauth-card">
+    <p>
+      You are now logged in. You can
+      {{
+        !!redirectPath
+          ? 'either click "Return" to continue where you
+      left off, or '
+          : ''
+      }}click "Home" to go to the home page.
+    </p>
+    <button *ngIf="!!redirectPath" class="cos-btn" (click)="onSelectGoBack()">
+      Return
+    </button>
+    <button class="cos-btn" (click)="onSelectGoHome()">Home</button>
+  </section>
+
+  <section *ngIf="!authInfo.isLoggedIn()" class="unauth-card">
+    <p>
+      You are not logged in. You can either log in below, or navigate to the
+      home page.
+    </p>
+    <button class="cos-btn" (click)="onSelectLogin()">Log In</button>
+    <button class="cos-btn" (click)="onSelectGoHome()">Home</button>
+  </section>
+</section>

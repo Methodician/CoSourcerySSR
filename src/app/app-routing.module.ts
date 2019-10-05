@@ -8,15 +8,21 @@ import { ProfileEditComponent } from '@components/user/profile/profile-edit/prof
 import { RegisterComponent } from '@components/user/register/register.component';
 import { AuthGuard } from '@guards/auth.guard';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
+import { UnsavedChangesGuard } from '@guards/unsaved-changes.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
-  { path: 'article/:id', component: ArticleComponent },
+  {
+    path: 'article/:id',
+    component: ArticleComponent,
+    canDeactivate: [UnsavedChangesGuard],
+  },
   {
     path: 'createarticle',
     component: ArticleComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [UnsavedChangesGuard],
   },
   { path: 'register', component: RegisterComponent },
   {

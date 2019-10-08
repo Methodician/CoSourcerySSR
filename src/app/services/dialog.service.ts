@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
 import { MatDialog, MatDialogConfig } from '@angular/material';
+
 import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
-import { Observable, interval } from 'rxjs';
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 

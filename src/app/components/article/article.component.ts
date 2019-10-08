@@ -393,7 +393,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
   setEditSessionTimeout = () => {
     if (this.editSessionTimeoutSubscription) this.resetEditSessionTimeout();
 
-    this.editSessionTimeoutSubscription = timer(3000)
+    // 300000 ms = 5 minutes
+    this.editSessionTimeoutSubscription = timer(300000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
         this.openTimeoutDialog();

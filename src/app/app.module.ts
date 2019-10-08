@@ -61,15 +61,15 @@ import { TagsComponent } from '@components/article/tags/tags.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { ProfileContributionsComponent } from '@components/user/profile/profile-contributions/profile-contributions.component';
+import { RegisterComponent } from '@components/user/register/register.component';
+import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 
 // Dialog components
 import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
 import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
 import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
-import { RegisterComponent } from './components/user/register/register.component';
-import { NotLoggedInComponent } from './components/shared/not-logged-in/not-logged-in.component';
-import { CountdownDialogComponent } from './components/dialogs/countdown-dialog/countdown-dialog.component';
+import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 // end components
 @NgModule({
   declarations: [

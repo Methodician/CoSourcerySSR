@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material';
-import { ConfirmDialogComponent } from '@modals/confirm-dialog/confirm-dialog.component';
-import { MessageDialogComponent } from '@modals/message-dialog/message-dialog.component';
-import { Observable } from 'rxjs';
-import { ProgressDialogComponent } from '@modals/progress-dialog/progress-dialog.component';
+import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
+import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
+import { Observable, interval } from 'rxjs';
+import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +35,12 @@ export class DialogService {
   };
 
   openTimeoutDialog = () => {
+    let timeRemaining = 0;
+    const interval$ = interval(1000);
+    const subscription = interval$.subscribe(val => {
+      timeRemaining++;
+      console.log('val', val, 'remaining', timeRemaining);
+    });
     // this.dialogIsOpen.next(true);
     // const dialogConfig = new MatDialogConfig();
     // dialogConfig.disableClose = true;
@@ -53,7 +59,7 @@ export class DialogService {
     //   }
     // });
     return this.openConfirmDialog(
-      'just for now',
+      'Are you still there?',
       'Have not implemented openTimeoutDialog yet',
       'Need to separate concerns between component and service'
     );

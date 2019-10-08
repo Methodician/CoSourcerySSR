@@ -63,10 +63,10 @@ import { ProfileEditComponent } from '@components/user/profile/profile-edit/prof
 import { ProfileContributionsComponent } from '@components/user/profile/profile-contributions/profile-contributions.component';
 
 // Dialog components
-import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
-import { MessageDialogComponent } from '@components/modals/message-dialog/message-dialog.component';
-import { ConfirmDialogComponent } from '@components/modals/confirm-dialog/confirm-dialog.component';
-import { ProgressDialogComponent } from '@components/modals/progress-dialog/progress-dialog.component';
+import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
+import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
+import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
+import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { RegisterComponent } from './components/user/register/register.component';
 import { NotLoggedInComponent } from './components/shared/not-logged-in/not-logged-in.component';
 // end components

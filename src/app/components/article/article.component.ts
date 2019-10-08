@@ -407,7 +407,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ---Editor Session Management
   setEditSessionTimeout = () => {
-    this.editSessionTimeoutSubscription = timer(300000)
+    this.editSessionTimeoutSubscription = timer(3000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
         this.openTimeoutDialog();
@@ -418,23 +418,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.editSessionTimeoutSubscription.unsubscribe();
 
   openTimeoutDialog = () => {
-    // this.dialogIsOpen.next(true);
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
-
-    // const dialogRef = this.dialog.open(
-    //   EditTimeoutDialogComponent,
-    //   dialogConfig
-    // );
-    // dialogRef.afterClosed().subscribe(res => {
-    //   this.dialogIsOpen.next(false);
-    //   const editorIsActive = res ? res : false;
-    //   if (editorIsActive) {
-    //     this.setEditSessionTimeout();
-    //   } else {
-    //     this.endEditSession();
-    //   }
-    // });
     this.dialogSvc
       .openTimeoutDialog()
       .afterClosed()

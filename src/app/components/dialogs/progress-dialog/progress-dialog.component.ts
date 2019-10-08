@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
-import { MessageDialogComponent } from '@modals/message-dialog/message-dialog.component';
+import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
 import { startWith, takeWhile, tap } from 'rxjs/operators';
 
 @Component({

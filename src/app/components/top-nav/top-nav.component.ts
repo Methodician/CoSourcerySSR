@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CAuthInfo } from '@models/auth-info';
 import { AuthService } from '@services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { LoginDialogComponent } from '@components/modals/login-dialog/login-dialog.component';
+import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'cos-top-nav',

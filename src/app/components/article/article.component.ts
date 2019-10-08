@@ -284,22 +284,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.patchValue({ body });
   };
 
-  cancelChanges = () => {
-    const response$ = this.dialogSvc
-      .openConfirmDialog(
-        'Undo Edits',
-        'Any unsaved changes will be discarded and the page will refresh.',
-        'Are you sure?'
-      )
-      .afterClosed();
-    response$.subscribe(shouldCancel => {
-      if (shouldCancel) {
-        this.resetEditStates();
-        location.reload();
-      }
-    });
-  };
-
   saveChanges = async () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (!isSignedIn) {
@@ -407,7 +391,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ---Editor Session Management
   setEditSessionTimeout = () => {
-    this.editSessionTimeoutSubscription = timer(300000)
+    if (this.editSessionTimeoutSubscription) this.resetEditSessionTimeout();
+
+    this.editSessionTimeoutSubscription = timer(3000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
         this.openTimeoutDialog();
@@ -418,30 +404,37 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.editSessionTimeoutSubscription.unsubscribe();
 
   openTimeoutDialog = () => {
-    // this.dialogIsOpen.next(true);
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
+    const response$ = this.dialogSvc.openTimeoutDialog(
+      45,
+      'Are you still there?',
+      'Your changes will be discarded and the page will reload so that others can have a chance to make edits.',
+      "I'm done. Discard my changes now",
+      "I'm still working. Give me more time."
+    );
 
-    // const dialogRef = this.dialog.open(
-    //   EditTimeoutDialogComponent,
-    //   dialogConfig
-    // );
-    // dialogRef.afterClosed().subscribe(res => {
-    //   this.dialogIsOpen.next(false);
-    //   const editorIsActive = res ? res : false;
-    //   if (editorIsActive) {
-    //     this.setEditSessionTimeout();
-    //   } else {
-    //     this.endEditSession();
-    //   }
-    // });
-    this.dialogSvc
-      .openTimeoutDialog()
-      .afterClosed()
-      .subscribe(res => {
-        if (res) this.setEditSessionTimeout();
-        else this.endEditSession();
-      });
+    response$.afterClosed().subscribe(shouldEndSession => {
+      if (shouldEndSession) {
+        this.resetEditStates();
+        location.reload();
+      } else this.setEditSessionTimeout();
+    });
+  };
+
+  cancelChanges = () => {
+    const response$ = this.dialogSvc
+      .openConfirmDialog(
+        'Undo Edits',
+        'Any unsaved changes will be discarded and the page will refresh.',
+        'Are you sure?'
+      )
+      .afterClosed();
+
+    response$.subscribe(shouldCancel => {
+      if (shouldCancel) {
+        this.resetEditStates();
+        location.reload();
+      }
+    });
   };
 
   endEditSession() {

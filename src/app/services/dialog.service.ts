@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material';
-import { ConfirmDialogComponent } from '@modals/confirm-dialog/confirm-dialog.component';
-import { MessageDialogComponent } from '@modals/message-dialog/message-dialog.component';
-import { Observable } from 'rxjs';
-import { ProgressDialogComponent } from '@modals/progress-dialog/progress-dialog.component';
+import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
+import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
+import { Observable, interval } from 'rxjs';
+import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
+import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -34,29 +35,25 @@ export class DialogService {
     return dialogRef;
   };
 
-  openTimeoutDialog = () => {
-    // this.dialogIsOpen.next(true);
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
+  openTimeoutDialog = (
+    allottedSeconds?: number,
+    title?: string,
+    msg?: string,
+    doneOption?: string,
+    stillWorkingOption?: string
+  ) => {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {
+      allottedSeconds,
+      dialogTitle: title,
+      dialogLine1: msg,
+      doneOption,
+      stillWorkingOption,
+    };
 
-    // const dialogRef = this.dialog.open(
-    //   EditTimeoutDialogComponent,
-    //   dialogConfig
-    // );
-    // dialogRef.afterClosed().subscribe(res => {
-    //   // this.dialogIsOpen.next(false);
-    //   const editorIsActive = res ? res : false;
-    //   if (editorIsActive) {
-    //     this.setEditSessionTimeout();
-    //   } else {
-    //     this.endEditSession();
-    //   }
-    // });
-    return this.openConfirmDialog(
-      'just for now',
-      'Have not implemented openTimeoutDialog yet',
-      'Need to separate concerns between component and service'
-    );
+    const dialogRef = this.dialog.open(CountdownDialogComponent, dialogConfig);
+    return dialogRef;
   };
 
   /**

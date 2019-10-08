@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
-import { MessageDialogComponent } from '@modals/message-dialog/message-dialog.component';
 import { startWith, takeWhile, tap } from 'rxjs/operators';
 
 @Component({
@@ -17,7 +16,7 @@ export class ProgressDialogComponent implements OnInit {
   progress: number;
 
   constructor(
-    private dialogRef: MatDialogRef<MessageDialogComponent>,
+    private dialogRef: MatDialogRef<ProgressDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     data: {
       dialogTitle: string;

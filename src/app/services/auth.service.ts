@@ -89,7 +89,7 @@ export class AuthService {
       tap(async isSignedIn => {
         if (!isSignedIn) {
           const { LoginDialogComponent } = await import(
-            '@modals/login-dialog/login-dialog.component'
+            '@dialogs/login-dialog/login-dialog.component'
           );
           this.dialogue.open(LoginDialogComponent);
         }

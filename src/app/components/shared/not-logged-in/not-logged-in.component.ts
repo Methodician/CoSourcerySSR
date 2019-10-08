@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { CAuthInfo } from '@models/auth-info';
 import { MatDialog } from '@angular/material';
-import { LoginDialogComponent } from '@modals/login-dialog/login-dialog.component';
+import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'cos-not-logged-in',

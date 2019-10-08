@@ -1,0 +1,13 @@
+<section class="dialog-box">
+  <h1 class="dialog-box__title">{{ dialogTitle }}</h1>
+  <p>{{ dialogLine1 }}</p>
+  <p>{{ countdownText }}</p>
+  <div class="dialog-box__btn-group">
+    <button class="cos-btn" (click)="onSelectDone()">
+      {{ doneOption }}
+    </button>
+    <button class="cos-btn" (click)="onSelectStillWorking()">
+      {{ stillWorkingOption }}
+    </button>
+  </div>
+</section>

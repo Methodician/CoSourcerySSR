@@ -69,6 +69,7 @@ import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.c
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { RegisterComponent } from './components/user/register/register.component';
 import { NotLoggedInComponent } from './components/shared/not-logged-in/not-logged-in.component';
+import { CountdownDialogComponent } from './components/dialogs/countdown-dialog/countdown-dialog.component';
 // end components
 @NgModule({
   declarations: [
@@ -108,12 +109,14 @@ import { NotLoggedInComponent } from './components/shared/not-logged-in/not-logg
     ProgressDialogComponent,
     RegisterComponent,
     NotLoggedInComponent,
+    CountdownDialogComponent,
   ],
   entryComponents: [
     LoginDialogComponent,
     MessageDialogComponent,
     ConfirmDialogComponent,
     ProgressDialogComponent,
+    CountdownDialogComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

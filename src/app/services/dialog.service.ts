@@ -4,6 +4,7 @@ import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.c
 import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
 import { Observable, interval } from 'rxjs';
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
+import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -34,35 +35,25 @@ export class DialogService {
     return dialogRef;
   };
 
-  openTimeoutDialog = () => {
-    let timeRemaining = 0;
-    const interval$ = interval(1000);
-    const subscription = interval$.subscribe(val => {
-      timeRemaining++;
-      console.log('val', val, 'remaining', timeRemaining);
-    });
-    // this.dialogIsOpen.next(true);
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
+  openTimeoutDialog = (
+    allottedSeconds?: number,
+    title?: string,
+    msg?: string,
+    doneOption?: string,
+    stillWorkingOption?: string
+  ) => {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {
+      allottedSeconds,
+      dialogTitle: title,
+      dialogLine1: msg,
+      doneOption,
+      stillWorkingOption,
+    };
 
-    // const dialogRef = this.dialog.open(
-    //   EditTimeoutDialogComponent,
-    //   dialogConfig
-    // );
-    // dialogRef.afterClosed().subscribe(res => {
-    //   // this.dialogIsOpen.next(false);
-    //   const editorIsActive = res ? res : false;
-    //   if (editorIsActive) {
-    //     this.setEditSessionTimeout();
-    //   } else {
-    //     this.endEditSession();
-    //   }
-    // });
-    return this.openConfirmDialog(
-      'Are you still there?',
-      'Have not implemented openTimeoutDialog yet',
-      'Need to separate concerns between component and service'
-    );
+    const dialogRef = this.dialog.open(CountdownDialogComponent, dialogConfig);
+    return dialogRef;
   };
 
   /**

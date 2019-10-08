@@ -4,7 +4,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
+import {
+  Subscription,
+  BehaviorSubject,
+  Observable,
+  Subject,
+  timer,
+} from 'rxjs';
 import {
   tap,
   map,
@@ -55,7 +61,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   currentArticleEditors = {};
 
   // Article Form State
-  editSessionTimeout;
+  editSessionTimeoutSubscription: Subscription;
   saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
@@ -313,7 +319,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
               this.loggedInUser,
               this.articleState
             );
-            clearTimeout(this.editSessionTimeout);
+            this.resetEditSessionTimeout();
             this.resetEditStates();
           } catch (error) {
             this.dialogSvc.openMessageDialog(
@@ -333,7 +339,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
               this.articleState,
               this.articleId
             );
-            clearTimeout(this.editSessionTimeout);
+            this.resetEditSessionTimeout();
             // TODO: Ensure unsaved chanes are actually being checked upon route change
             this.resetEditStates(); // Unsaved chagnes checked upon route change
             this.router.navigate([`article/${this.articleId}`]);
@@ -401,11 +407,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ---Editor Session Management
   setEditSessionTimeout = () => {
-    clearTimeout(this.editSessionTimeout);
-    this.editSessionTimeout = setTimeout(() => {
-      this.openTimeoutDialog();
-    }, 300000);
+    this.editSessionTimeoutSubscription = timer(300000)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(() => {
+        this.openTimeoutDialog();
+      });
   };
+
+  resetEditSessionTimeout = () =>
+    this.editSessionTimeoutSubscription.unsubscribe();
 
   openTimeoutDialog = () => {
     // this.dialogIsOpen.next(true);

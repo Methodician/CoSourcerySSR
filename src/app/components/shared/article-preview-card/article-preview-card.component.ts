@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
 import { IArticlePreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { storage } from 'firebase';
 
 @Component({
   selector: 'cos-article-preview-card',
@@ -15,6 +16,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleData: IArticlePreview;
+  coverImageUrl: any;
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private unsubscribe: Subject<void> = new Subject();
 
@@ -24,19 +26,11 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.getCoverImageUrl().then(url => (this.coverImageUrl = url));
     this.isArticleBookmarked()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
         this.isArticleBookmarked$.next(val);
-      });
-    this.authSvc
-      .isSignedIn()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(isLoggedIn => {
-        const url = this.articleData.imageUrl;
-        if (url === 'unset') {
-          this.articleSvc.setThumbnailImageUrl(this.articleData.articleId);
-        }
       });
   }
 
@@ -44,6 +38,23 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
+
+  getCoverImageUrl = async () => {
+    const imageRef = storage().ref(
+      `articleCoverImages/${this.articleData.articleId}`
+    );
+    try {
+      const url = await imageRef.getDownloadURL();
+      console.log(url);
+      return url;
+    } catch (error) {
+      if (error.code !== 'storage/object-not-found') {
+        console.warn('We should handle other cases such as:');
+        console.error(error);
+      }
+      return '../../assets/images/logo.svg';
+    }
+  };
 
   isValidUrl = (str: string) => {
     try {

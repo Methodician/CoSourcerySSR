@@ -183,14 +183,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
         startWith(preExisting)
       );
-    //   .subscribe(articleData => {
-    //     article$.next(articleData);
-    //     // this.updateMetaData(articleData);
-    //     // this.ckeditor.content = articleData
-    //     //   ? articleData.body
-    //     //   : this.ckeditor.placeholder;
-    //     // this.setFormData(articleData);
-    //   });
     return article$;
   };
 
@@ -438,22 +430,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     });
   };
 
-  endEditSession() {
-    // this.dialogIsOpen.next(true);
-    this.dialogSvc
-      // TODO: Implement edit session dialogs
-      .openMessageDialog(
-        'just for now',
-        'Have not implemented edit session dialogs',
-        'Do the thing and separate concerns'
-      )
-      .afterClosed()
-      .subscribe(() => {
-        // this.dialogIsOpen.next(false);
-        this.resetEditStates();
-        this.router.navigate(['home']);
-      });
-  }
   // ===end editing stuff
 
   // ===UI DISPLAY

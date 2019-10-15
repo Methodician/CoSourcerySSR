@@ -3,11 +3,7 @@
     <section class="card-content">
       <img
         class="card-content__image"
-        [src]="
-          articleData.imageUrl && isValidUrl(articleData.imageUrl)
-            ? articleData.imageUrl
-            : '../../assets/images/logo.svg'
-        "
+        [src]="coverImageUrl"
         [alt]="articleData.imageAlt ? articleData.imageAlt : 'Cover Image'"
       />
       <h2 class="card-content__title">

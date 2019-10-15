@@ -7,7 +7,7 @@ import { IArticlePreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { storage } from 'firebase';
+import { StorageService } from '@services/storage.service';
 
 @Component({
   selector: 'cos-article-preview-card',
@@ -16,17 +16,18 @@ import { storage } from 'firebase';
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleData: IArticlePreview;
-  coverImageUrl: any;
+  coverImageUrl = '';
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
     private articleSvc: ArticleService,
-    private authSvc: AuthService
+    private authSvc: AuthService,
+    private storageSvc: StorageService
   ) {}
 
   ngOnInit() {
-    this.getCoverImageUrl().then(url => (this.coverImageUrl = url));
+    this.watchCoverImageUrl();
     this.isArticleBookmarked()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
@@ -39,21 +40,12 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete();
   }
 
-  getCoverImageUrl = async () => {
-    const imageRef = storage().ref(
-      `articleCoverImages/${this.articleData.articleId}`
-    );
-    try {
-      const url = await imageRef.getDownloadURL();
-      console.log(url);
-      return url;
-    } catch (error) {
-      if (error.code !== 'storage/object-not-found') {
-        console.warn('We should handle other cases such as:');
-        console.error(error);
-      }
-      return '../../assets/images/logo.svg';
-    }
+  watchCoverImageUrl = () => {
+    this.storageSvc
+      .getImageUrl(`articleCoverImages/${this.articleData.articleId}`)
+      .subscribe(url => {
+        this.coverImageUrl = url;
+      });
   };
 
   isValidUrl = (str: string) => {

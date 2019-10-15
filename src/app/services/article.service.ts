@@ -3,11 +3,8 @@ import { Injectable } from '@angular/core';
 // AnguilarFire Stuff
 import {
   AngularFirestore,
-  AngularFirestoreDocument,
-  AngularFirestoreCollection,
-  QueryFn,
 } from '@angular/fire/firestore';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { IArticlePreview, IArticleDetail } from '@models/article-info';
 
@@ -185,6 +182,7 @@ export class ArticleService {
     }
   };
 
+  
   setThumbnailImageUrl = async (articleId: string) => {
     const storagePath = `articleCoverThumbnails/${articleId}`;
     const storageRef = this.storage.ref(storagePath);

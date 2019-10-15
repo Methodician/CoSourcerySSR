@@ -42,7 +42,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
 
   watchCoverImageUrl = () => {
     this.storageSvc
-      .getImageUrl(`articleCoverImages/${this.articleData.articleId}`)
+      .getImageUrl(`articleCoverThumbnails/${this.articleData.articleId}`)
       .subscribe(url => {
         this.coverImageUrl = url;
       });

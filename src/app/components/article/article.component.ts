@@ -318,7 +318,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
             this.resetEditSessionTimeout();
             // TODO: Ensure unsaved chanes are actually being checked upon route change
             this.resetEditStates(); // Unsaved chagnes checked upon route change
-            this.router.navigate([`article/${this.articleId}`]);
           } catch (error) {
             this.dialogSvc.openMessageDialog(
               'Error creating article',

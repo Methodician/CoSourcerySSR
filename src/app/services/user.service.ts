@@ -26,6 +26,7 @@ export class UserService {
         this.userRef(authInfo.uid)
           .valueChanges()
           .subscribe((val: IUserInfo) => {
+            val.uid = authInfo.uid;
             const user = new CUserInfo(val);
             this.loggedInUser$.next(user);
           });

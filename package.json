@@ -20,7 +20,6 @@
   },
   "private": true,
   "dependencies": {
-    "@ckeditor/ckeditor5-angular": "^1.1.0",
     "@angular/animations": "~8.1.2",
     "@angular/cdk": "^8.1.1",
     "@angular/common": "~8.1.2",

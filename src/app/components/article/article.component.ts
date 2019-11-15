@@ -176,8 +176,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
         map(article =>
           article
             ? (this.articleSvc.processArticleTimestamps(
-                article
-              ) as IArticleDetail)
+              article
+            ) as IArticleDetail)
             : null
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
@@ -292,7 +292,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
           // It's not new so just update existing and return
           try {
             await this.articleSvc.updateArticle(
-              this.loggedInUser,
               this.articleState
             );
             this.resetEditSessionTimeout();

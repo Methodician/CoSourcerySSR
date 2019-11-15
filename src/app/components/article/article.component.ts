@@ -226,21 +226,17 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  updateUserEditingStatus = (status: boolean) => {
-    this.articleSvc.updateArticleEditStatus(
-      this.articleId,
-      this.loggedInUser.uid,
-      status
-    );
-  };
+  updateUserEditingStatus = (status: boolean) => this.articleSvc.updateArticleEditStatus(
+    this.articleId,
+    this.loggedInUser.uid,
+    status
+  );
 
   resetEditStates = () => {
-    this.updateUserEditingStatus(false);
-    // this.currentArticleEditors[this.loggedInUser.uid] = false;
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;
-
+    // this.coverImageFile = null;  
     this.activateCtrl(ECtrlNames.none);
+    return this.updateUserEditingStatus(false);
   };
 
   addTag = (tag: string) => {
@@ -315,8 +311,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
               this.articleId
             );
             this.resetEditSessionTimeout();
-            // TODO: Ensure unsaved chanes are actually being checked upon route change
-            this.resetEditStates(); // Unsaved chagnes checked upon route change
+            // TODO: Ensure unsaved changes are actually being checked upon route change
+            await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
             this.router.navigate([`article/${this.articleId}`]);
           } catch (error) {
             this.dialogSvc.openMessageDialog(

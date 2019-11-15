@@ -11,11 +11,14 @@ import { IArticlePreview, IArticleDetail } from '@models/article-info';
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
+
+// Internal stuff
 import {
   rtServerTimestamp,
   fsServerTimestamp,
 } from '../shared/helpers/firebase';
 import { IUserInfo } from '@models/user-info';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -24,8 +27,9 @@ export class ArticleService {
   constructor(
     private afs: AngularFirestore,
     private afd: AngularFireDatabase,
-    private storage: AngularFireStorage
-  ) {}
+    private storage: AngularFireStorage,
+    private authSvc: AuthService
+  ) { }
 
   // FIRESTORE REF BUILDERS
   articleDetailRef = (articleId: string) =>
@@ -130,16 +134,19 @@ export class ArticleService {
   // end editors stuff
 
   // UTILITY
-  updateArticle = (editor: IUserInfo, article: IArticleDetail) => {
+  updateArticle = (article: IArticleDetail) => {
     const articleRef = this.articleDetailRef(article.articleId);
+    const editorId = this.authSvc.authInfo$.value.uid;
+
+    if (!editorId) throw new Error("updateArticle can't be used without a valid auth state (authInfo$) in authService")
 
     // Avoids mutating original object
     const articleToSave = { ...article };
     const editors = articleToSave.editors || {};
-    const editCount = editors[editor.uid] || 0;
-    editors[editor.uid] = editCount + 1;
+    const editCount = editors[editorId] || 0;
+    editors[editorId] = editCount + 1;
     articleToSave.editors = editors;
-    articleToSave.lastEditorId = editor.uid;
+    articleToSave.lastEditorId = editorId;
     articleToSave.lastUpdated = fsServerTimestamp;
     articleToSave.version++;
     // TODO: Deterimine if we still need the cleanArticleImages action
@@ -154,18 +161,20 @@ export class ArticleService {
   ) => {
     if (article.articleId || !articleId)
       throw "we can't create an article without an ID, and the IArticleDetail should lack an ID";
-    if (!author || !author.uid)
+
+    const authorId = this.authSvc.authInfo$.value.uid;
+    if (!author || !authorId)
       throw 'New articles must have an author with an ID';
 
     const articleRef = this.articleDetailRef(articleId);
     const newArticle = { ...article };
     newArticle.editors = {};
-    newArticle.editors[author.uid] = 1;
-    newArticle.authorId = author.uid;
+    newArticle.editors[authorId] = 1;
+    newArticle.authorId = authorId;
     newArticle.articleId = articleId;
     newArticle.lastUpdated = fsServerTimestamp;
     newArticle.timestamp = fsServerTimestamp;
-    newArticle.lastEditorId = author.uid;
+    newArticle.lastEditorId = authorId;
     newArticle.authorImageUrl =
       author.imageUrl || '../../assets/images/logo.svg';
 
@@ -182,7 +191,7 @@ export class ArticleService {
     }
   };
 
-  
+
   setThumbnailImageUrl = async (articleId: string) => {
     const storagePath = `articleCoverThumbnails/${articleId}`;
     const storageRef = this.storage.ref(storagePath);

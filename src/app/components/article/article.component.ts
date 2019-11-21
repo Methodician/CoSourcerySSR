@@ -62,7 +62,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
-  saveButtonIsSticky = true;
 
   articleEditForm: FormGroup = this.fb.group({
     articleId: '',
@@ -348,6 +347,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         task.then(() => {
           ref.getDownloadURL().subscribe(imageUrl => {
             this.articleEditForm.patchValue({ imageUrl });
+            this.coverImageFile = null;
             isComplete$.next(true);
           });
         });

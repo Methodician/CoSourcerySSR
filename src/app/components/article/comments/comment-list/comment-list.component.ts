@@ -23,7 +23,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
     private commentSvc: CommentService,
     private userSvc: UserService,
     private authSvc: AuthService
-  ) {}
+  ) { }
 
   commentState$ = this.commentSvc.commentState$;
   loggedInUser$ = this.userSvc.loggedInUser$;
@@ -104,6 +104,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
   wasVoteCast = (parentKey: string, direction: EVoteDirections) =>
     this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
+  //scott: this should be checking authSvc.authInfo$.value instead
+  // There are abunch of other places this may be happening too but this one should fix a lot
   isLoggedIn = () => !!this.loggedInUser$.value.uid;
 
   isCommentNew = () => {

@@ -1,9 +1,6 @@
 <!-- Comment Loop for Current Parent -->
-<section
-  *ngFor="let comment of comments | reverseArray"
-  class="comment-wrapper"
-  [ngClass]="{ 'comment-wrapper_root': !isUnderComment }"
->
+<section *ngFor="let comment of comments | reverseArray" class="comment-wrapper"
+  [ngClass]="{ 'comment-wrapper_root': !isUnderComment }">
   <section class="comment-container">
     <div class="comment-container__border-decoration">
       <div class="border-endpoint border-endpoint_bottom"></div>
@@ -11,34 +8,23 @@
     <section id="{{ comment.key }}" class="comment-content-region">
       <section class="comment-rating">
         <div class="comment-rating__score-container">
-          <span
-            class="comment-rating__score"
-            [ngClass]="{
+          <span class="comment-rating__score" [ngClass]="{
               'comment-rating__score_negative': comment.voteCount < 0
-            }"
-          >
+            }">
             {{ comment.voteCount }}
           </span>
         </div>
-        <button
-          class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden"
-          [ngClass]="{
+        <button class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden" [ngClass]="{
             'comment-rating__btn_voted': wasVoteCast(comment.key, 'up')
-          }"
-          (click)="onUpvoteComment(comment.key)"
-        >
+          }" (click)="onUpvoteComment(comment.key)">
           <mat-icon>expand_less</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{
             wasVoteCast(comment.key, 'up') ? 'Remove Vote' : 'Upvote'
           }}</span>
         </button>
-        <button
-          class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden"
-          [ngClass]="{
+        <button class="mat-icon-btn mat-icon-btn_small comment-rating__btn comment-rating__btn_hidden" [ngClass]="{
             'comment-rating__btn_voted': wasVoteCast(comment.key, 'down')
-          }"
-          (click)="onDownvoteComment(comment.key)"
-        >
+          }" (click)="onDownvoteComment(comment.key)">
           <mat-icon>expand_more</mat-icon>
           <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_right">{{
             wasVoteCast(comment.key, 'down') ? 'Remove Vote' : 'Downvote'
@@ -47,12 +33,9 @@
       </section>
 
       <!-- DISPLAY COMMENT -->
-      <cos-comment
-        [comment]="
+      <cos-comment [comment]="
           isCommentBeingEdited(comment.key) ? commentState$.value : comment
-        "
-        [isBeingEdited]="isCommentBeingEdited(comment.key)"
-      >
+        " [isBeingEdited]="isCommentBeingEdited(comment.key)">
       </cos-comment>
       <!-- end display comment -->
 
@@ -66,111 +49,63 @@
       </p>
 
       <section class="comment-controls">
-        <button
-          *ngIf="
+        <button *ngIf="
             isLoggedIn() &&
             !isCommentBeingEdited(comment.key) &&
             !isChildBeingEdited(comment.key)
-          "
-          class="mat-icon-btn mat-icon-btn_small"
-          (click)="enterNewCommentMode(comment.key)"
-        >
+          " class="mat-icon-btn mat-icon-btn_small" (click)="enterNewCommentMode(comment.key)">
           <mat-icon class="mat-icon_small">reply</mat-icon>
-          <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-            >Reply</span
-          >
+          <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Reply</span>
         </button>
-        <div
-          *ngIf="loggedInUser$.value.uid === comment.authorId"
-          class="comment-controls__btn-group"
-        >
-          <button
-            *ngIf="
+        <div *ngIf="authSvc.authInfo$.value.uid === comment.authorId" class="comment-controls__btn-group">
+          <button *ngIf="
               isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
               !isChildBeingEdited(comment.key)
-            "
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="enterEditMode(comment)"
-          >
+            " class="mat-icon-btn mat-icon-btn_small" (click)="enterEditMode(comment)">
             <mat-icon class="mat-icon_small">edit</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Edit</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Edit</span>
           </button>
-          <button
-            *ngIf="
+          <button *ngIf="
               isLoggedIn() &&
               !isCommentBeingEdited(comment.key) &&
               !isChildBeingEdited(comment.key)
-            "
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="onRemoveComment(comment.key)"
-          >
+            " class="mat-icon-btn mat-icon-btn_small" (click)="onRemoveComment(comment.key)">
             <mat-icon class="mat-icon_small">clear</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Remove</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Remove</span>
           </button>
-          <button
-            *ngIf="isCommentBeingEdited(comment.key)"
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="onSaveEdits()"
-          >
+          <button *ngIf="isCommentBeingEdited(comment.key)" class="mat-icon-btn mat-icon-btn_small"
+            (click)="onSaveEdits()">
             <mat-icon class="mat-icon_small">check</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Save</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Save</span>
           </button>
-          <button
-            *ngIf="isCommentBeingEdited(comment.key)"
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="onCancelComment()"
-          >
+          <button *ngIf="isCommentBeingEdited(comment.key)" class="mat-icon-btn mat-icon-btn_small"
+            (click)="onCancelComment()">
             <mat-icon class="mat-icon_small">clear</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Cancel</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Cancel</span>
           </button>
         </div>
       </section>
       <!-- end comment controls -->
 
       <!-- NEW REPLY STUB -->
-      <section
-        *ngIf="
+      <section *ngIf="
           isLoggedIn() && isCommentNew() && isChildBeingEdited(comment.key)
-        "
-        class="comment-container comment-container_new-reply comment-content-region"
-      >
+        " class="comment-container comment-container_new-reply comment-content-region">
         <div class="comment-container__border-decoration">
-          <div
-            class="border-endpoint border-endpoint_top border-endpoint_accent-2"
-          ></div>
-          <div
-            class="border-endpoint border-endpoint_bottom border-endpoint_accent-2"
-          ></div>
+          <div class="border-endpoint border-endpoint_top border-endpoint_accent-2"></div>
+          <div class="border-endpoint border-endpoint_bottom border-endpoint_accent-2"></div>
         </div>
         <cos-comment [isBeingEdited]="true" [comment]="commentState$.value">
         </cos-comment>
         <section class="comment-controls">
-          <button
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="onAddComment()"
-          >
+          <button class="mat-icon-btn mat-icon-btn_small" (click)="onAddComment()">
             <mat-icon class="mat-icon_small">check</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Save</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Save</span>
           </button>
-          <button
-            class="mat-icon-btn mat-icon-btn_small"
-            (click)="onCancelComment()"
-          >
+          <button class="mat-icon-btn mat-icon-btn_small" (click)="onCancelComment()">
             <mat-icon class="mat-icon_small">clear</mat-icon>
-            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-              >Cancel</span
-            >
+            <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left">Cancel</span>
           </button>
         </section>
       </section>

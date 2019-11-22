@@ -9,7 +9,7 @@ import { AuthService } from '@services/auth.service';
 @Component({
   selector: 'cos-comment-list',
   templateUrl: './comment-list.component.html',
-  styleUrls: ['./comment-list.component.scss'],
+  styleUrls: ['./comment-list.component.scss']
 })
 export class CommentListComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
@@ -23,14 +23,14 @@ export class CommentListComponent implements OnInit, OnDestroy {
     private commentSvc: CommentService,
     private userSvc: UserService,
     private authSvc: AuthService
-  ) { }
+  ) {}
 
   commentState$ = this.commentSvc.commentState$;
   loggedInUser$ = this.userSvc.loggedInUser$;
 
   ngOnInit() {
     if (!this.parentKey) {
-      throw 'CommentList cannot function without a parentKey input';
+      throw new Error('CommentList cannot function without a parentKey input');
     }
     this.watchComments();
     this.watchUserVotes();
@@ -47,50 +47,55 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   enterNewCommentMode = parentKey =>
     this.commentSvc.enterNewCommentMode(
-      this.loggedInUser$.value.uid,
+      this.authSvc.authInfo$.value.uid,
       parentKey,
       EParentTypes.comment
-    );
+    )
 
   onAddComment = () => this.commentSvc.saveNewComment();
 
   onCancelComment = () => this.commentSvc.resetCommentState();
 
   onRemoveComment = (commentKey: string) =>
-    this.commentSvc.removeComment(commentKey);
+    this.commentSvc.removeComment(commentKey)
 
   onUpvoteComment = (commentKey: string) =>
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-      if (isSignedIn)
-        this.commentSvc.upvoteComment(this.loggedInUser$.value.uid, commentKey);
-    });
+      if (isSignedIn) {
+        this.commentSvc.upvoteComment(
+          this.authSvc.authInfo$.value.uid,
+          commentKey
+        );
+      }
+    })
 
   onDownvoteComment = (commentKey: string) =>
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-      if (isSignedIn)
+      if (isSignedIn) {
         this.commentSvc.downvoteComment(
-          this.loggedInUser$.value.uid,
+          this.authSvc.authInfo$.value.uid,
           commentKey
         );
-    });
+      }
+    })
 
   onToggleUnfurl = (key: string) =>
-    (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true);
+    (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true)
 
   watchUserVotes = () => {
     this.commentSvc
-      .userVotesRef(this.loggedInUser$.value.uid)
+      .userVotesRef(this.authSvc.authInfo$.value.uid)
       .snapshotChanges()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(votesSnap => {
         const votesMap = {};
-        for (let vote of votesSnap) {
+        for (const vote of votesSnap) {
           // The vote key happens to be a commentKey
           votesMap[vote.key] = vote.payload.val();
         }
         this.votesMap = votesMap;
       });
-  };
+  }
 
   watchComments = () => {
     this.commentSvc
@@ -99,21 +104,21 @@ export class CommentListComponent implements OnInit, OnDestroy {
       .subscribe(comments => {
         this.comments = comments;
       });
-  };
+  }
 
   wasVoteCast = (parentKey: string, direction: EVoteDirections) =>
-    this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
+    this.votesMap[parentKey] && this.votesMap[parentKey] === direction
 
-  //scott: this should be checking authSvc.authInfo$.value instead
+  // scott: this should be checking authSvc.authInfo$.value instead
   // There are abunch of other places this may be happening too but this one should fix a lot
-  isLoggedIn = () => !!this.loggedInUser$.value.uid;
+  isLoggedIn = () => !!this.authSvc.authInfo$.value.isLoggedIn();
 
   isCommentNew = () => {
     return this.commentState$.value.parentKey && !this.commentState$.value.key;
-  };
+  }
 
   isCommentBeingEdited = (key: string) => this.commentState$.value.key === key;
 
   isChildBeingEdited = (key: string) =>
-    this.commentState$.value.parentKey === key;
+    this.commentState$.value.parentKey === key
 }

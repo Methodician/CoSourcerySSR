@@ -30,7 +30,7 @@ export class CommentsComponent implements OnInit {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn)
         this.commentSvc.enterNewCommentMode(
-          this.loggedInUser$.value.uid,
+          this.authSvc.authInfo$.value.uid,
           this.articleId,
           EParentTypes.article
         );
@@ -44,7 +44,7 @@ export class CommentsComponent implements OnInit {
   // Helpers etc
   isTopLevelCommentBeingCreated = () => {
     return (
-      this.loggedInUser$.value.uid &&
+      this.authSvc.authInfo$.value.uid &&
       this.commentState$.value.parentKey === this.articleId &&
       !this.commentState$.value.key
     );

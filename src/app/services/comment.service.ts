@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
-import {
-  IComment,
-  EParentTypes,
-  EVoteDirections,
-} from '@models/comment';
+import { IComment, EParentTypes, EVoteDirections } from '@models/comment';
 import { rtServerTimestamp } from '../shared/helpers/firebase';
 import { switchMap, map } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class CommentService {
   NULL_COMMENT: IComment = {
@@ -19,7 +15,7 @@ export class CommentService {
     text: null,
     replyCount: null,
     parentType: null,
-    voteCount: null,
+    voteCount: null
   };
   commentState$: BehaviorSubject<IComment> = new BehaviorSubject(
     this.NULL_COMMENT
@@ -28,7 +24,7 @@ export class CommentService {
   constructor(private afd: AngularFireDatabase) {}
 
   enterEditCommentMode = (comment: IComment) =>
-    this.commentState$.next({ ...comment });
+    this.commentState$.next({ ...comment })
 
   enterNewCommentMode = (
     authorId: string,
@@ -37,21 +33,21 @@ export class CommentService {
   ) => {
     const newComment = this.createCommentStub(authorId, parentKey, parentType);
     this.commentState$.next(newComment);
-  };
+  }
 
   saveNewComment = async () => {
     await this.createComment(this.commentState$.value);
     this.resetCommentState();
-  };
+  }
 
   saveCommentEdits = async () => {
     await this.updateComment(this.commentState$.value);
     this.resetCommentState();
-  };
+  }
 
   resetCommentState = () => {
     this.commentState$.next(this.NULL_COMMENT);
-  };
+  }
 
   createCommentStub = (
     authorId: string,
@@ -59,15 +55,15 @@ export class CommentService {
     parentType: EParentTypes
   ) => {
     const newComment: IComment = {
-      authorId: authorId,
-      parentKey: parentKey,
+      authorId,
+      parentKey,
       text: '',
       replyCount: 0,
-      parentType: parentType,
-      voteCount: 0,
+      parentType,
+      voteCount: 0
     };
     return newComment;
-  };
+  }
 
   userVotesRef(userId: string) {
     return this.afd.list<EVoteDirections>(this.userVotesPath(userId));
@@ -106,19 +102,19 @@ export class CommentService {
     this.afd.list('commentData/comments').push({
       ...comment,
       lastUpdated: rtServerTimestamp,
-      timestamp: rtServerTimestamp,
-    }).key;
+      timestamp: rtServerTimestamp
+    }).key
 
   updateComment = (comment: IComment) =>
     this.afd.object(this.singleCommentPath(comment.key)).update({
       lastUpdated: rtServerTimestamp,
-      text: comment.text,
-    });
+      text: comment.text
+    })
 
   removeComment = (commentKey: string) =>
     this.afd
       .object(this.singleCommentPath(commentKey))
-      .update({ removedAt: rtServerTimestamp });
+      .update({ removedAt: rtServerTimestamp })
 
   // May be deprecated in light of Firebase's caching...
   watchCommentsByParent = (parentKey: string) => {
@@ -138,14 +134,14 @@ export class CommentService {
         return combineLatest(comments$);
       })
     );
-  };
+  }
 
   watchCommentKeysByParent = (parentKey: string) => {
     const commentList$ = this.afd
       .list(`commentData/commentsByParent/${parentKey}`)
       .snapshotChanges();
     return commentList$.pipe(map(keySnaps => keySnaps.map(snap => snap.key)));
-  };
+  }
 
   watchCommentByKey(key: string): AngularFireObject<IComment> {
     return this.afd.object(this.singleCommentPath(key));

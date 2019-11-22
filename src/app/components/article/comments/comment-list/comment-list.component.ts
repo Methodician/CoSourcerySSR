@@ -27,6 +27,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   commentState$ = this.commentSvc.commentState$;
   loggedInUser$ = this.userSvc.loggedInUser$;
+  authInfo$ = this.authSvc.authInfo$;
 
   ngOnInit() {
     if (!this.parentKey) {
@@ -102,7 +103,11 @@ export class CommentListComponent implements OnInit, OnDestroy {
       .watchCommentsByParent(this.parentKey)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(comments => {
-        this.comments = comments;
+        if (!this.isUnderComment) {
+          this.comments = comments.reverse();
+        } else {
+          this.comments = comments;
+        }
       });
   }
 

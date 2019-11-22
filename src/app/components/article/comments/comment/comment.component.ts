@@ -30,7 +30,6 @@ export class CommentComponent implements OnInit, OnDestroy {
       .userRef(this.comment.authorId)
       .valueChanges()
       .subscribe(user => {
-        console.log(user);
         this.authorInfo = new CUserInfo(user);
       });
   }

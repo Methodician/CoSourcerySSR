@@ -70,6 +70,7 @@ import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.c
 import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.component';
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
+import { ArticleHistoryComponent } from './components/article/article-history/article-history.component';
 // end components
 @NgModule({
   declarations: [
@@ -110,6 +111,7 @@ import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-di
     RegisterComponent,
     NotLoggedInComponent,
     CountdownDialogComponent,
+    ArticleHistoryComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

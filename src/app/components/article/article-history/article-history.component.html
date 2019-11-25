@@ -1,1 +1,6 @@
-<p>article-history works!</p>
+<section id="article-edits">
+  <div class="article-grid">
+    <cos-article-preview-card *ngFor="let article of allArticleEdits$ | async" [articleData]="article">
+    </cos-article-preview-card>
+  </div>
+</section>

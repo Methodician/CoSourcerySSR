@@ -71,8 +71,8 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       if (isSignedIn) {
         const uid = this.authSvc.authInfo$.value.uid,
           aid = this.articleData.articleId,
-          isBookemarked = this.isArticleBookmarked$.value;
-        if (isBookemarked) {
+          isBookmarked = this.isArticleBookmarked$.value;
+        if (isBookmarked) {
           this.articleSvc.unBookmarkArticle(uid, aid);
         } else {
           this.articleSvc.bookmarkArticle(uid, aid);

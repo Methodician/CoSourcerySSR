@@ -43,6 +43,11 @@ export class ArticleService {
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
 
+  allArticleEditsRef = () =>
+    this.afs.collection<IArticlePreview>('articleData/articles/articles/history', ref =>
+      ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
+    );
+
   latestArticlesRef = () =>
     this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref

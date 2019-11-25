@@ -20,23 +20,23 @@ export interface IArticlePreview {
 export interface IArticleDetail {
   articleId: string;
   authorId: string;
-  title: string;
-  introduction: string;
-  body: string;
-  imageUrl: string;
-  imageAlt: string;
   authorImageUrl: string;
-  lastUpdated: any;
-  timestamp: any;
-  lastEditorId: string;
-  version: number;
-  editors: IKeyMap<number>;
+  body: string;
+  bodyImages?: IBodyImageMap;
   commentCount?: number;
-  viewCount?: number;
-  tags?: string[];
+  editors: IKeyMap<number>;
+  imageAlt: string;
+  imageUrl: string;
+  introduction: string;
   isFeatured?: boolean;
   isFlagged?: boolean;
-  bodyImages?: IBodyImageMap;
+  lastEditorId: string;
+  lastUpdated: any;
+  tags?: string[];
+  timestamp: any;
+  title: string;
+  version: number;
+  viewCount?: number;
 }
 
 export interface IBodyImageMeta {

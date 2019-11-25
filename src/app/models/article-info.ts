@@ -3,18 +3,18 @@ import { IKeyMap } from '@models/shared';
 export interface IArticlePreview {
   articleId: string;
   authorId: string;
-  title: string;
-  introduction: string;
-  imageUrl: string;
-  imageAlt: string;
-  lastUpdated: any;
-  timestamp: any;
-  version: number;
-  editors: IKeyMap<number>;
   commentCount?: number;
-  viewCount?: number;
-  tags?: string[];
+  editors: IKeyMap<number>;
+  imageAlt: string;
+  imageUrl: string;
   isFlagged?: boolean;
+  introduction: string;
+  lastUpdated: any;
+  tags?: string[];
+  timestamp: any;
+  title: string;
+  version: number;
+  viewCount?: number;
 }
 
 export interface IArticleDetail {

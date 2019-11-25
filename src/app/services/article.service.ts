@@ -191,7 +191,6 @@ export class ArticleService {
     }
   };
 
-
   setThumbnailImageUrl = async (articleId: string) => {
     const storagePath = `articleCoverThumbnails/${articleId}`;
     const storageRef = this.storage.ref(storagePath);

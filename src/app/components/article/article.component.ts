@@ -5,33 +5,33 @@ import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import {
-  Subscription,
   BehaviorSubject,
   Observable,
   Subject,
+  Subscription,
   timer,
 } from 'rxjs';
 import {
-  tap,
   map,
   startWith,
   switchMap,
-  takeUntil,
+  tap,
   take,
+  takeUntil,
 } from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
+import { SeoService } from '@services/seo.service';
 import { UserService } from '@services/user.service';
 
 import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
-import { IArticleDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
-import { SeoService } from '@services/seo.service';
+import { IArticleDetail } from '@models/article-info';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleState'
@@ -39,8 +39,8 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
 
 @Component({
   selector: 'cos-article',
-  templateUrl: './article.component.html',
   styleUrls: ['./article.component.scss'],
+  templateUrl: './article.component.html',
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
@@ -49,16 +49,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
-  //  // Cover Image State
+  //  Cover Image State
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
   articleId: string;
-  isArticleNew: boolean;
   articleSubscription: Subscription;
   currentArticleEditors = {};
+  isArticleNew: boolean;
 
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
@@ -66,22 +66,22 @@ export class ArticleComponent implements OnInit, OnDestroy {
   articleEditForm: FormGroup = this.fb.group({
     articleId: '',
     authorId: '',
-    title: ['', [Validators.required, Validators.maxLength(100)]],
-    introduction: ['', [Validators.required, Validators.maxLength(300)]],
+    authorImageUrl: '',
     body: 'This article is empty.',
     bodyImages: {},
+    commentCount: 0,
+    editors: {},
     imageUrl: '',
     imageAlt: ['', Validators.maxLength(100)],
-    authorImageUrl: '',
-    lastUpdated: null,
-    timestamp: 0,
-    lastEditorId: '',
-    version: 1,
-    commentCount: 0,
-    viewCount: 0,
-    tags: [[], Validators.maxLength(25)],
+    introduction: ['', [Validators.required, Validators.maxLength(300)]],
     isFeatured: false,
-    editors: {},
+    lastEditorId: '',
+    lastUpdated: null,
+    tags: [[], Validators.maxLength(25)],
+    timestamp: 0,
+    title: ['', [Validators.required, Validators.maxLength(100)]],
+    version: 1,
+    viewCount: 0,
   });
 
   articleState: IArticleDetail;
@@ -90,15 +90,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
 
   constructor(
+    private articleSvc: ArticleService,
+    private authSvc: AuthService,
+    private dialogSvc: DialogService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private seoSvc: SeoService,
     private state: TransferState,
-    private articleSvc: ArticleService,
     private userSvc: UserService,
-    private authSvc: AuthService,
-    private dialogSvc: DialogService,
-    private seoSvc: SeoService
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))

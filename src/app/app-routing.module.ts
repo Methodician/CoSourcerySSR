@@ -20,7 +20,7 @@ const routes: Routes = [
     canDeactivate: [UnsavedChangesGuard],
   },
   {
-    path: 'article/:id/history/',
+    path: 'article/:id/history',
     component: ArticleHistoryComponent,
     canDeactivate: [UnsavedChangesGuard],
   },

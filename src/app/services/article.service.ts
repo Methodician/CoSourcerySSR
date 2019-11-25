@@ -10,7 +10,7 @@ import { IArticlePreview, IArticleDetail } from '@models/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 
 // Internal stuff
 import {
@@ -43,9 +43,9 @@ export class ArticleService {
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
     );
 
-  allArticleEditsRef = () =>
-    this.afs.collection<IArticlePreview>('articleData/articles/articles/history', ref =>
-      ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false)
+  allArticleEditsRef = (articleId: string) =>
+      this.afs.collection<IArticlePreview>(`/articleData/articles/articles/${articleId}/history`, ref =>
+      ref.orderBy('lastUpdated', 'desc')
     );
 
   latestArticlesRef = () =>

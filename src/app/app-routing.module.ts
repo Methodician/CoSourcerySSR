@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/article/article.component';
-import { ArticleHistoryComponent } from '@components/article/article-history/article-history.component';
+import { ArticleHistoryComponent } from '@components/article-history/article-history.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { RegisterComponent } from '@components/user/register/register.component';
@@ -22,7 +22,6 @@ const routes: Routes = [
   {
     path: 'article/:id/history',
     component: ArticleHistoryComponent,
-    canDeactivate: [UnsavedChangesGuard],
   },
   {
     path: 'createarticle',

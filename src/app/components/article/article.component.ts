@@ -170,7 +170,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   watchArticle$ = (id, articleVersion) => {
     const preExisting: IArticleDetail = this.state.get(
-      ARTICLE_STATE_KEY,
+      ARTICLE_VERSION_STATE_KEY,
       null as any
     );
     if(articleVersion) {

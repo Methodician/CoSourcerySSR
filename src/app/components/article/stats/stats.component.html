@@ -1,18 +1,20 @@
 <section class="article-utils">
   <div class="counters">
-    <div class="counters__item counters__item_clickable">
+    <div class="counters__item">
       <mat-icon class="counters__icon">comment</mat-icon>
       <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above" style="left: 0;">
         {{ commentCount }} Comment(s)
       </span>
       <span class="counters__item-stat">{{ commentCount }}</span>
     </div>
-    <div class="counters__item ">
+    <a routerLink="/article/{{articleId}}/history" class="counters__item counters__item_clickable">
+      <!-- <div class=""> -->
       <mat-icon class="counters__icon">border_color</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ editCount }}
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">View {{ editCount }}
         Edit(s)</span>
       <span class="counters__item-stat">{{ editCount }}</span>
-    </div>
+      <!-- </div> -->
+    </a>
     <div class="counters__item">
       <mat-icon class="counters__icon">loyalty</mat-icon>
       <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ tagsCount }} Tag(s)</span>

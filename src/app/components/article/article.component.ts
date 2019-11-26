@@ -37,6 +37,10 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleState'
 );
 
+const ARTICLE_VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
+  'articleVersionState'
+);
+
 @Component({
   selector: 'cos-article',
   styleUrls: ['./article.component.scss'],
@@ -135,13 +139,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, version, isNew }): Observable<IArticleDetail> => {
           if (isNew) {
             return Observable.create(observer => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
-          } else return this.watchArticle$(id);
+          } else return this.watchArticle$(id, version);
         }
       )
     );
@@ -157,32 +161,51 @@ export class ArticleComponent implements OnInit, OnDestroy {
   watchArticleIdAndStatus$ = () => {
     return this.route.params.pipe(
       map(params => {
-        if (params['id']) return { id: params['id'], isNew: false };
+        if (params['id'] && params['version'] ) return { id: params['id'], version: params['version'], isNew: false };
+        else if (params['id']) return { id: params['id'], isNew: false };
         else return { id: this.articleSvc.createArticleId(), isNew: true };
       })
     );
   };
 
-  watchArticle$ = id => {
+  watchArticle$ = (id, articleVersion) => {
     const preExisting: IArticleDetail = this.state.get(
       ARTICLE_STATE_KEY,
       null as any
     );
-    const article$ = this.articleSvc
-      .articleDetailRef(id)
-      .valueChanges()
-      .pipe(
-        map(article =>
-          article
-            ? (this.articleSvc.processArticleTimestamps(
-              article
-            ) as IArticleDetail)
-            : null
-        ),
-        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-        startWith(preExisting)
-      );
-    return article$;
+    if(articleVersion) {
+      const article$ = this.articleSvc
+        .articleVersionDetailRef(id, articleVersion)
+        .valueChanges()
+        .pipe(
+          map(article =>
+            article
+              ? (this.articleSvc.processArticleTimestamps(
+                article
+              ) as IArticleDetail)
+              : null
+          ),
+          tap(article => this.state.set(ARTICLE_VERSION_STATE_KEY, article)),
+          startWith(preExisting)
+        );
+      return article$;
+    } else {
+      const article$ = this.articleSvc
+        .articleDetailRef(id)
+        .valueChanges()
+        .pipe(
+          map(article =>
+            article
+              ? (this.articleSvc.processArticleTimestamps(
+                article
+              ) as IArticleDetail)
+              : null
+          ),
+          tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+          startWith(preExisting)
+        );
+      return article$;
+    }
   };
 
   watchArticleEditors = () => {

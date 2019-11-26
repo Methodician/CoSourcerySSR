@@ -48,6 +48,9 @@ export class ArticleService {
       ref.orderBy('lastUpdated', 'desc')
     );
 
+  articleVersionDetailRef = (articleId: string, version: number) =>
+    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}/history/${version}`);
+
   latestArticlesRef = () =>
     this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
       ref

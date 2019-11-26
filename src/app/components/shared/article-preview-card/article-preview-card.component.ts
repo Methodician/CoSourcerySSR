@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map, switchMap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/article-info';
+import { IArticleDetail, IArticlePreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { StorageService } from '@services/storage.service';
   styleUrls: ['./article-preview-card.component.scss'],
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
-  @Input() articleData: IArticlePreview;
+  @Input() articleData: IArticleDetail;
   @Input() routeLink = '';
   coverImageUrl = '';
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -30,26 +30,26 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.watchCoverImageUrl();
     this.isArticleBookmarked()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
         this.isArticleBookmarked$.next(val);
       });
-    this.getRoute();
+    this.initializeByRoute();
   }
 
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
-  
-  getRoute = () => {
+
+  initializeByRoute = () => {
     if(this.route.component.toString().split(' ')[1] == 'ArticleHistoryComponent') {
-      this.routeLink = `/article/${this.articleData.articleId}/history/${this.articleData.version}`
-      
+      this.routeLink = `/article/${this.articleData.articleId}/history/${this.articleData.version}`;
+      this.coverImageUrl = this.articleData.imageUrl;
     } else {
-      this.routeLink = `/article/${this.articleData.articleId}`
+      this.routeLink = `/article/${this.articleData.articleId}`;
+      this.watchCoverImageUrl();
     }
   }
 

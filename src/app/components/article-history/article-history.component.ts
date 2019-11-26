@@ -5,7 +5,7 @@ import {
   StateKey,
 } from '@angular/platform-browser';
 
-import { IArticlePreview } from '@models/article-info';
+import { IArticleDetail, IArticlePreview } from '@models/article-info';
 
 import { ArticleService } from '@services/article.service';
 
@@ -28,8 +28,8 @@ const ALL_ARTICLE_EDITS_KEY = makeStateKey<Observable<IArticlePreview[]>>(
 export class ArticleHistoryComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   articleId: string;
-  article$: Observable<IArticlePreview[]>;
-  allArticleEdits$: Observable<IArticlePreview[]>;
+  articles$: Observable<IArticleDetail[]>;
+  allArticleEdits$: Observable<IArticleDetail[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -52,9 +52,9 @@ export class ArticleHistoryComponent implements OnInit, OnDestroy {
 
   // ARTICLE STUFF
   initializeArticles = () => {
-    this.article$ = this.articleSvc.allArticleEditsRef(this.articleId).valueChanges()
+    this.articles$ = this.articleSvc.allArticleEditsRef(this.articleId).valueChanges()
     this.allArticleEdits$ = this.ssrArticleCollection(
-      this.article$,
+      this.articles$,
       ALL_ARTICLE_EDITS_KEY,
     );
   };
@@ -65,13 +65,13 @@ export class ArticleHistoryComponent implements OnInit, OnDestroy {
   };
 
   ssrArticleCollection = (
-    articles$: Observable<IArticlePreview[]>,
-    stateKey: StateKey<Observable<IArticlePreview[]>>,
+    articles$: Observable<IArticleDetail[]>,
+    stateKey: StateKey<Observable<IArticleDetail[]>>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(
       map(articles =>
-        articles.map(art => this.articleSvc.processArticleTimestamps(art))
+        articles.map(article => this.articleSvc.processArticleTimestamps(article))
       ),
       tap(articles => this.state.set(stateKey, articles)),
       startWith(preExisting$)

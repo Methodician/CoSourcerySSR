@@ -24,6 +24,11 @@ const routes: Routes = [
     component: ArticleHistoryComponent,
   },
   {
+    path: 'article/:id/history/:version',
+    component: ArticleComponent,
+    canDeactivate: [UnsavedChangesGuard],
+  },
+  {
     path: 'createarticle',
     component: ArticleComponent,
     canActivate: [AuthGuard],

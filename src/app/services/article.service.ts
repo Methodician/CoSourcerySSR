@@ -44,7 +44,7 @@ export class ArticleService {
     );
 
   allArticleEditsRef = (articleId: string) =>
-      this.afs.collection<IArticlePreview>(`/articleData/articles/articles/${articleId}/history`, ref =>
+      this.afs.collection<IArticleDetail>(`/articleData/articles/articles/${articleId}/history`, ref =>
       ref.orderBy('lastUpdated', 'desc')
     );
 

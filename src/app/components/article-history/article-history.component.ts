@@ -28,7 +28,6 @@ const ALL_ARTICLE_EDITS_KEY = makeStateKey<Observable<IArticlePreview[]>>(
 export class ArticleHistoryComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   articleId: string;
-  private sub: any;
   article$: Observable<IArticlePreview[]>;
   allArticleEdits$: Observable<IArticlePreview[]>;
 
@@ -36,7 +35,6 @@ export class ArticleHistoryComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private state: TransferState,
     private route: ActivatedRoute,
-    private router: Router,
   ) {}
 
   ngOnInit() {

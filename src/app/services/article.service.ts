@@ -48,7 +48,7 @@ export class ArticleService {
       ref.orderBy('lastUpdated', 'desc')
     );
 
-  articleVersionDetailRef = (articleId: string, version: number) =>
+  articleVersionDetailRef = (articleId: string, version: string) =>
     this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}/history/${version}`);
 
   latestArticlesRef = () =>
@@ -151,8 +151,8 @@ export class ArticleService {
     // Avoids mutating original object
     const articleToSave = { ...article };
     const editors = articleToSave.editors || {};
-    const editCount = editors[editorId] || 0;
-    editors[editorId] = editCount + 1;
+    const editsPerEditor = editors[editorId] || 0;
+    editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
     articleToSave.lastUpdated = fsServerTimestamp;

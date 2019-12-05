@@ -148,6 +148,7 @@ export class ArticleService {
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
     articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.slug = this.slugify(article.title);
     articleToSave.version++;
     // TODO: Deterimine if we still need the cleanArticleImages action
     // articleToSave.bodyImages = this.cleanArticleImages(articleToSave);
@@ -175,6 +176,7 @@ export class ArticleService {
     newArticle.lastUpdated = fsServerTimestamp;
     newArticle.timestamp = fsServerTimestamp;
     newArticle.lastEditorId = authorId;
+    newArticle.slug = this.slugify(article.title);
     newArticle.authorImageUrl =
       author.imageUrl || '../../assets/images/logo.svg';
 
@@ -228,7 +230,7 @@ export class ArticleService {
       .replace(/^-+/, '') // Trim - from start of text
       .replace(/-+$/, '') // Trim - from end of text
   }
-  
+
   createArticleId = () => this.afs.createId();
 
   processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {

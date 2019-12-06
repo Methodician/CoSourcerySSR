@@ -79,6 +79,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     version: 1,
     commentCount: 0,
     viewCount: 0,
+    slug: '',
     tags: [[], Validators.maxLength(25)],
     isFeatured: false,
     editors: {},

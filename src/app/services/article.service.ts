@@ -211,7 +211,7 @@ export class ArticleService {
       return articleRef.update(articleToSave);
   };
 
-  createArticle = (
+  createArticle = async (
     author: IUserInfo,
     article: IArticleDetail,
     articleId: string
@@ -223,20 +223,32 @@ export class ArticleService {
     if (!author || !authorId)
       throw 'New articles must have an author with an ID';
 
-    const articleRef = this.articleDetailRef(articleId);
-    const newArticle = { ...article };
-    newArticle.editors = {};
-    newArticle.editors[authorId] = 1;
-    newArticle.authorId = authorId;
-    newArticle.articleId = articleId;
-    newArticle.lastUpdated = fsServerTimestamp;
-    newArticle.timestamp = fsServerTimestamp;
-    newArticle.lastEditorId = authorId;
-    newArticle.slug = this.slugify(article.title);
-    newArticle.authorImageUrl =
-      author.imageUrl || '../../assets/images/logo.svg';
+    const newSlug = this.slugify(article.title);
+    const isSlugValid = await this.validateNewTitleAndSlug(newSlug);
+  
+    if (!isSlugValid) {
+      throw new Error("The title is not unique enough to form a unique URL slug.")
+    }
 
-    return articleRef.set(newArticle, { merge: true });
+    const articleRef = this.articleDetailRef(articleId);
+
+    const newArticle = {
+      ...article,
+      editors: {},
+      authorId,
+      articleId,
+      lastUpdated: fsServerTimestamp,
+      timestamp: fsServerTimestamp,
+      lastEditorId: authorId,
+      slug: newSlug,
+      authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',
+    };
+
+    newArticle.editors[authorId] = 1;
+
+    const createSlugTracking = this.afd.object(`articleData/slugs/${newSlug}`).set(articleId);
+    const createArticle = articleRef.set(newArticle, { merge: true })
+    return Promise.all([createSlugTracking, createArticle]);
   };
 
   uploadCoverImage = (articleId: string, file: File) => {

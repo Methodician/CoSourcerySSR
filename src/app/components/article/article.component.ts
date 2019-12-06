@@ -10,6 +10,7 @@ import {
   Observable,
   Subject,
   timer,
+  of,
 } from 'rxjs';
 import {
   tap,
@@ -157,9 +158,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   watchArticleIdAndStatus$ = () => {
     return this.route.params.pipe(
-      map(params => {
-        if (params['id']) return { id: params['id'], isNew: false };
-        else return { id: this.articleSvc.createArticleId(), isNew: true };
+      switchMap(params => {
+        if (params['id']) return this.articleSvc.getIdFromSlugOrId(params['id']).pipe(map(id => ({ id, isNew: false })));
+        else return of({ id: this.articleSvc.createArticleId(), isNew: true });
       })
     );
   };

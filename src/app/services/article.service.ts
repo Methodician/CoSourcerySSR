@@ -48,6 +48,8 @@ export class ArticleService {
   // end temp seeding code
 
   // FIRESTORE REF BUILDERS
+  slugIdRef = (slug: string) => this.afd.object(`articleData/slugs/${slug}`);
+
   articleDetailRef = (articleId: string) =>
     this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
 
@@ -280,6 +282,8 @@ export class ArticleService {
     const articleUpdate = articleDocRef.update({ imageUrl: url });
     return await Promise.all([trackerSet, articleUpdate]);
   };
+
+  getIdFromSlugOrId = (slugOrId: string) => this.slugIdRef(slugOrId).valueChanges().pipe(take(1), map((possibleId: string) => possibleId || slugOrId));
   // end utility
 
   // HELPERS

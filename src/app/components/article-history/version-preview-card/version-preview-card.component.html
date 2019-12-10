@@ -1,0 +1,46 @@
+<article class="preview-card">
+  <a [routerLink]="'/article/' + articleData.articleId">
+    <section class="card-content">
+      <img class="card-content__image" [src]="
+          coverImageUrl !== '' ? coverImageUrl : '../../assets/images/logo.svg'
+        " [alt]="articleData.imageAlt ? articleData.imageAlt : 'Cover Image'" />
+      <h2 class="card-content__title">
+        {{ articleData.title | truncateString: 20 }}
+      </h2>
+      <p class="card-content__date">
+        Last Updated: {{ articleData?.lastUpdated | date }}
+      </p>
+      <p>{{ articleData.introduction | truncateString: 100 }}</p>
+    </section>
+  </a>
+
+  <section class="card-icons">
+    <div class="counter-icons">
+      <div class="counter-icons__item">
+        <mat-icon>comment</mat-icon>
+        <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above" style="left: 0;">
+          {{ articleData.commentCount }} Comment(s)
+        </span>
+        <span class="counter-icons__stat">{{ articleData.commentCount }}</span>
+      </div>
+      <div class="counter-icons__item">
+        <mat-icon>border_color</mat-icon>
+        <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ articleData.version }} Edit(s)</span>
+        <span class="counter-icons__stat">{{ articleData.version }}</span>
+      </div>
+      <div class="counter-icons__item">
+        <mat-icon>loyalty</mat-icon>
+        <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ articleData.tags.length }} Tag(s)</span>
+        <span class="counter-icons__stat">{{ articleData.tags.length }}</span>
+      </div>
+    </div>
+    <div (click)="onToggleBookmark()" class="counter-icons__item bookmark-icon">
+      <mat-icon>{{
+        isArticleBookmarked$.value ? 'bookmark' : 'bookmark_border'
+      }}</mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above" style="right: 0;">
+        {{ isArticleBookmarked$.value ? 'Remove Bookmark' : 'Bookmark' }}
+      </span>
+    </div>
+  </section>
+</article>

@@ -71,8 +71,8 @@ import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.c
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { ArticleHistoryComponent } from './components/article-history/article-history.component';
-import { VersionDetailComponent } from './version-detail/version-detail.component';
-import { VersionPreviewCardComponent } from './version-preview-card/version-preview-card.component';
+import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
+import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
 // end components
 @NgModule({
   declarations: [

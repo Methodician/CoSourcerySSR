@@ -10,7 +10,7 @@ import { RegisterComponent } from '@components/user/register/register.component'
 import { AuthGuard } from '@guards/auth.guard';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 import { UnsavedChangesGuard } from '@guards/unsaved-changes.guard';
-import { VersionDetailComponent } from './version-detail/version-detail.component';
+import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },

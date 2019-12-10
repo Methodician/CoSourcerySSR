@@ -4,7 +4,7 @@ import {
   makeStateKey,
   StateKey,
 } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
 

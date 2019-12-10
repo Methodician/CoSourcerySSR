@@ -63,5 +63,4 @@ export class ArticleHistoryComponent implements OnInit {
       startWith(preExisting$)
     );
   };
-
 }

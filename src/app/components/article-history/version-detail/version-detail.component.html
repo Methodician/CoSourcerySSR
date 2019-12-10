@@ -1,1 +1,49 @@
-<p>version-detail works!</p>
+<section #formBoundingBox class="article-form">
+  <!-- MAIN IMAGE -->
+  <cos-cover-image [imageUrl]="articleState.imageUrl" [imageAlt]="articleState.imageAlt">
+  </cos-cover-image>
+  <!-- end main image -->
+
+  <!-- HEADER SECTION -->
+  <section class="article-header">
+    <!-- TITLE -->
+    <cos-title [title]="articleState.title">
+    </cos-title>
+
+    <!-- DATE -->
+    <p class="article-date">
+      <span *ngIf="isArticleNew">Current Date: {{ tempTimestamp().toDate() | date }}</span>
+      <span *ngIf="!isArticleNew">Last Updated: {{ articleState.lastUpdated | date }}</span>
+    </p>
+
+    <!-- INTRO -->
+    <cos-intro [introduction]="articleState.introduction">
+    </cos-intro>
+
+    <!-- STATS -->
+    <cos-stats [commentCount]="articleState.commentCount" [editCount]="articleState.version"
+      [tagsCount]="articleState.tags.length" [articleId]="articleId">
+    </cos-stats>
+
+    <!-- ATTRIBUTIONS -->
+    <section class="article-attributions">
+      <cos-contributors [creatorKey]="loggedInUser.uid" [editorMap]="articleState.editors">
+      </cos-contributors>
+    </section>
+  </section>
+
+  <!-- BODY and EDITOR -->
+  <section #ckeditorBoundingBox class="article-body" [ngClass]="{
+        'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
+      }">
+    <cos-body [body]="articleState.body" [articleId]="articleId"></cos-body>
+
+    <!-- TAGS UI -->
+    <cos-tags [tags]="articleState.tags">
+    </cos-tags>
+    <!-- end tags ui -->
+
+
+
+    <cos-comments *ngIf="articleState && !isArticleNew" [articleId]="articleState.articleId"></cos-comments>
+  </section>

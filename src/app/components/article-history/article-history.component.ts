@@ -27,7 +27,6 @@ export class ArticleHistoryComponent implements OnInit {
 
   articleId: string;
   allArticleVersions$: Observable<IArticlePreview[]>;
-  articleVersion$: Observable<IArticlePreview[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -43,23 +42,26 @@ export class ArticleHistoryComponent implements OnInit {
   }
 
   initializeArticles = () => {
-    this.articleVersion$ = this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges()
-    this.allArticleVersions$ = this.ssrArticleCollection(
-      this.articleVersion$,
+    this.allArticleVersions$ = this.ssrArticleVersionCollection(
+      this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges(),
       ALL_ARTICLE_VERSIONS_KEY
     );
   };
 
-  ssrArticleCollection = (
-    articles$: Observable<IArticlePreview[]>,
+  clearArticleKeys = () => {
+    this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
+  };
+
+  ssrArticleVersionCollection = (
+    versions$: Observable<IArticlePreview[]>,
     stateKey: StateKey<Observable<IArticlePreview[]>>
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
-    return articles$.pipe(
-      map(articles =>
-        articles.map(art => this.articleSvc.processArticleTimestamps(art))
+    return versions$.pipe(
+      map(versions =>
+        versions.map(version => this.articleSvc.processArticleTimestamps(version))
       ),
-      tap(articles => this.state.set(stateKey, articles)),
+      tap(versions => this.state.set(stateKey, versions)),
       startWith(preExisting$)
     );
   };

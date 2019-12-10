@@ -1,5 +1,5 @@
 <article class="preview-card">
-  <a [routerLink]="'/article/' + articleData.articleId">
+  <a [routerLink]="'/article/' + articleData.articleId + '/history/' + articleData.version">
     <section class="card-content">
       <img class="card-content__image" [src]="
           coverImageUrl !== '' ? coverImageUrl : '../../assets/images/logo.svg'

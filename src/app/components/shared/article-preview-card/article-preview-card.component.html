@@ -1,5 +1,5 @@
 <article class="preview-card">
-  <a [routerLink]="'/article/' + articleData.articleId">
+  <a [routerLink]="'/article/' + articleData.slug">
     <section class="card-content">
       <img
         class="card-content__image"
@@ -47,13 +47,13 @@
     </div>
     <div (click)="onToggleBookmark()" class="counter-icons__item bookmark-icon">
       <mat-icon>{{
-        isArticleBookmarked$.value ? 'bookmark' : 'bookmark_border'
+        isArticleBookmarked$.value ? "bookmark" : "bookmark_border"
       }}</mat-icon>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
         style="right: 0;"
       >
-        {{ isArticleBookmarked$.value ? 'Remove Bookmark' : 'Bookmark' }}
+        {{ isArticleBookmarked$.value ? "Remove Bookmark" : "Bookmark" }}
       </span>
     </div>
   </section>

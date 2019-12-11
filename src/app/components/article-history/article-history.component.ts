@@ -6,7 +6,7 @@ import {
 } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, tap, startWith } from 'rxjs/operators';
+import { map, tap, startWith, switchMap } from 'rxjs/operators';
 
 import { IArticlePreview } from '@models/article-info';
 import { ArticleService } from '@services/article.service';
@@ -36,10 +36,10 @@ export class ArticleHistoryComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.articleId = params['id'];
+    this.route.params.pipe(switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id']))).subscribe(id => {
+      this.articleId = id;
+      this.initializeArticles();
     });
-    this.initializeArticles();
   }
 
   initializeArticles = () => {

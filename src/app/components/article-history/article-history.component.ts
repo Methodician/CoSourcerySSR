@@ -27,7 +27,7 @@ export class ArticleHistoryComponent implements OnInit {
 
   articleId: string;
   allArticleVersions$: Observable<IArticlePreview[]>;
-  articleVersion$: Observable<IArticlePreview[]>;
+  articleVersions$: Observable<IArticlePreview[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -43,9 +43,9 @@ export class ArticleHistoryComponent implements OnInit {
   }
 
   initializeArticles = () => {
-    this.articleVersion$ = this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges()
+    this.articleVersions$ = this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges()
     this.allArticleVersions$ = this.ssrArticleCollection(
-      this.articleVersion$,
+      this.articleVersions$,
       ALL_ARTICLE_VERSIONS_KEY
     );
   };

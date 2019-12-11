@@ -151,8 +151,8 @@ export class ArticleService {
     // Avoids mutating original object
     const articleToSave = { ...article };
     const editors = articleToSave.editors || {};
-    const editPerEditor = editors[editorId] || 0;
-    editors[editorId] = editPerEditor + 1;
+    const editsPerEditor = editors[editorId] || 0;
+    editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
     articleToSave.lastUpdated = fsServerTimestamp;

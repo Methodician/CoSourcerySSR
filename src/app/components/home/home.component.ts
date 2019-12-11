@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private seoSvc: SeoService,
     private authSvc: AuthService,
-    private state: TransferState
+    private state: TransferState,
   ) {}
 
   ngOnInit() {

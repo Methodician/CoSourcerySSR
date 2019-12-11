@@ -12,5 +12,6 @@
         "createarticle",
         "downvote",
         "upvote"
-    ]
+    ],
+    "html.format.wrapAttributes": "force-aligned"
 }

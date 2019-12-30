@@ -8,10 +8,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap, startWith } from 'rxjs/operators';
 
-import { IArticlePreview } from '@models/article-info';
+import { IVersionPreview, IVersionDetail } from '@models/article-info';
 import { ArticleService } from '@services/article.service';
 
-const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IArticlePreview[]>>(
+const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
   'allArticleVersions'
 );
 
@@ -26,7 +26,7 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IArticlePreview[]>>(
 export class ArticleHistoryComponent implements OnInit {
 
   articleId: string;
-  allArticleVersions$: Observable<IArticlePreview[]>;
+  allArticleVersions$: Observable<IVersionPreview[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -53,8 +53,8 @@ export class ArticleHistoryComponent implements OnInit {
   };
 
   ssrArticleVersionCollection = (
-    versions$: Observable<IArticlePreview[]>,
-    stateKey: StateKey<Observable<IArticlePreview[]>>
+    versions$: Observable<IVersionDetail[]>,
+    stateKey: StateKey<Observable<IVersionDetail[]>>
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return versions$.pipe(

@@ -6,7 +6,7 @@ import {
 } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { IArticlePreview, IArticleDetail } from '@models/article-info';
+import { IArticlePreview, IArticleDetail, IVersionDetail } from '@models/article-info';
 
 // RXJS stuff
 import { switchMap, take } from 'rxjs/operators';
@@ -35,6 +35,9 @@ export class ArticleService {
   articleDetailRef = (articleId: string) =>
     this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
 
+  versionDetailRef = (articleId: string, versionId: string) =>
+    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}/history/${versionId}`);
+
   articlePreviewRef = (articleId: string) =>
     this.afs.doc<IArticlePreview>(`articleData/articles/previews/${articleId}`);
 
@@ -52,12 +55,12 @@ export class ArticleService {
     );
 
   allArticleVersionsRef = (articleId: string) =>
-    this.afs.collection<IArticleDetail>(`/articleData/articles/articles/${articleId}/history`, ref =>
+    this.afs.collection<IVersionDetail>(`/articleData/articles/articles/${articleId}/history`, ref =>
     ref.orderBy('version', 'desc')
   );
 
   articleVersionDetailRef = (articleId: string, version: string) =>
-    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}/history/${version}`);
+    this.afs.doc<IVersionDetail>(`articleData/articles/articles/${articleId}/history/${version}`);
 
   // TODO: Either re-structure data to duplicate editors (array of IDs and map of edit counts) or store edit counts in RTDB or other doc?
   // Explanation: Copound queries still seem not to work. I can not do .where(`editors.${editorId}`) in addition to ordering by lastUpdated and filtering out flagged content...

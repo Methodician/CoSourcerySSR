@@ -29,13 +29,13 @@ import { UserService } from '@services/user.service';
 import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
-import { IArticleDetail } from '@models/article-info';
+import { IVersionDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
 import { ECtrlNames } from '../../article/article.component';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
-  'articleState'
+const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
+  'articleVersionState'
 );
 
 @Component({
@@ -59,6 +59,7 @@ export class VersionDetailComponent implements OnInit {
 
   // Article State
   articleId: string;
+  versionId: string;
   isArticleNew: boolean;
   articleSubscription: Subscription;
   currentArticleEditors = {};
@@ -87,7 +88,7 @@ export class VersionDetailComponent implements OnInit {
     editors: {},
   });
 
-  articleState: IArticleDetail;
+  articleVersionState: IVersionDetail;
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -120,7 +121,7 @@ export class VersionDetailComponent implements OnInit {
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
-    this.state.set(ARTICLE_STATE_KEY, null);
+    this.state.set(VERSION_STATE_KEY, null);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
@@ -131,25 +132,26 @@ export class VersionDetailComponent implements OnInit {
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
-      tap(({ id, isNew }) => {
+      tap(({ id, version, isNew }) => {
         if (id) this.articleId = id;
+        if (version) this.versionId = version;
         if (isNew) {
           this.isArticleNew = true;
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, version, isNew }): Observable<IVersionDetail> => {
           if (isNew) {
             return Observable.create(observer => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
-          } else return this.watchArticle$(id);
+          } else return this.watchArticleVersion$(id, version);
         }
       )
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      this.articleState = article;
+      this.articleVersionState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
         this.updateMetaTags(article);
@@ -160,32 +162,32 @@ export class VersionDetailComponent implements OnInit {
   watchArticleIdAndStatus$ = () => {
     return this.route.params.pipe(
       map(params => {
-        if (params['id']) return { id: params['id'], isNew: false };
+        if (params['id'] && params['versionId']) return { id: params['id'], version: params['versionId'], isNew: false };
         else return { id: this.articleSvc.createArticleId(), isNew: true };
       })
     );
   };
 
-  watchArticle$ = id => {
-    const preExisting: IArticleDetail = this.state.get(
-      ARTICLE_STATE_KEY,
+  watchArticleVersion$ = (id, versionId) => {
+    const preExisting: IVersionDetail = this.state.get(
+      VERSION_STATE_KEY,
       null as any
     );
-    const article$ = this.articleSvc
-      .articleDetailRef(id)
+    const version$ = this.articleSvc
+      .versionDetailRef(id, versionId)
       .valueChanges()
       .pipe(
-        map(article =>
-          article
+        map(version =>
+          version
             ? (this.articleSvc.processArticleTimestamps(
-              article
-            ) as IArticleDetail)
+              version
+            ) as IVersionDetail)
             : null
         ),
-        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+        tap(version => this.state.set(VERSION_STATE_KEY, version)),
         startWith(preExisting)
       );
-    return article$;
+    return version$;
   };
 
   watchArticleEditors = () => {
@@ -207,7 +209,7 @@ export class VersionDetailComponent implements OnInit {
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
-      this.articleState = change;
+      this.articleVersionState = change;
       if (this.articleEditForm.dirty) {
         this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
           if (isSignedIn) {
@@ -242,9 +244,9 @@ export class VersionDetailComponent implements OnInit {
   };
 
   addTag = (tag: string) => {
-    this.articleState.tags.push(tag);
+    this.articleVersionState.tags.push(tag);
     this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags: this.articleState.tags });
+    this.articleEditForm.patchValue({ tags: this.articleVersionState.tags });
   };
 
   /**
@@ -253,7 +255,7 @@ export class VersionDetailComponent implements OnInit {
    * Removes that tag, patches the form, marks form as dirty
    */
   removeTag = (tagIndex: number) => {
-    const tags = this.articleState.tags;
+    const tags = this.articleVersionState.tags;
     tags.splice(tagIndex, 1);
     this.articleEditForm.markAsDirty();
     this.articleEditForm.patchValue({ tags });
@@ -286,11 +288,11 @@ export class VersionDetailComponent implements OnInit {
       const coverImageSub = this.saveCoverImage().subscribe(async isReady => {
         if (!isReady) return;
 
-        if (this.articleState.articleId) {
+        if (this.articleVersionState.articleId) {
           // It's not new so just update existing and return
           try {
             await this.articleSvc.updateArticle(
-              this.articleState
+              this.articleVersionState
             );
             this.resetEditSessionTimeout();
             this.resetEditStates();
@@ -309,7 +311,7 @@ export class VersionDetailComponent implements OnInit {
           try {
             await this.articleSvc.createArticle(
               this.loggedInUser,
-              this.articleState,
+              this.articleVersionState,
               this.articleId
             );
             this.resetEditSessionTimeout();
@@ -491,7 +493,7 @@ export class VersionDetailComponent implements OnInit {
   // ===OTHER
   tempTimestamp = () => fsTimestampNow();
 
-  updateMetaTags = (article: IArticleDetail) => {
+  updateMetaTags = (article: IVersionDetail) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();

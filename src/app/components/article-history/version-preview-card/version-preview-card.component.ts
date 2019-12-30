@@ -3,7 +3,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { map, switchMap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/article-info';
+import { IVersionPreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -18,7 +18,7 @@ import { StorageService } from '@services/storage.service';
   ]
 })
 export class VersionPreviewCardComponent implements OnInit {
-  @Input() articleData: IArticlePreview;
+  @Input() articleVersionData: IVersionPreview;
   coverImageUrl = '';
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private unsubscribe: Subject<void> = new Subject();
@@ -30,7 +30,7 @@ export class VersionPreviewCardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.watchCoverImageUrl();
+    this.coverImageUrl = this.articleVersionData.imageUrl;
     this.isArticleBookmarked()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
@@ -45,7 +45,7 @@ export class VersionPreviewCardComponent implements OnInit {
 
   watchCoverImageUrl = () => {
     this.storageSvc
-      .getImageUrl(`articleCoverThumbnails/${this.articleData.articleId}`)
+      .getImageUrl(`articleCoverThumbnails/${this.articleVersionData.articleId}`)
       .subscribe(url => {
         this.coverImageUrl = url;
       });
@@ -63,7 +63,7 @@ export class VersionPreviewCardComponent implements OnInit {
     this.authSvc.authInfo$.pipe(
       switchMap(info =>
         this.articleSvc
-          .singleBookmarkRef(info.uid, this.articleData.articleId)
+          .singleBookmarkRef(info.uid, this.articleVersionData.articleId)
           .valueChanges()
       ),
       map(bookmark => !!bookmark)
@@ -73,7 +73,7 @@ export class VersionPreviewCardComponent implements OnInit {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
         const uid = this.authSvc.authInfo$.value.uid,
-          aid = this.articleData.articleId,
+          aid = this.articleVersionData.articleId,
           isBookemarked = this.isArticleBookmarked$.value;
         if (isBookemarked) {
           this.articleSvc.unBookmarkArticle(uid, aid);

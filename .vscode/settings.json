@@ -1,16 +1,10 @@
 {
-    "files.autoSave": "onFocusChange",
-    "editor.formatOnSave": true,
-    "prettier.singleQuote": true,
-    "javascript.preferences.quoteStyle": "single",
-    "typescript.preferences.quoteStyle": "single",
-    "prettier.trailingComma": "es5",
-    "cSpell.words": [
-        "ckeditor",
-        "clickout",
-        "cosourcery",
-        "createarticle",
-        "downvote",
-        "upvote"
-    ]
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "workbench.settings.editor": "json",
+  "html.format.wrapAttributes": "force-expand-multiline"
 }

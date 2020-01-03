@@ -37,10 +37,10 @@ const createArticlePreview = (article: any, id: string) => {
 
 const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview  => {
   const { articleId, authorId, title, introduction, lastUpdated, timestamp, version, editors, commentCount, viewCount, tags, imageUrl, imageAlt } = articleObject;
-  const url = imageUrl && imageUrl.length > 0 ? 'unset' : '';
+  const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
 
   const preview: IArticlePreview = {
-    articleId, authorId, title, introduction, imageAlt, lastUpdated, timestamp, version, editors, commentCount, viewCount, tags, isFlagged: false, imageUrl: url, slug: slugify(title)
+    articleId, authorId, title, introduction, imageAlt, lastUpdated, timestamp, version, editors, commentCount, viewCount, tags, isFlagged: false, imageUrl: previewImageUrl, slug: slugify(title)
   }
 
   return preview;

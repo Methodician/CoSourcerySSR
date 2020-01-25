@@ -9,7 +9,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { IArticlePreview, IArticleDetail } from '@models/article-info';
 
 // RXJS stuff
-import { switchMap, take } from 'rxjs/operators';
+import { switchMap, take, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 
 // Internal stuff
@@ -31,7 +31,25 @@ export class ArticleService {
     private authSvc: AuthService
   ) { }
 
+  // TEMP SEEDING CODE
+  trackAllSlugs = () => {
+    this.afs.collection<IArticlePreview>('articleData/articles/previews').get().pipe(map(querySnaps => querySnaps.docs.map(docSnap => {
+      const article = docSnap.data();
+      const id = docSnap.id;
+      return {id, slug: article.slug as string };
+    }))).subscribe(all => {
+      for(let item of all){
+        console.log(item.id, item.slug);
+        const slugRef = this.afd.object(`articleData/slugs/${item.slug}`);
+        slugRef.set(item.id)
+      }
+    })
+  }
+  // end temp seeding code
+
   // FIRESTORE REF BUILDERS
+  slugIdRef = (slug: string) => this.afd.object(`articleData/slugs/${slug}`);
+
   articleDetailRef = (articleId: string) =>
     this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
 
@@ -142,13 +160,36 @@ export class ArticleService {
   // end editors stuff
 
   // UTILITY
-  updateArticle = (article: IArticleDetail) => {
-    const articleRef = this.articleDetailRef(article.articleId);
+
+  validateNewTitleAndSlug = async(newSlug: string) => {
+    const newMatchId$ = this.afd.object<string>(`articleData/slugs/${newSlug}`).valueChanges();
+    const newMatchId = await newMatchId$.pipe(take(1)).toPromise();
+
+    return !newMatchId;
+  }
+
+  updateSlug = async (newSlug: string, oldSlug: string, articleId: string) => {
+    const newSlugPath = `articleData/slugs/${newSlug}`;
+    const oldSlugPath = `articleData/slugs/${oldSlug}`;
+
+    const updates = {};
+    updates[newSlugPath] = articleId;
+    updates[oldSlugPath] = null;
+    const batch = this.afd.database.ref().update(updates);
+    
+    return batch;
+  }
+
+  updateArticle = async (article: IArticleDetail) => {
+    
     const editorId = this.authSvc.authInfo$.value.uid;
-
     if (!editorId) throw new Error("updateArticle can't be used without a valid auth state (authInfo$) in authService")
-
+    
+    const articleRef = this.articleDetailRef(article.articleId);
+    
+    
     // Avoids mutating original object
+    const newSlug = this.slugify(article.title);
     const articleToSave = { ...article };
     const editors = articleToSave.editors || {};
     const editsPerEditor = editors[editorId] || 0;
@@ -156,13 +197,31 @@ export class ArticleService {
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
     articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.slug = newSlug;
     articleToSave.version++;
     // TODO: Deterimine if we still need the cleanArticleImages action
     // articleToSave.bodyImages = this.cleanArticleImages(articleToSave);
-    return articleRef.update(articleToSave);
+
+    // If slug has changed, do extra stuff
+    if(newSlug !== article.slug){
+      // If new slug is already in use, return error and/or display message
+      // TODO: Reflect this in server side rules validation too
+      const isSlugValid = await this.validateNewTitleAndSlug(newSlug);
+      
+      if(!isSlugValid) {
+        throw new Error("The title is not unique enough to form a unique URL slug.")
+      }
+      // add new slug and remove old slug
+      const slugUpdateBatch = this.updateSlug(newSlug, article.slug, article.articleId)
+
+      return Promise.all([articleRef.update(articleToSave), slugUpdateBatch])
+
+    } 
+ 
+      return articleRef.update(articleToSave);
   };
 
-  createArticle = (
+  createArticle = async (
     author: IUserInfo,
     article: IArticleDetail,
     articleId: string
@@ -174,19 +233,32 @@ export class ArticleService {
     if (!author || !authorId)
       throw 'New articles must have an author with an ID';
 
-    const articleRef = this.articleDetailRef(articleId);
-    const newArticle = { ...article };
-    newArticle.editors = {};
-    newArticle.editors[authorId] = 1;
-    newArticle.authorId = authorId;
-    newArticle.articleId = articleId;
-    newArticle.lastUpdated = fsServerTimestamp;
-    newArticle.timestamp = fsServerTimestamp;
-    newArticle.lastEditorId = authorId;
-    newArticle.authorImageUrl =
-      author.imageUrl || '../../assets/images/logo.svg';
+    const newSlug = this.slugify(article.title);
+    const isSlugValid = await this.validateNewTitleAndSlug(newSlug);
+  
+    if (!isSlugValid) {
+      throw new Error("The title is not unique enough to form a unique URL slug.")
+    }
 
-    return articleRef.set(newArticle, { merge: true });
+    const articleRef = this.articleDetailRef(articleId);
+
+    const newArticle = {
+      ...article,
+      editors: {},
+      authorId,
+      articleId,
+      lastUpdated: fsServerTimestamp,
+      timestamp: fsServerTimestamp,
+      lastEditorId: authorId,
+      slug: newSlug,
+      authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',
+    };
+
+    newArticle.editors[authorId] = 1;
+
+    const createSlugTracking = this.afd.object(`articleData/slugs/${newSlug}`).set(articleId);
+    const createArticle = articleRef.set(newArticle, { merge: true })
+    return Promise.all([createSlugTracking, createArticle]);
   };
 
   uploadCoverImage = (articleId: string, file: File) => {
@@ -218,9 +290,27 @@ export class ArticleService {
     const articleUpdate = articleDocRef.update({ imageUrl: url });
     return await Promise.all([trackerSet, articleUpdate]);
   };
+
+  getIdFromSlugOrId = (slugOrId: string) => this.slugIdRef(slugOrId).valueChanges().pipe(take(1), map((possibleId: string) => possibleId || slugOrId));
   // end utility
 
   // HELPERS
+
+  slugify = (string) => {
+    const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+    const p = new RegExp(a.split('').join('|'), 'g')
+  
+    return string.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, '-and-') // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start of text
+      .replace(/-+$/, '') // Trim - from end of text
+  }
+
   createArticleId = () => this.afs.createId();
 
   processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {

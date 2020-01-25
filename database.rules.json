@@ -1,0 +1,45 @@
+{
+  "rules": {
+    ".read": "true",
+    "articleData": {
+      "userBookmarksPerArticle": {
+        "$articleId": {
+          "$uid": {
+            ".write": "auth.uid == $uid"
+          }
+        }
+      },
+      "editStatus": {
+        ".write": "auth != null"
+      },
+      "slugs": {
+        ".write": "true",
+        ".read": "true"
+      }
+    },
+    "commentData": {
+      "comments": {
+        "$commentId": {
+          ".write": "auth != null && (!data.exists() || auth.uid === data.child('authorId').val())"
+        }
+      },
+      "votesByUser": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      }
+    },
+    "userInfo": {
+      "articleBookmarksPerUser": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      },
+      "open": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      }
+    }
+  }
+}

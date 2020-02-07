@@ -29,12 +29,12 @@
 
     <!-- DATE -->
     <p class="article-date">
-      <span *ngIf="isArticleNew"
-        >Current Date: {{ tempTimestamp().toDate() | date }}</span
-      >
-      <span *ngIf="!isArticleNew"
-        >Last Updated: {{ articleState.lastUpdated | date }}</span
-      >
+      <span *ngIf="isArticleNew">
+        Current Date: {{ tempTimestamp().toDate() | date }}
+      </span>
+      <span *ngIf="!isArticleNew">
+        Last Updated: {{ articleState.lastUpdated | date }}
+      </span>
     </p>
 
     <!-- INTRO -->

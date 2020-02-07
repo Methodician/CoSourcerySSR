@@ -1,76 +1,137 @@
-<form #formBoundingBox [formGroup]="articleEditForm" *ngIf="articleState" class="article-form">
+<form
+  #formBoundingBox
+  [formGroup]="articleEditForm"
+  *ngIf="articleState"
+  class="article-form"
+>
   <!-- MAIN IMAGE -->
-  <cos-cover-image (onClickOut)="clickoutCtrl(ECtrlNames.coverImage)" (onCtrlToggle)="toggleCtrl(ECtrlNames.coverImage)"
-    (onCoverImageSelected)="selectCoverImage($event)" [isActive]="isCtrlActive(ECtrlNames.coverImage)"
-    [imageUrl]="articleState.imageUrl" [imageAlt]="articleState.imageAlt" [parentForm]="articleEditForm">
-  </cos-cover-image>
+  <cos-cover-image
+    (onClickOut)="clickoutCtrl(ECtrlNames.coverImage)"
+    (onCtrlToggle)="toggleCtrl(ECtrlNames.coverImage)"
+    (onCoverImageSelected)="selectCoverImage($event)"
+    [isActive]="isCtrlActive(ECtrlNames.coverImage)"
+    [imageUrl]="articleState.imageUrl"
+    [imageAlt]="articleState.imageAlt"
+    [parentForm]="articleEditForm"
+  ></cos-cover-image>
   <!-- end main image -->
 
   <!-- HEADER SECTION -->
   <section class="article-header">
     <!-- TITLE -->
-    <cos-title [parentForm]="articleEditForm" [isActive]="isCtrlActive(ECtrlNames.title)" [title]="articleState.title"
-      (onCtrlToggle)="toggleCtrl(ECtrlNames.title)" (onClickOut)="clickoutCtrl(ECtrlNames.title)"></cos-title>
+    <cos-title
+      [parentForm]="articleEditForm"
+      [isActive]="isCtrlActive(ECtrlNames.title)"
+      [title]="articleState.title"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.title)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.title)"
+    ></cos-title>
 
     <!-- DATE -->
     <p class="article-date">
-      <span *ngIf="isArticleNew">Current Date: {{ tempTimestamp().toDate() | date }}</span>
-      <span *ngIf="!isArticleNew">Last Updated: {{ articleState.lastUpdated | date }}</span>
+      <span *ngIf="isArticleNew"
+        >Current Date: {{ tempTimestamp().toDate() | date }}</span
+      >
+      <span *ngIf="!isArticleNew"
+        >Last Updated: {{ articleState.lastUpdated | date }}</span
+      >
     </p>
 
     <!-- INTRO -->
-    <cos-intro [parentForm]="articleEditForm" [isActive]="isCtrlActive(ECtrlNames.intro)"
-      [introduction]="articleState.introduction" (onCtrlToggle)="toggleCtrl(ECtrlNames.intro)"
-      (onClickOut)="clickoutCtrl(ECtrlNames.intro)"></cos-intro>
+    <cos-intro
+      [parentForm]="articleEditForm"
+      [isActive]="isCtrlActive(ECtrlNames.intro)"
+      [introduction]="articleState.introduction"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.intro)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.intro)"
+    ></cos-intro>
 
     <!-- STATS -->
-    <cos-stats [commentCount]="articleState.commentCount" [editCount]="articleState.version"
-      [tagsCount]="articleState.tags.length" [articleId]="articleId" [isArticleNew]="isArticleNew"></cos-stats>
+    <cos-stats
+      [commentCount]="articleState.commentCount"
+      [editCount]="articleState.version"
+      [tagsCount]="articleState.tags.length"
+      [articleId]="articleId"
+      [isArticleNew]="isArticleNew"
+    ></cos-stats>
 
     <!-- ATTRIBUTIONS -->
     <section class="article-attributions">
-      <cos-contributors [creatorKey]="loggedInUser.uid" [editorMap]="articleState.editors">
+      <cos-contributors
+        [creatorKey]="loggedInUser.uid"
+        [editorMap]="articleState.editors"
+      >
       </cos-contributors>
     </section>
   </section>
 
   <!-- BODY and EDITOR -->
-  <section #ckeditorBoundingBox class="article-body" [ngClass]="{
+  <section
+    #ckeditorBoundingBox
+    class="article-body"
+    [ngClass]="{
       'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
-    }">
-    <cos-body [isActive]="isCtrlActive(ECtrlNames.body)" [body]="articleState.body" [articleId]="articleId"
-      (onCtrlToggle)="toggleCtrl(ECtrlNames.body)" (onClickOut)="clickoutCtrl(ECtrlNames.body)"
-      (onBodyChange)="changeBody($event)"></cos-body>
+    }"
+  >
+    <cos-body
+      [isActive]="isCtrlActive(ECtrlNames.body)"
+      [body]="articleState.body"
+      [articleId]="articleId"
+      (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
+      (onClickOut)="clickoutCtrl(ECtrlNames.body)"
+      (onBodyChange)="changeBody($event)"
+    ></cos-body>
   </section>
 
   <!-- TAGS UI -->
-  <cos-tags [tags]="articleState.tags" [isActive]="isCtrlActive(ECtrlNames.tags)"
-    (onCtrlToggle)="toggleCtrl(ECtrlNames.tags)" (onTagSubmitted)="addTag($event)" (onTagRemoved)="removeTag($event)">
-  </cos-tags>
+  <cos-tags
+    [tags]="articleState.tags"
+    [isActive]="isCtrlActive(ECtrlNames.tags)"
+    (onCtrlToggle)="toggleCtrl(ECtrlNames.tags)"
+    (onTagSubmitted)="addTag($event)"
+    (onTagRemoved)="removeTag($event)"
+  ></cos-tags>
   <!-- end tags ui -->
 
   <!-- SAVE-UNDO UI -->
   <section class="save-undo-abs-position">
-    <div class="save-undo-sticky-position sticky" [ngClass]="{
+    <div
+      class="save-undo-sticky-position sticky"
+      [ngClass]="{
         extended: isUserEditingArticle(),
         disabled: !articleEditForm.valid || !isUserEditingArticle()
-      }">
-      <button class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow" type="button"
-        [disabled]="!articleEditForm.valid || !isUserEditingArticle()" (click)="saveChanges()">
+      }"
+    >
+      <button
+        class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
+        type="button"
+        [disabled]="!articleEditForm.valid || !isUserEditingArticle()"
+        (click)="saveChanges()"
+      >
         <mat-icon>done</mat-icon>
       </button>
 
-      <div *ngIf="!isArticleNew" class="restore-control flag flag-axle flag-axle-90"
-        [ngClass]="{ 'flag-axle-90_active': isUserEditingArticle() }">
+      <div
+        *ngIf="!isArticleNew"
+        class="restore-control flag flag-axle flag-axle-90"
+        [ngClass]="{ 'flag-axle-90_active': isUserEditingArticle() }"
+      >
         <div class="flag flag-pole flag-pole_right">
-          <button class="restore-button mat-icon-btn mat-icon-btn_no-shadow" type="button"
-            [disabled]="!isUserEditingArticle()" (click)="cancelChanges()">
+          <button
+            class="restore-button mat-icon-btn mat-icon-btn_no-shadow"
+            type="button"
+            [disabled]="!isUserEditingArticle()"
+            (click)="cancelChanges()"
+          >
             <mat-icon>replay</mat-icon>
           </button>
         </div>
       </div>
 
-      <div class="flag flag-axle flag-axle-270" [ngClass]="{ 'flag-axle-270_active': isUserEditingArticle() }">
+      <div
+        class="flag flag-axle flag-axle-270"
+        [ngClass]="{ 'flag-axle-270_active': isUserEditingArticle() }"
+      >
         <div class="flag flag-pole flag-pole_left">
           <div class="flag flag-tooltip">
             <span class="flag-tooltip_changes">Unsaved</span>
@@ -84,4 +145,7 @@
   <!-- end save-undo ui -->
 </form>
 
-<cos-comments *ngIf="articleState && !isArticleNew" [articleId]="articleState.articleId"></cos-comments>
+<cos-comments
+  *ngIf="articleState && !isArticleNew"
+  [articleId]="articleState.articleId"
+></cos-comments>

@@ -10,6 +10,7 @@ import {
   Observable,
   Subject,
   timer,
+  of,
 } from 'rxjs';
 import {
   tap,
@@ -79,6 +80,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     version: 1,
     commentCount: 0,
     viewCount: 0,
+    slug: '',
     tags: [[], Validators.maxLength(25)],
     isFeatured: false,
     editors: {},
@@ -109,7 +111,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeArticleIdAndState();
-    this.watchArticleEditors();
     this.watchFormChanges();
   }
 
@@ -154,11 +155,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
     });
   };
 
-  watchArticleIdAndStatus$ = () => {
+  watchArticleIdAndStatus$: () => Observable<{id: any, isNew: boolean}> = () => {
     return this.route.params.pipe(
-      map(params => {
-        if (params['id']) return { id: params['id'], isNew: false };
-        else return { id: this.articleSvc.createArticleId(), isNew: true };
+      switchMap(params => {
+        let status$ = of({ id: null, isNew: false });
+        if (params['id']) status$ = this.articleSvc.getIdFromSlugOrId(params['id']).pipe(map(id => ({ id, isNew: false })));
+        else status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
+        status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
+          if(!!status.id){
+            this.watchArticleEditors(status.id);
+          }
+        })
+        return status$
       })
     );
   };
@@ -185,9 +193,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return article$;
   };
 
-  watchArticleEditors = () => {
+  watchArticleEditors = (id) => {
     this.articleSvc
-      .currentEditorsRef(this.articleId)
+      .currentEditorsRef(id)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
@@ -227,7 +235,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===EDITING STUFF
   updateUserEditingStatus = (status: boolean) => this.articleSvc.updateArticleEditStatus(
     this.articleId,
-    this.loggedInUser.uid,
+    this.authSvc.authInfo$.value.uid,
     status
   );
 
@@ -479,8 +487,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return this.ctrlBeingEdited === ctrl;
   };
 
-  isUserEditingArticle = () =>
-    !!this.currentArticleEditors[this.loggedInUser.uid];
+  isUserEditingArticle = () => !!this.currentArticleEditors[this.authSvc.authInfo$.value.uid];
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;

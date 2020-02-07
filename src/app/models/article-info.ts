@@ -11,6 +11,7 @@ export interface IArticlePreview {
   timestamp: any;
   version: number;
   editors: IKeyMap<number>;
+  slug: string;
   commentCount?: number;
   viewCount?: number;
   tags?: string[];
@@ -49,6 +50,7 @@ export interface IArticleDetail {
   lastEditorId: string;
   version: number;
   editors: IKeyMap<number>;
+  slug: string;
   commentCount?: number;
   viewCount?: number;
   tags?: string[];
@@ -72,6 +74,7 @@ export interface IVersionDetail {
   lastEditorId: string;
   version: number;
   editors: IKeyMap<number>;
+  slug: string;
   commentCount?: number;
   viewCount?: number;
   tags?: string[];

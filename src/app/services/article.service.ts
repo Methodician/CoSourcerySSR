@@ -218,7 +218,8 @@ export class ArticleService {
       // add new slug and remove old slug
       const slugUpdateBatch = this.updateSlug(newSlug, article.slug, article.articleId)
 
-      return Promise.all([articleRef.update(articleToSave), slugUpdateBatch])
+      // HACKY: I'm returning the slug as 3rd in tuple to indicate that a slug was updated so we can redirect in the article component. Needs re-thinking...
+      return Promise.all([articleRef.update(articleToSave), slugUpdateBatch, newSlug])
 
     } 
  

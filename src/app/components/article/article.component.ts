@@ -233,7 +233,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  updateUserEditingStatus = (status: boolean) => this.articleSvc.updateArticleEditStatus(
+  updateUserEditingStatus = async (status: boolean) => this.articleSvc.updateArticleEditStatus(
     this.articleId,
     this.authSvc.authInfo$.value.uid,
     status
@@ -294,11 +294,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
         if (this.articleState.articleId) {
           // It's not new so just update existing and return
           try {
-            await this.articleSvc.updateArticle(
+            const updateResult = await this.articleSvc.updateArticle(
               this.articleState
             );
             this.resetEditSessionTimeout();
-            this.resetEditStates();
+            await this.resetEditStates();
+            // HACKY: see associated note in UpdateArticle inside ArticleService
+            if( updateResult && updateResult[2]){
+              this.router.navigate([`article/${updateResult[2]}`])
+            }
           } catch (error) {
             this.dialogSvc.openMessageDialog(
               'Error saving article',

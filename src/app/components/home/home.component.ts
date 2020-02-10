@@ -19,10 +19,10 @@ import { map, tap, startWith, takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 
 const ALL_ARTICLES_KEY = makeStateKey<Observable<IArticlePreview[]>>(
-  'allArticles'
+  'allArticles',
 );
 const LATEST_ARTICLES_KEY = makeStateKey<Observable<IArticlePreview[]>>(
-  'latestArticles'
+  'latestArticles',
 );
 
 @Component({
@@ -80,12 +80,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   initializeArticles = () => {
     this.latestArticles$ = this.ssrArticleCollection(
       this.articleSvc.latestArticlesRef().valueChanges(),
-      LATEST_ARTICLES_KEY
+      LATEST_ARTICLES_KEY,
     );
 
     this.allArticles$ = this.ssrArticleCollection(
       this.articleSvc.allArticlesRef().valueChanges(),
-      ALL_ARTICLES_KEY
+      ALL_ARTICLES_KEY,
     );
   };
 
@@ -99,22 +99,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       .watchBookmarkedArticles(uid)
       .pipe(
         map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art))
-        )
+          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
+        ),
       );
   };
 
   ssrArticleCollection = (
     articles$: Observable<IArticlePreview[]>,
-    stateKey: StateKey<Observable<IArticlePreview[]>>
+    stateKey: StateKey<Observable<IArticlePreview[]>>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(
       map(articles =>
-        articles.map(art => this.articleSvc.processArticleTimestamps(art))
+        articles.map(art => this.articleSvc.processArticleTimestamps(art)),
       ),
       tap(articles => this.state.set(stateKey, articles)),
-      startWith(preExisting$)
+      startWith(preExisting$),
     );
   };
 

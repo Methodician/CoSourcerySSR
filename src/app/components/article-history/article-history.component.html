@@ -1,8 +1,6 @@
 <section id="all-versions">
   <div class="article-grid">
-    <cos-article-preview-card
-      *ngFor="let version of allArticleVersions$ | async"
-      [articleData]="version"
-    ></cos-article-preview-card>
+    <cos-version-preview-card *ngFor="let version of allArticleVersions$ | async" [articleVersionData]="version">
+    </cos-version-preview-card>
   </div>
 </section>

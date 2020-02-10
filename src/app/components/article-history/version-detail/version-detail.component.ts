@@ -10,7 +10,6 @@ import {
   Observable,
   Subject,
   timer,
-  of,
 } from 'rxjs';
 import {
   tap,
@@ -30,21 +29,24 @@ import { UserService } from '@services/user.service';
 import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
-import { IArticleDetail } from '@models/article-info';
+import { IVersionDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
+import { ECtrlNames } from '../../article/article.component';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
-  'articleState'
+const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
+  'articleVersionState'
 );
 
 @Component({
-  selector: 'cos-article',
-  templateUrl: './article.component.html',
-  styleUrls: ['./article.component.scss'],
+  selector: 'cos-version-detail',
+  templateUrl: './version-detail.component.html',
+  styleUrls: [
+    './version-detail.component.scss',
+    '../../article/article.component.scss'
+  ]
 })
-export class ArticleComponent implements OnInit, OnDestroy {
-  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
+export class VersionDetailComponent implements OnInit {
   @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
 
   private unsubscribe: Subject<void> = new Subject();
@@ -57,6 +59,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Article State
   articleId: string;
+  versionId: string;
   isArticleNew: boolean;
   articleSubscription: Subscription;
   currentArticleEditors = {};
@@ -80,13 +83,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
     version: 1,
     commentCount: 0,
     viewCount: 0,
-    slug: '',
     tags: [[], Validators.maxLength(25)],
     isFeatured: false,
     editors: {},
   });
 
-  articleState: IArticleDetail;
+  articleVersionState: IVersionDetail;
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -111,6 +113,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeArticleIdAndState();
+    this.watchArticleEditors();
     this.watchFormChanges();
   }
 
@@ -118,7 +121,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
-    this.state.set(ARTICLE_STATE_KEY, null);
+    this.state.set(VERSION_STATE_KEY, null);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
@@ -129,25 +132,26 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
-      tap(({ id, isNew }) => {
+      tap(({ id, version, isNew }) => {
         if (id) this.articleId = id;
+        if (version) this.versionId = version;
         if (isNew) {
           this.isArticleNew = true;
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, version, isNew }): Observable<IVersionDetail> => {
           if (isNew) {
             return Observable.create(observer => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
-          } else return this.watchArticle$(id);
+          } else return this.watchArticleVersion$(id, version);
         }
       )
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      this.articleState = article;
+      this.articleVersionState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
         this.updateMetaTags(article);
@@ -155,47 +159,40 @@ export class ArticleComponent implements OnInit, OnDestroy {
     });
   };
 
-  watchArticleIdAndStatus$: () => Observable<{id: any, isNew: boolean}> = () => {
+  watchArticleIdAndStatus$ = () => {
     return this.route.params.pipe(
-      switchMap(params => {
-        let status$ = of({ id: null, isNew: false });
-        if (params['id']) status$ = this.articleSvc.getIdFromSlugOrId(params['id']).pipe(map(id => ({ id, isNew: false })));
-        else status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
-        status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
-          if(!!status.id){
-            this.watchArticleEditors(status.id);
-          }
-        })
-        return status$
+      map(params => {
+        if (params['id'] && params['versionId']) return { id: params['id'], version: params['versionId'], isNew: false };
+        else return { id: this.articleSvc.createArticleId(), isNew: true };
       })
     );
   };
 
-  watchArticle$ = id => {
-    const preExisting: IArticleDetail = this.state.get(
-      ARTICLE_STATE_KEY,
+  watchArticleVersion$ = (id, versionId) => {
+    const preExisting: IVersionDetail = this.state.get(
+      VERSION_STATE_KEY,
       null as any
     );
-    const article$ = this.articleSvc
-      .articleDetailRef(id)
+    const version$ = this.articleSvc
+      .versionDetailRef(id, versionId)
       .valueChanges()
       .pipe(
-        map(article =>
-          article
+        map(version =>
+          version
             ? (this.articleSvc.processArticleTimestamps(
-              article
-            ) as IArticleDetail)
+              version
+            ) as IVersionDetail)
             : null
         ),
-        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+        tap(version => this.state.set(VERSION_STATE_KEY, version)),
         startWith(preExisting)
       );
-    return article$;
+    return version$;
   };
 
-  watchArticleEditors = (id) => {
+  watchArticleEditors = () => {
     this.articleSvc
-      .currentEditorsRef(id)
+      .currentEditorsRef(this.articleId)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
@@ -212,7 +209,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
-      this.articleState = change;
+      this.articleVersionState = change;
       if (this.articleEditForm.dirty) {
         this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
           if (isSignedIn) {
@@ -233,9 +230,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  updateUserEditingStatus = async (status: boolean) => this.articleSvc.updateArticleEditStatus(
+  updateUserEditingStatus = (status: boolean) => this.articleSvc.updateArticleEditStatus(
     this.articleId,
-    this.authSvc.authInfo$.value.uid,
+    this.loggedInUser.uid,
     status
   );
 
@@ -247,9 +244,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   addTag = (tag: string) => {
-    this.articleState.tags.push(tag);
+    this.articleVersionState.tags.push(tag);
     this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags: this.articleState.tags });
+    this.articleEditForm.patchValue({ tags: this.articleVersionState.tags });
   };
 
   /**
@@ -258,7 +255,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
    * Removes that tag, patches the form, marks form as dirty
    */
   removeTag = (tagIndex: number) => {
-    const tags = this.articleState.tags;
+    const tags = this.articleVersionState.tags;
     tags.splice(tagIndex, 1);
     this.articleEditForm.markAsDirty();
     this.articleEditForm.patchValue({ tags });
@@ -291,18 +288,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
       const coverImageSub = this.saveCoverImage().subscribe(async isReady => {
         if (!isReady) return;
 
-        if (this.articleState.articleId) {
+        if (this.articleVersionState.articleId) {
           // It's not new so just update existing and return
           try {
-            const updateResult = await this.articleSvc.updateArticle(
-              this.articleState
+            await this.articleSvc.updateArticle(
+              this.articleVersionState
             );
             this.resetEditSessionTimeout();
-            await this.resetEditStates();
-            // HACKY: see associated note in UpdateArticle inside ArticleService
-            if( updateResult && updateResult[2]){
-              this.router.navigate([`article/${updateResult[2]}`])
-            }
+            this.resetEditStates();
           } catch (error) {
             this.dialogSvc.openMessageDialog(
               'Error saving article',
@@ -318,7 +311,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           try {
             await this.articleSvc.createArticle(
               this.loggedInUser,
-              this.articleState,
+              this.articleVersionState,
               this.articleId
             );
             this.resetEditSessionTimeout();
@@ -491,7 +484,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return this.ctrlBeingEdited === ctrl;
   };
 
-  isUserEditingArticle = () => !!this.currentArticleEditors[this.authSvc.authInfo$.value.uid];
+  isUserEditingArticle = () =>
+    !!this.currentArticleEditors[this.loggedInUser.uid];
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
@@ -499,7 +493,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===OTHER
   tempTimestamp = () => fsTimestampNow();
 
-  updateMetaTags = (article: IArticleDetail) => {
+  updateMetaTags = (article: IVersionDetail) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();
@@ -519,15 +513,5 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .concat(cleanBody.substr(0, lengthToFill))
       .concat('...');
   };
-  // ===end other
-}
 
-// Types and Enums
-export enum ECtrlNames {
-  coverImage = 'coverImage',
-  title = 'title',
-  intro = 'intro',
-  body = 'body',
-  tags = 'tags',
-  none = 'none',
 }

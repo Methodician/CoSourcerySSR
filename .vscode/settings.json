@@ -12,6 +12,7 @@
     "cosourcery",
     "createarticle",
     "downvote",
+    "slugify",
     "upvote"
   ],
   "html.format.wrapAttributes": "force-expand-multiline",

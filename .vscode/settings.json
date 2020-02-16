@@ -7,11 +7,13 @@
   "typescript.preferences.quoteStyle": "single",
   "prettier.trailingComma": "es5",
   "cSpell.words": [
+    "changefreq",
     "ckeditor",
     "clickout",
     "cosourcery",
     "createarticle",
     "downvote",
+    "lastmod",
     "slugify",
     "upvote"
   ],

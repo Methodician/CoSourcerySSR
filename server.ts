@@ -8,6 +8,8 @@ import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
 import * as express from 'express';
 import { join } from 'path';
 
+import axios from 'axios';
+
 // Polyfills required for Firebase
 (global as any).XMLHttpRequest = require('xhr2');
 // may also come in handy
@@ -45,23 +47,14 @@ app.set('views', DIST_FOLDER);
 // Example Express Rest API endpoints
 // app.get('/api/**', (req, res) => { });
 
-const generateSiteMap = () => {
+const generateSiteMap = async () => {
   const lastmod = new Date().toISOString();
-  const articleSlugs = [
-    'get-large-fenestrated-leaves-on-your-monstera-deliciosa',
-    'grow-aroids-in-glass',
-    'how-to-re-pot-a-house-plant',
-    'hydroponics-the-kratky-jar',
-    'hydroponics-deep-water-culture',
-    'save-time-and-money-with-your-instant-pot',
-    'how-to-use-google-calendar-as-a-super-charged-to-do-list',
-    'zucchini-bread-vegan',
-    'github-pages-for-the-budding-technical-writer',
-    'grow-some-food-in-kratky-jars',
-    'contributing-to-cosourcery',
-    'how-to-grow-store-bought-celery-at-home-using-hydroponics',
-    'a-quick-list-of-the-pros-and-cons-of-using-hydroponics-kratky-method',
-  ];
+  const slugsUrl = 'https://cosourcery.firebaseio.com/articleData/slugs.json';
+  const usersUrl = 'https://cosourcery.firebaseio.com/userInfo/open.json';
+
+  const responses = await axios.all([axios.get(slugsUrl), axios.get(usersUrl)]);
+  const articleSlugs = Object.keys(responses[0].data);
+  const userIds = Object.keys(responses[1].data);
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset
@@ -83,6 +76,17 @@ const generateSiteMap = () => {
       `https://cosourcery.com/${slug}`,
       lastmod,
       1.0,
+      'monthly',
+    );
+
+    xml += block;
+  }
+
+  for (let id of userIds) {
+    const block = generateUrlBlock(
+      `https://cosourcery.com/profile/${id}`,
+      lastmod,
+      0.5,
       'monthly',
     );
 
@@ -116,8 +120,8 @@ const generateUrlBlock = (
   return xml;
 };
 
-app.get('/sitemap.xml', (req, res) => {
-  const sitemap = generateSiteMap();
+app.get('/sitemap.xml', async (req, res) => {
+  const sitemap = await generateSiteMap();
   res.header('Content-Type', 'text/xml');
   res.send(sitemap);
 });

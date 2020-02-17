@@ -3,19 +3,22 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { map, switchMap } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/article-info';
+import { IVersionPreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StorageService } from '@services/storage.service';
 
 @Component({
-  selector: 'cos-article-preview-card',
-  templateUrl: './article-preview-card.component.html',
-  styleUrls: ['./article-preview-card.component.scss'],
+  selector: 'cos-version-preview-card',
+  templateUrl: './version-preview-card.component.html',
+  styleUrls: [
+    './version-preview-card.component.scss',
+    '../../shared/article-preview-card/article-preview-card.component.scss',
+  ],
 })
-export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
-  @Input() articleData: IArticlePreview;
+export class VersionPreviewCardComponent implements OnInit {
+  @Input() articleVersionData: IVersionPreview;
   coverImageUrl = '';
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private unsubscribe: Subject<void> = new Subject();
@@ -27,7 +30,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.watchCoverImageUrl();
+    this.coverImageUrl = this.articleVersionData.imageUrl;
     this.isArticleBookmarked()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(val => {
@@ -42,7 +45,9 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
 
   watchCoverImageUrl = () => {
     this.storageSvc
-      .getImageUrl(`articleCoverThumbnails/${this.articleData.articleId}`)
+      .getImageUrl(
+        `articleCoverThumbnails/${this.articleVersionData.articleId}`,
+      )
       .subscribe(url => {
         this.coverImageUrl = url;
       });
@@ -60,7 +65,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
     this.authSvc.authInfo$.pipe(
       switchMap(info =>
         this.articleSvc
-          .singleBookmarkRef(info.uid, this.articleData.articleId)
+          .singleBookmarkRef(info.uid, this.articleVersionData.articleId)
           .valueChanges(),
       ),
       map(bookmark => !!bookmark),
@@ -70,7 +75,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
         const uid = this.authSvc.authInfo$.value.uid,
-          aid = this.articleData.articleId,
+          aid = this.articleVersionData.articleId,
           isbookmarked = this.isArticleBookmarked$.value;
         if (isbookmarked) {
           this.articleSvc.unBookmarkArticle(uid, aid);

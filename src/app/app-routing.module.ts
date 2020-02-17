@@ -3,12 +3,14 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from '@components/home/home.component';
 import { ArticleComponent } from '@components/article/article.component';
+import { ArticleHistoryComponent } from '@components/article-history/article-history.component';
 import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
 import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { RegisterComponent } from '@components/user/register/register.component';
 import { AuthGuard } from '@guards/auth.guard';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 import { UnsavedChangesGuard } from '@guards/unsaved-changes.guard';
+import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -17,6 +19,14 @@ const routes: Routes = [
     path: 'article/:id',
     component: ArticleComponent,
     canDeactivate: [UnsavedChangesGuard],
+  },
+  {
+    path: 'article/:id/history',
+    component: ArticleHistoryComponent,
+  },
+  {
+    path: 'article/:id/history/:versionId',
+    component: VersionDetailComponent,
   },
   {
     path: 'createarticle',

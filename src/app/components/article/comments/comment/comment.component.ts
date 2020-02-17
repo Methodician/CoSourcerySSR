@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'cos-comment',
   templateUrl: './comment.component.html',
-  styleUrls: ['./comment.component.scss'],
+  styleUrls: ['./comment.component.scss']
 })
 export class CommentComponent implements OnInit, OnDestroy {
   @Input() comment: IComment;
@@ -29,6 +29,8 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.authorSubscription = this.userSvc
       .userRef(this.comment.authorId)
       .valueChanges()
-      .subscribe(user => (this.authorInfo = new CUserInfo(user)));
-  };
+      .subscribe(user => {
+        this.authorInfo = new CUserInfo(user);
+      });
+  }
 }

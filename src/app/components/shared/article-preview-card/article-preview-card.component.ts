@@ -23,7 +23,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   constructor(
     private articleSvc: ArticleService,
     private authSvc: AuthService,
-    private storageSvc: StorageService
+    private storageSvc: StorageService,
   ) {}
 
   ngOnInit() {
@@ -61,9 +61,9 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       switchMap(info =>
         this.articleSvc
           .singleBookmarkRef(info.uid, this.articleData.articleId)
-          .valueChanges()
+          .valueChanges(),
       ),
-      map(bookmark => !!bookmark)
+      map(bookmark => !!bookmark),
     );
 
   onToggleBookmark = () => {
@@ -71,8 +71,8 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       if (isSignedIn) {
         const uid = this.authSvc.authInfo$.value.uid,
           aid = this.articleData.articleId,
-          isBookemarked = this.isArticleBookmarked$.value;
-        if (isBookemarked) {
+          isbookmarked = this.isArticleBookmarked$.value;
+        if (isbookmarked) {
           this.articleSvc.unBookmarkArticle(uid, aid);
         } else {
           this.articleSvc.bookmarkArticle(uid, aid);

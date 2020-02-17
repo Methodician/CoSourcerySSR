@@ -13,9 +13,9 @@ import { StorageService } from '@services/storage.service';
   selector: 'cos-version-preview-card',
   templateUrl: './version-preview-card.component.html',
   styleUrls: [
-    './version-preview-card.component.scss', 
+    './version-preview-card.component.scss',
     '../../shared/article-preview-card/article-preview-card.component.scss',
-  ]
+  ],
 })
 export class VersionPreviewCardComponent implements OnInit {
   @Input() articleVersionData: IVersionPreview;
@@ -26,7 +26,7 @@ export class VersionPreviewCardComponent implements OnInit {
   constructor(
     private articleSvc: ArticleService,
     private authSvc: AuthService,
-    private storageSvc: StorageService
+    private storageSvc: StorageService,
   ) {}
 
   ngOnInit() {
@@ -45,7 +45,9 @@ export class VersionPreviewCardComponent implements OnInit {
 
   watchCoverImageUrl = () => {
     this.storageSvc
-      .getImageUrl(`articleCoverThumbnails/${this.articleVersionData.articleId}`)
+      .getImageUrl(
+        `articleCoverThumbnails/${this.articleVersionData.articleId}`,
+      )
       .subscribe(url => {
         this.coverImageUrl = url;
       });
@@ -64,9 +66,9 @@ export class VersionPreviewCardComponent implements OnInit {
       switchMap(info =>
         this.articleSvc
           .singleBookmarkRef(info.uid, this.articleVersionData.articleId)
-          .valueChanges()
+          .valueChanges(),
       ),
-      map(bookmark => !!bookmark)
+      map(bookmark => !!bookmark),
     );
 
   onToggleBookmark = () => {
@@ -74,8 +76,8 @@ export class VersionPreviewCardComponent implements OnInit {
       if (isSignedIn) {
         const uid = this.authSvc.authInfo$.value.uid,
           aid = this.articleVersionData.articleId,
-          isBookemarked = this.isArticleBookmarked$.value;
-        if (isBookemarked) {
+          isbookmarked = this.isArticleBookmarked$.value;
+        if (isbookmarked) {
           this.articleSvc.unBookmarkArticle(uid, aid);
         } else {
           this.articleSvc.bookmarkArticle(uid, aid);

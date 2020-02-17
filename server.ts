@@ -73,7 +73,7 @@ const generateSiteMap = async () => {
 
   for (let slug of articleSlugs) {
     const block = generateUrlBlock(
-      `https://cosourcery.com/${slug}`,
+      `https://cosourcery.com/article/${slug}`,
       lastmod,
       1.0,
       'monthly',

@@ -35,7 +35,7 @@ import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
-  'articleState'
+  'articleState',
 );
 
 @Component({
@@ -100,7 +100,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private userSvc: UserService,
     private authSvc: AuthService,
     private dialogSvc: DialogService,
-    private seoSvc: SeoService
+    private seoSvc: SeoService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -143,8 +143,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
               observer.complete();
             });
           } else return this.watchArticle$(id);
-        }
-      )
+        },
+      ),
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleState = article;
@@ -155,26 +155,33 @@ export class ArticleComponent implements OnInit, OnDestroy {
     });
   };
 
-  watchArticleIdAndStatus$: () => Observable<{id: any, isNew: boolean}> = () => {
+  watchArticleIdAndStatus$: () => Observable<{
+    id: any;
+    isNew: boolean;
+  }> = () => {
     return this.route.params.pipe(
       switchMap(params => {
         let status$ = of({ id: null, isNew: false });
-        if (params['id']) status$ = this.articleSvc.getIdFromSlugOrId(params['id']).pipe(map(id => ({ id, isNew: false })));
-        else status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
+        if (params['id'])
+          status$ = this.articleSvc
+            .getIdFromSlugOrId(params['id'])
+            .pipe(map(id => ({ id, isNew: false })));
+        else
+          status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
         status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
-          if(!!status.id){
+          if (!!status.id) {
             this.watchArticleEditors(status.id);
           }
-        })
-        return status$
-      })
+        });
+        return status$;
+      }),
     );
   };
 
   watchArticle$ = id => {
     const preExisting: IArticleDetail = this.state.get(
       ARTICLE_STATE_KEY,
-      null as any
+      null as any,
     );
     const article$ = this.articleSvc
       .articleDetailRef(id)
@@ -183,23 +190,23 @@ export class ArticleComponent implements OnInit, OnDestroy {
         map(article =>
           article
             ? (this.articleSvc.processArticleTimestamps(
-              article
-            ) as IArticleDetail)
-            : null
+                article,
+              ) as IArticleDetail)
+            : null,
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-        startWith(preExisting)
+        startWith(preExisting),
       );
     return article$;
   };
 
-  watchArticleEditors = (id) => {
+  watchArticleEditors = id => {
     this.articleSvc
       .currentEditorsRef(id)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
-        takeUntil(this.unsubscribe)
+        takeUntil(this.unsubscribe),
       )
       .subscribe(keys => {
         const currentEditors = {};
@@ -223,7 +230,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           } else {
             this.dialogSvc.openMessageDialog(
               'Must be signed in',
-              'You can not save changes without signing in or registering'
+              'You can not save changes without signing in or registering',
             );
           }
         });
@@ -233,15 +240,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  updateUserEditingStatus = async (status: boolean) => this.articleSvc.updateArticleEditStatus(
-    this.articleId,
-    this.authSvc.authInfo$.value.uid,
-    status
-  );
+  updateUserEditingStatus = async (status: boolean) =>
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.authSvc.authInfo$.value.uid,
+      status,
+    );
 
   resetEditStates = () => {
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;  
+    // this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
   };
@@ -284,7 +292,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       if (!isSignedIn) {
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
-          'You can not save changes without signing in or registering'
+          'You can not save changes without signing in or registering',
         );
         return;
       }
@@ -295,19 +303,19 @@ export class ArticleComponent implements OnInit, OnDestroy {
           // It's not new so just update existing and return
           try {
             const updateResult = await this.articleSvc.updateArticle(
-              this.articleState
+              this.articleState,
             );
             this.resetEditSessionTimeout();
             await this.resetEditStates();
             // HACKY: see associated note in UpdateArticle inside ArticleService
-            if( updateResult && updateResult[2]){
-              this.router.navigate([`article/${updateResult[2]}`])
+            if (updateResult && updateResult[2]) {
+              this.router.navigate([`article/${updateResult[2]}`]);
             }
           } catch (error) {
             this.dialogSvc.openMessageDialog(
               'Error saving article',
               'Attempting to save your changes returned the following error',
-              error.message || error
+              error.message || error,
             );
           } finally {
             coverImageSub.unsubscribe();
@@ -319,7 +327,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
             await this.articleSvc.createArticle(
               this.loggedInUser,
               this.articleState,
-              this.articleId
+              this.articleId,
             );
             this.resetEditSessionTimeout();
             // TODO: Ensure unsaved changes are actually being checked upon route change
@@ -329,7 +337,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
             this.dialogSvc.openMessageDialog(
               'Error creating article',
               'Attempting to create the article returned the following error. If this persists, please let us know...',
-              `Error: ${error.message || error}`
+              `Error: ${error.message || error}`,
             );
           } finally {
             if (coverImageSub) coverImageSub.unsubscribe();
@@ -352,7 +360,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       try {
         const { task, ref } = this.articleSvc.uploadCoverImage(
           this.articleId,
-          this.coverImageFile
+          this.coverImageFile,
         );
 
         this.coverImageUploadTask = task;
@@ -368,7 +376,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           .openProgressDialog(
             'Uploading new cover image',
             'You can hide this dialog while you wait, or cancel the upload to go back to editing',
-            task.percentageChanges()
+            task.percentageChanges(),
           )
           .afterClosed()
           .subscribe(shouldCancel => {
@@ -409,7 +417,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       'Are you still there?',
       'Your changes will be discarded and the page will reload so that others can have a chance to make edits.',
       "I'm done. Discard my changes now",
-      "I'm still working. Give me more time."
+      "I'm still working. Give me more time.",
     );
 
     response$.afterClosed().subscribe(shouldEndSession => {
@@ -425,7 +433,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .openConfirmDialog(
         'Undo Edits',
         'Any unsaved changes will be discarded and the page will refresh.',
-        'Are you sure?'
+        'Are you sure?',
       )
       .afterClosed();
 
@@ -459,7 +467,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           this.dialogSvc.openMessageDialog(
             'Edit Locked',
             `The user "${cUser.displayName()}" is currently editing this article.`,
-            'Please try again later.'
+            'Please try again later.',
           );
         });
     } else {
@@ -491,7 +499,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return this.ctrlBeingEdited === ctrl;
   };
 
-  isUserEditingArticle = () => !!this.currentArticleEditors[this.authSvc.authInfo$.value.uid];
+  isUserEditingArticle = () =>
+    !!this.currentArticleEditors[this.authSvc.authInfo$.value.uid];
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;

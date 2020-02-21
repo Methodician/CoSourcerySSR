@@ -1,94 +1,125 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+import { Storage } from '@google-cloud/storage';
+const gcs = new Storage();
+
+import * as path from 'path';
+import * as os from 'os';
+import * as fs from 'fs';
+
+import * as cpp from 'child-process-promise';
+
 admin.initializeApp();
 const adminFS = admin.firestore();
 const adminDB = admin.database();
 
-export const trackCommentDeletions = functions.database.ref('commentData/comments/{commentKey}/removedAt').onCreate(async (snap, context) => {
-  const commentKey = context.params.commentKey;
-  const commentRef = snap.ref.parent;
+export const trackCommentDeletions = functions.database
+  .ref('commentData/comments/{commentKey}/removedAt')
+  .onCreate(async (snap, context) => {
+    const commentKey = context.params.commentKey;
+    const commentRef = snap.ref.parent;
 
-  if(!commentRef || !commentRef.parent || !commentRef.parent.parent) throw new Error("one of the references is null or undefined")
+    if (!commentRef || !commentRef.parent || !commentRef.parent.parent)
+      throw new Error('one of the references is null or undefined');
 
-  const archiveRef = commentRef.parent.parent.child(`commentArchive/${commentKey}`);
-  const commentSnap = await commentRef.once('value').then();
-  return Promise.all([
+    const archiveRef = commentRef.parent.parent.child(
+      `commentArchive/${commentKey}`,
+    );
+    const commentSnap = await commentRef.once('value').then();
+    return Promise.all([
       archiveRef.set(commentSnap.val()),
-      commentRef.update({ text: 'This comment was removed.' })
-  ]);
-})
-
+      commentRef.update({ text: 'This comment was removed.' }),
+    ]);
+  });
 
 const trackArticleAuthorship = (article: any) => {
   const authorId = article.authorId;
   const articleId = article.articleId;
   const createdAt = new Date(article.timestamp.toDate()).getTime();
-  const ref = adminDB.ref(`userInfo/articlesAuthoredPerUser/${authorId}/${articleId}`);
+  const ref = adminDB.ref(
+    `userInfo/articlesAuthoredPerUser/${authorId}/${articleId}`,
+  );
   return ref.set(createdAt);
-}
+};
 
 const createArticlePreview = (article: any, id: string) => {
   const previewRef = adminFS.doc(`articleData/articles/previews/${id}`);
   const preview = previewFromArticle(article);
 
-  return previewRef.set(preview).catch(error => console.log(error))
-}
+  return previewRef.set(preview).catch(error => console.log(error));
+};
 
-const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview  => {
-  const { articleId, authorId, title, introduction, lastUpdated, timestamp, version, editors, commentCount, viewCount, tags, imageUrl, imageAlt } = articleObject;
+const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
+  const {
+    articleId,
+    authorId,
+    title,
+    introduction,
+    lastUpdated,
+    timestamp,
+    version,
+    editors,
+    commentCount,
+    viewCount,
+    tags,
+    imageUrl,
+    imageAlt,
+    slug,
+  } = articleObject;
   const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
 
   const preview: IArticlePreview = {
-    articleId, authorId, title, introduction, imageAlt, lastUpdated, timestamp, version, editors, commentCount, viewCount, tags, isFlagged: false, imageUrl: previewImageUrl, slug: slugify(title)
-  }
+    articleId,
+    authorId,
+    title,
+    introduction,
+    imageAlt,
+    lastUpdated,
+    timestamp,
+    version,
+    editors,
+    commentCount,
+    viewCount,
+    tags,
+    isFlagged: false,
+    imageUrl: previewImageUrl,
+    slug,
+  };
 
   return preview;
-}
+};
 
+export const onCreateArticleDetail = functions.firestore
+  .document('articleData/articles/articles/{articleId}')
+  .onCreate(async (snap, context) => {
+    const id = context.params.articleId;
+    const article = snap.data();
 
-export const onCreateArticleDetail = functions.firestore.document('articleData/articles/articles/{articleId}').onCreate(async (snap, context) => {
-  const id = context.params.articleId;
-  const article = snap.data();
+    try {
+      console.log('handling ArticleDetail creation');
+      await trackArticleAuthorship(article);
+      await createArticlePreview(article, id);
+    } catch (error) {
+      console.error('There was an issue handling article creation', error);
+    }
+  });
 
-  try {
-    console.log("handling ArticleDetail creation")
-    await trackArticleAuthorship(article);
-    await createArticlePreview(article, id)
-  } catch (error) {
-    console.error("There was an issue handling article creation", error)
-  }
-})
+export const onWriteArticleDetail = functions.firestore
+  .document('articleData/articles/articles/{articleId}')
+  .onWrite(async (change, context) => {
+    const article = change.after.data();
+    const id = context.params.articleId;
 
-export const onWriteArticleDetail = functions.firestore.document('articleData/articles/articles/{articleId}').onWrite(async (change, context) => {
-  const article = change.after.data();
-  const id = context.params.articleId;
+    if (context.eventType !== 'google.firestore.document.delete') {
+      console.log('handling Article Detail update');
+      return createArticlePreview(article, id);
+    }
+  });
 
-  if(context.eventType !== 'google.firestore.document.delete') {
-    console.log("handling Article Detail update")
-    return createArticlePreview(article, id);
-  }
-})
 
 
 // TODO: Figure out a good way to share models and functions between app and cloud
-
-// TODO: This is deployed but I realize now it's silly because the detail object should already have a slug. Please update it.
-const slugify = (string: String) => {
-  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-  const p = new RegExp(a.split('').join('|'), 'g')
-
-  return string.toString().toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, '') // Trim - from end of text
-}
-
 
 interface IArticlePreview {
   articleId: string;

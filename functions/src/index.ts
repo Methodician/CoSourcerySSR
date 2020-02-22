@@ -47,10 +47,14 @@ const createArticlePreview = (article: any, id: string) => {
   const previewRef = adminFS.doc(`articleData/articles/previews/${id}`);
   const preview = previewFromArticle(article);
 
+  console.log('returning article preview with metadata =');
+  console.log(preview.coverImageMeta);
   return previewRef.set(preview).catch(error => console.log(error));
 };
 
 const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
+  console.log('receiving article with metadata =');
+  console.log(articleObject.coverImageMeta);
   const {
     articleId,
     authorId,
@@ -66,6 +70,7 @@ const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
     imageUrl,
     imageAlt,
     slug,
+    coverImageMeta,
   } = articleObject;
   const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
 
@@ -85,6 +90,7 @@ const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
     isFlagged: false,
     imageUrl: previewImageUrl,
     slug,
+    coverImageMeta,
   };
 
   return preview;
@@ -130,7 +136,7 @@ export const onFileUpload = functions.storage
       }
       if (filePath?.startsWith('articleCoverImages/')) {
         // It was a cover image.
-        await createCoverImageThumbnail(object);
+        await handleCoverImageUpload(object);
       }
     }
   });
@@ -150,7 +156,6 @@ const saveImageRotation = async (object: functions.storage.ObjectMetadata) => {
     `${articleId}${bodyImageId ? '_' + bodyImageId : ''}`,
   );
 
-  let metadata: string;
   // Download file from bucket
   // ToDo: ensure we aren't downloading it multiple times in these different operations
   const bucket = gcs.bucket(fileBucket);
@@ -165,21 +170,111 @@ const saveImageRotation = async (object: functions.storage.ObjectMetadata) => {
     return;
   }
 
-  metadata = metaObject;
   const properties = metaObject['Properties'];
-  const orientation = properties['exif:Orientation'];
-  console.log('orientation', orientation);
+  let orientation = properties['exif:Orientation'];
+  orientation = orientation || 0;
 
-  await admin
-    .database()
-    .ref(`${articleId}${bodyImageId ? '_' + bodyImageId : ''}`)
-    .set(metadata);
-
-  console.log({ filePath, articleId, bodyImageId, metadata });
   fs.unlinkSync(tempLocalFile);
   console.log('cleanup successful');
 
   return;
+};
+
+const handleCoverImageUpload = async (
+  object: functions.storage.ObjectMetadata,
+) => {
+  const { bucket: fileBucket, name: filePath, contentType } = object;
+
+  if (!filePath) return;
+
+  // fileName should be an articleId...
+  const articleId = path.basename(filePath);
+  const bucket = gcs.bucket(fileBucket);
+  const tempFilePath = path.join(os.tmpdir(), articleId);
+
+  // Downloading once for all operations. Avoid doing this more times than necessary
+  await bucket.file(filePath).download({ destination: tempFilePath });
+
+  const orientation = await getImageEXIFOrientation(tempFilePath);
+
+  await uploadCoverImageOrientation(orientation, articleId);
+  await createCoverImageThumbnail(
+    tempFilePath,
+    articleId,
+    contentType || 'none',
+    fileBucket,
+  );
+
+  // Delete local file to free up space
+  fs.unlinkSync(tempFilePath);
+  return null;
+};
+
+const uploadCoverImageOrientation = (
+  orientation: number,
+  articleId: string,
+) => {
+  const firestore = admin.firestore();
+  const docRef = firestore
+    .collection('articleData')
+    .doc('articles')
+    .collection('articles')
+    .doc(articleId);
+  return docRef.update({ 'coverImageMeta.orientation': orientation });
+};
+
+/**
+ *
+ * @param localFilePath the path for a file that has been downloaded locally on server
+ */
+const getImageEXIFOrientation = async (
+  localFilePath: string,
+): Promise<number> => {
+  const result = await cpp.spawn('identify', ['-verbose', localFilePath], {
+    capture: ['stdout', 'stderr'],
+  });
+  const metaObject = imageMagickOutputToObject(result.stdout) as any;
+  if (!metaObject) {
+    console.log('no metadata for image. Using 0 for image orientation.');
+
+    return 0;
+  }
+
+  const properties = metaObject['Properties'];
+  const orientation = properties['exif:Orientation'];
+
+  return orientation || 0;
+};
+
+/**
+ * This modifies the file. Avoid calling it before other operations that use the original file just in case...
+ *
+ * @param localFilePath the path for a file that has been downloaded locally on server
+ * @param articleId id of the article the cover image is for
+ * @param contentType image content type
+ * @param fileBucket name of the file bucket for use in creating a bucket reference thingy
+ */
+const createCoverImageThumbnail = async (
+  localFilePath: string,
+  articleId: string,
+  contentType: string,
+  fileBucket: string,
+) => {
+  console.log('creating cover image thumbnail');
+
+  await cpp.spawn('convert', [
+    localFilePath,
+    '-thumbnail',
+    '260X175>',
+    localFilePath,
+  ]);
+
+  const metadata = { contentType: contentType };
+  const thumbFilePath = path.join('articleCoverThumbnails', articleId);
+  const bucket = gcs.bucket(fileBucket);
+
+  // Upload the thumbnail
+  await bucket.upload(localFilePath, { destination: thumbFilePath, metadata });
 };
 
 /**
@@ -226,7 +321,6 @@ const imageMagickOutputToObject = (input: string) => {
   let output = lines.join('');
   output = '{' + output.substring(0, output.length - 1) + '}'; // remove trailing comma.
   output = JSON.parse(output);
-  console.log('Metadata extracted from image', output);
 
   return output;
 };
@@ -239,93 +333,7 @@ const makeKeyFirebaseCompatible = (key: string) => {
   return key.replace(/\./g, '*');
 };
 
-// const getExifData = async (file: File, callback: Function) => {
-// // -2: not jpeg
-// // -1: not defined
-//   const reader = new FileReader();
-
-//   reader.onload = (event: ProgressEvent) => {
-//     if (!event.target) return;
-
-//     const file = event.target as FileReader;
-//     const view = new DataView(file.result as ArrayBuffer);
-
-//     if (view.getUint16(0, false) != 0xFFD8) {
-//         return callback(-2);
-//     }
-
-//     const length = view.byteLength
-//     let offset = 2;
-
-//     while (offset < length)
-//     {
-//         if (view.getUint16(offset+2, false) <= 8) return callback(-1);
-//         let marker = view.getUint16(offset, false);
-//         offset += 2;
-
-//         if (marker == 0xFFE1) {
-//           if (view.getUint32(offset += 2, false) != 0x45786966) {
-//             return callback(-1);
-//           }
-
-//           let little = view.getUint16(offset += 6, false) == 0x4949;
-//           offset += view.getUint32(offset + 4, little);
-//           let tags = view.getUint16(offset, little);
-//           offset += 2;
-//           for (let i = 0; i < tags; i++) {
-//             if (view.getUint16(offset + (i * 12), little) == 0x0112) {
-//               return callback(view.getUint16(offset + (i * 12) + 8, little));
-//             }
-//           }
-//         } else if ((marker & 0xFF00) != 0xFF00) {
-//             break;
-//         }
-//         else {
-//             offset += view.getUint16(offset, false);
-//         }
-//     }
-//     return callback(-1);
-//   };
-
-//   reader.readAsArrayBuffer(file);
-//   };
-// };
-
-const createCoverImageThumbnail = async (
-  object: functions.storage.ObjectMetadata,
-) => {
-  console.log('creating cover image thumbnail');
-
-  const { bucket: fileBucket, name: filePath, contentType } = object;
-  if (!filePath) return;
-
-  // fileName should be an articleId...
-  const fileName = path.basename(filePath);
-  const bucket = gcs.bucket(fileBucket);
-  const tempFilePath = path.join(os.tmpdir(), fileName);
-  const metadata = { contentType: contentType };
-
-  // looks like cover images on preview card ranges from 260x175 to 360x175 - let's go with a standard 260x175px thumbnail
-  await bucket.file(filePath).download({ destination: tempFilePath });
-  await cpp.spawn('convert', [
-    tempFilePath,
-    '-thumbnail',
-    '260X175>',
-    tempFilePath,
-  ]);
-
-  const thumbFilePath = path.join('articleCoverThumbnails', fileName);
-
-  // Upload the thumbnail
-  await bucket.upload(tempFilePath, { destination: thumbFilePath, metadata });
-
-  // Delete local file to free up space
-  fs.unlinkSync(tempFilePath);
-  return null;
-};
-
 // TODO: Figure out a good way to share models and functions between app and cloud
-
 interface IArticlePreview {
   articleId: string;
   authorId: string;
@@ -342,6 +350,7 @@ interface IArticlePreview {
   viewCount?: number;
   tags?: string[];
   isFlagged?: boolean;
+  coverImageMeta?: object;
 }
 
 interface IArticleDetail {
@@ -364,12 +373,14 @@ interface IArticleDetail {
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
-  bodyImages?: IBodyImageMap;
+  coverImageMeta?: object;
+  bodyImagesMeta?: IBodyImageMap;
 }
 
 interface IBodyImageMeta {
   orientation: number;
-  path: string;
+  // Should remove path...
+  path?: string;
 }
 
 interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}

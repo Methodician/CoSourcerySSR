@@ -15,6 +15,7 @@
     "downvote",
     "exif",
     "lastmod",
+    "rtdb",
     "slugify",
     "upvote"
   ],

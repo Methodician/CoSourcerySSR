@@ -8,6 +8,7 @@ import 'firebase/storage';
 import * as exif from 'exif-js';
 
 import { IBodyImageMeta, IBodyImageMap } from '@models/article-info';
+import { ArticleService, orientationDegrees } from '@services/article.service';
 
 @Component({
   selector: 'cos-body-edit',
@@ -54,7 +55,7 @@ export class BodyEditComponent implements OnInit {
     toggleBtnOffset: 0,
   };
 
-  constructor() {
+  constructor(private articleSvc: ArticleService) {
     this.importEditor();
   }
 
@@ -129,14 +130,14 @@ export class BodyEditComponent implements OnInit {
       return;
     } else if (this.bodyImages[imgCode]) {
       // it's in the image map so set the rotation from DB
-      rotation = this.exifOrientationToDegrees(
+      rotation = this.articleSvc.exifOrientationToDegrees(
         this.bodyImages[imgCode].orientation,
       );
     } else {
       // Find correct orientation and add it to the map
       let orientation = await this.getExifOrientation(img);
       orientation = orientation || 0;
-      rotation = this.exifOrientationToDegrees(orientation);
+      rotation = this.articleSvc.exifOrientationToDegrees(orientation);
 
       const imageMeta: IBodyImageMeta = {
         path: imgPath,
@@ -161,25 +162,4 @@ export class BodyEditComponent implements OnInit {
     });
     return promise;
   }
-
-  exifOrientationToDegrees = (orientation): orientationDegrees => {
-    switch (orientation) {
-      case 1:
-      case 2:
-        return 0;
-      case 3:
-      case 4:
-        return 180;
-      case 5:
-      case 6:
-        return 90;
-      case 7:
-      case 8:
-        return 270;
-      default:
-        return 0;
-    }
-  };
 }
-
-export type orientationDegrees = 0 | 90 | 180 | 270;

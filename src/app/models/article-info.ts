@@ -16,7 +16,6 @@ export interface IArticlePreview {
   viewCount?: number;
   tags?: string[];
   isFlagged?: boolean;
-  coverImageMeta?: object;
 }
 
 export interface IVersionPreview {
@@ -36,7 +35,6 @@ export interface IVersionPreview {
   viewCount?: number;
   tags?: string[];
   isFlagged?: boolean;
-  coverImageMeta?: object;
 }
 
 export interface IArticleDetail {
@@ -59,8 +57,6 @@ export interface IArticleDetail {
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
-  coverImageMeta?: object;
-  bodyImagesMeta?: IBodyImageMap;
 }
 
 export interface IVersionDetail {
@@ -83,8 +79,10 @@ export interface IVersionDetail {
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
-  coverImageMeta?: object;
-  bodyImagesMeta?: IBodyImageMap;
+}
+
+export interface ICoverImageMeta {
+  orientation?: number;
 }
 
 export interface IBodyImageMeta {

@@ -47,14 +47,10 @@ const createArticlePreview = (article: any, id: string) => {
   const previewRef = adminFS.doc(`articleData/articles/previews/${id}`);
   const preview = previewFromArticle(article);
 
-  console.log('returning article preview with metadata =');
-  console.log(preview.coverImageMeta);
   return previewRef.set(preview).catch(error => console.log(error));
 };
 
 const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
-  console.log('receiving article with metadata =');
-  console.log(articleObject.coverImageMeta);
   const {
     articleId,
     authorId,
@@ -70,7 +66,6 @@ const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
     imageUrl,
     imageAlt,
     slug,
-    coverImageMeta,
   } = articleObject;
   const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
 
@@ -90,7 +85,6 @@ const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
     isFlagged: false,
     imageUrl: previewImageUrl,
     slug,
-    coverImageMeta,
   };
 
   return preview;
@@ -130,7 +124,7 @@ export const onFileUpload = functions.storage
 
     if (contentType?.startsWith('image/')) {
       // An image was uploaded.
-      await saveImageRotation(object);
+      // await saveImageRotation(object);
       if (filePath?.startsWith('articleBodyImages/')) {
         // It was a body image
       }
@@ -141,44 +135,44 @@ export const onFileUpload = functions.storage
     }
   });
 
-const saveImageRotation = async (object: functions.storage.ObjectMetadata) => {
-  const { name: filePath, bucket: fileBucket } = object;
-  if (!filePath) return;
+// const saveImageRotation = async (object: functions.storage.ObjectMetadata) => {
+//   const { name: filePath, bucket: fileBucket } = object;
+//   if (!filePath) return;
 
-  const parts = filePath.split('/');
-  const articleId = parts[1];
-  const bodyImageId = parts[2];
+//   const parts = filePath.split('/');
+//   const articleId = parts[1];
+//   const bodyImageId = parts[2];
 
-  console.log('saving image rotation');
+//   console.log('saving image rotation');
 
-  const tempLocalFile = path.join(
-    os.tmpdir(),
-    `${articleId}${bodyImageId ? '_' + bodyImageId : ''}`,
-  );
+//   const tempLocalFile = path.join(
+//     os.tmpdir(),
+//     `${articleId}${bodyImageId ? '_' + bodyImageId : ''}`,
+//   );
 
-  // Download file from bucket
-  // ToDo: ensure we aren't downloading it multiple times in these different operations
-  const bucket = gcs.bucket(fileBucket);
-  await bucket.file(filePath).download({ destination: tempLocalFile });
+//   // Download file from bucket
+//   // ToDo: ensure we aren't downloading it multiple times in these different operations
+//   const bucket = gcs.bucket(fileBucket);
+//   await bucket.file(filePath).download({ destination: tempLocalFile });
 
-  const result = await cpp.spawn('identify', ['-verbose', tempLocalFile], {
-    capture: ['stdout', 'stderr'],
-  });
-  const metaObject = imageMagickOutputToObject(result.stdout) as any;
-  if (!metaObject) {
-    console.error('no metadata for image');
-    return;
-  }
+//   const result = await cpp.spawn('identify', ['-verbose', tempLocalFile], {
+//     capture: ['stdout', 'stderr'],
+//   });
+//   const metaObject = imageMagickOutputToObject(result.stdout) as any;
+//   if (!metaObject) {
+//     console.error('no metadata for image');
+//     return;
+//   }
 
-  const properties = metaObject['Properties'];
-  let orientation = properties['exif:Orientation'];
-  orientation = orientation || 0;
+//   const properties = metaObject['Properties'];
+//   let orientation = properties['exif:Orientation'];
+//   orientation = orientation || 0;
 
-  fs.unlinkSync(tempLocalFile);
-  console.log('cleanup successful');
+//   fs.unlinkSync(tempLocalFile);
+//   console.log('cleanup successful');
 
-  return;
-};
+//   return;
+// };
 
 const handleCoverImageUpload = async (
   object: functions.storage.ObjectMetadata,
@@ -214,13 +208,10 @@ const uploadCoverImageOrientation = (
   orientation: number,
   articleId: string,
 ) => {
-  const firestore = admin.firestore();
-  const docRef = firestore
-    .collection('articleData')
-    .doc('articles')
-    .collection('articles')
-    .doc(articleId);
-  return docRef.update({ 'coverImageMeta.orientation': orientation });
+  const rtdb = admin.database();
+  const dbRef = rtdb.ref(`articleData/meta/${articleId}/imageData/coverImage`);
+
+  return dbRef.update({ orientation });
 };
 
 /**
@@ -350,7 +341,6 @@ interface IArticlePreview {
   viewCount?: number;
   tags?: string[];
   isFlagged?: boolean;
-  coverImageMeta?: object;
 }
 
 interface IArticleDetail {
@@ -373,17 +363,15 @@ interface IArticleDetail {
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
-  coverImageMeta?: object;
-  bodyImagesMeta?: IBodyImageMap;
 }
 
-interface IBodyImageMeta {
-  orientation: number;
-  // Should remove path...
-  path?: string;
-}
+// interface IBodyImageMeta {
+//   orientation: number;
+//   // Should remove path...
+//   path?: string;
+// }
 
-interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}
+// interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}
 
 interface IKeyMap<T> {
   [key: string]: T;

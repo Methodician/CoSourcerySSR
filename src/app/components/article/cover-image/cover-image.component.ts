@@ -10,6 +10,7 @@ export class CoverImageComponent {
   @Input() isActive = false;
   @Input() imageUrl: string;
   @Input() imageAlt: string;
+  @Input() articleId: string;
   @Input() parentForm: FormGroup;
 
   @Output() onCtrlToggle = new EventEmitter();

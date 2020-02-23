@@ -1,4 +1,5 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { ArticleService } from '@services/article.service';
 
 @Component({
   selector: 'cos-cover-image-display',
@@ -8,9 +9,30 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 export class CoverImageDisplayComponent {
   @Input() imageUrl;
   @Input() imageAlt;
+  @Input() articleId: string;
+
+  @ViewChild('coverImage', { static: false }) coverImage;
 
   _imageUrl = 'assets/images/logo.svg';
   _imageAlt = 'Cover Image';
+
+  constructor(private articleSvc: ArticleService) {}
+  ngOnInit() {
+    this.articleSvc
+      .coverImageMetaRef(this.articleId)
+      .valueChanges()
+      .subscribe(val => {
+        if (val.orientation) {
+          const rotation = this.articleSvc.exifOrientationToDegrees(
+            +val.orientation,
+          );
+          this.coverImage.nativeElement.setAttribute(
+            'style',
+            `transform:rotate(${rotation}deg);`,
+          );
+        }
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.imageUrl || changes.imageAlt) {

@@ -1,0 +1,20 @@
+[debug] [2020-02-24T22:15:19.204Z] ----------------------------------------------------------------------
+[debug] [2020-02-24T22:15:19.207Z] Command:       C:\Program Files (x86)\Nodist\v-x64\11.13.0\node.exe C:\Program Files (x86)\Nodist\bin\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions:onFileUpload
+[debug] [2020-02-24T22:15:19.207Z] CLI Version:   7.13.1
+[debug] [2020-02-24T22:15:19.207Z] Platform:      win32
+[debug] [2020-02-24T22:15:19.207Z] Node Version:  v11.13.0
+[debug] [2020-02-24T22:15:19.208Z] Time:          Mon Feb 24 2020 14:15:19 GMT-0800 (Pacific Standard Time)
+[debug] [2020-02-24T22:15:19.208Z] ----------------------------------------------------------------------
+[debug] [2020-02-24T22:15:19.208Z] 
+[debug] [2020-02-24T22:15:19.215Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-02-24T22:15:19.216Z] > authorizing via signed-in user
+[debug] [2020-02-24T22:15:19.216Z] [iam] checking project cosourcerytest for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2020-02-24T22:15:19.218Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/cosourcerytest:testIamPermissions  
+
+[debug] [2020-02-24T22:15:19.412Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'cosourcerytest'...
+[info] 
+[info] i  deploying functions
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build

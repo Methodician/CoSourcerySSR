@@ -17,22 +17,22 @@ export class CoverImageDisplayComponent {
   _imageAlt = 'Cover Image';
 
   constructor(private articleSvc: ArticleService) {}
-  ngOnInit() {
-    this.articleSvc
-      .coverImageMetaRef(this.articleId)
-      .valueChanges()
-      .subscribe(val => {
-        if (val.orientation) {
-          const rotation = this.articleSvc.exifOrientationToDegrees(
-            +val.orientation,
-          );
-          this.coverImage.nativeElement.setAttribute(
-            'style',
-            `transform:rotate(${rotation}deg);`,
-          );
-        }
-      });
-  }
+  // ngOnInit() {
+  //   this.articleSvc
+  //     .coverImageMetaRef(this.articleId)
+  //     .valueChanges()
+  //     .subscribe(val => {
+  //       if (val.orientation) {
+  //         const rotation = this.articleSvc.exifOrientationToDegrees(
+  //           +val.orientation,
+  //         );
+  //         this.coverImage.nativeElement.setAttribute(
+  //           'style',
+  //           `transform:rotate(${rotation}deg);`,
+  //         );
+  //       }
+  //     });
+  // }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.imageUrl || changes.imageAlt) {

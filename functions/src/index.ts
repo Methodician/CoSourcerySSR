@@ -177,152 +177,175 @@ export const onFileUpload = functions.storage
 const handleCoverImageUpload = async (
   object: functions.storage.ObjectMetadata,
 ) => {
-  const { bucket: fileBucket, name: filePath, contentType } = object;
+  const {
+    bucket: fileBucket,
+    name: filePath,
+    // contentType,
+    metadata: objectMeta,
+  } = object;
 
-  if (!filePath) return;
+  if (!filePath) {
+    console.error('no file path');
+    return;
+  }
 
   // fileName should be an articleId...
   const articleId = path.basename(filePath);
   const bucket = gcs.bucket(fileBucket);
-  const tempFilePath = path.join(os.tmpdir(), articleId);
+  const tempFilePath = path.join(os.tmpdir(), `coverImage_${articleId}`);
+  // const tempLocalDir = path.dirname(tempFilePath);
 
   // Downloading once for all operations. Avoid doing this more times than necessary
   await bucket.file(filePath).download({ destination: tempFilePath });
 
-  const orientation = await getImageEXIFOrientation(tempFilePath);
+  // const orientation = await getImageEXIFOrientation(tempFilePath);
 
-  await uploadCoverImageOrientation(orientation, articleId);
-  await createCoverImageThumbnail(
-    tempFilePath,
-    articleId,
-    contentType || 'none',
-    fileBucket,
-  );
+  // await uploadCoverImageOrientation(orientation, articleId);
+  // await createCoverImageThumbnail(
+  //   tempFilePath,
+  //   articleId,
+  //   contentType || 'none',
+  //   fileBucket,
+  // );
+
+  console.log('object meta is', objectMeta);
+  if (objectMeta && objectMeta.autoOrient) {
+    console.log('the image was already rotated.');
+  } else if (objectMeta) {
+    console.log('rotating image');
+    await cpp.spawn('convert', [tempFilePath, '-auto-orient', tempFilePath]);
+    objectMeta.autoOrient = 'true';
+    await bucket.upload(tempFilePath, {
+      destination: filePath,
+      metadata: { metadata: objectMeta },
+    });
+    console.log('uploaded rotated file');
+  }
 
   // Delete local file to free up space
   fs.unlinkSync(tempFilePath);
   return null;
 };
 
-const uploadCoverImageOrientation = (
-  orientation: number,
-  articleId: string,
-) => {
-  const rtdb = admin.database();
-  const dbRef = rtdb.ref(`articleData/meta/${articleId}/imageData/coverImage`);
+// const uploadCoverImageOrientation = (
+//   orientation: number,
+//   articleId: string,
+// ) => {
+//   const rtdb = admin.database();
+//   const dbRef = rtdb.ref(`articleData/meta/${articleId}/imageData/coverImage`);
 
-  return dbRef.update({ orientation });
-};
+//   return dbRef.update({ orientation });
+// };
 
-/**
- *
- * @param localFilePath the path for a file that has been downloaded locally on server
- */
-const getImageEXIFOrientation = async (
-  localFilePath: string,
-): Promise<number> => {
-  const result = await cpp.spawn('identify', ['-verbose', localFilePath], {
-    capture: ['stdout', 'stderr'],
-  });
-  const metaObject = imageMagickOutputToObject(result.stdout) as any;
-  if (!metaObject) {
-    console.log('no metadata for image. Using 0 for image orientation.');
+// /**
+//  *
+//  * @param localFilePath the path for a file that has been downloaded locally on server
+//  */
+// const getImageEXIFOrientation = async (
+//   localFilePath: string,
+// ): Promise<number> => {
+//   const result = await cpp.spawn('identify', ['-verbose', localFilePath], {
+//     capture: ['stdout', 'stderr'],
+//   });
+//   const metaObject = imageMagickOutputToObject(result.stdout) as any;
+//   if (!metaObject) {
+//     console.log('no metadata for image. Using 0 for image orientation.');
 
-    return 0;
-  }
+//     return 0;
+//   }
 
-  const properties = metaObject['Properties'];
-  const orientation = properties['exif:Orientation'];
+//   const properties = metaObject['Properties'];
+//   const orientation = properties['exif:Orientation'];
 
-  return orientation || 0;
-};
+//   return orientation || 0;
+// };
 
-/**
- * This modifies the file. Avoid calling it before other operations that use the original file just in case...
- *
- * @param localFilePath the path for a file that has been downloaded locally on server
- * @param articleId id of the article the cover image is for
- * @param contentType image content type
- * @param fileBucket name of the file bucket for use in creating a bucket reference thingy
- */
-const createCoverImageThumbnail = async (
-  localFilePath: string,
-  articleId: string,
-  contentType: string,
-  fileBucket: string,
-) => {
-  console.log('creating cover image thumbnail');
+// /**
+//  * This modifies the file. Avoid calling it before other operations that use the original file just in case...
+//  *
+//  * @param localFilePath the path for a file that has been downloaded locally on server
+//  * @param articleId id of the article the cover image is for
+//  * @param contentType image content type
+//  * @param fileBucket name of the file bucket for use in creating a bucket reference thingy
+//  */
+// const createCoverImageThumbnail = async (
+//   localFilePath: string,
+//   articleId: string,
+//   contentType: string,
+//   fileBucket: string,
+// ) => {
+//   console.log('creating cover image thumbnail');
 
-  await cpp.spawn('convert', [
-    localFilePath,
-    '-thumbnail',
-    '260X175>',
-    localFilePath,
-  ]);
+//   await cpp.spawn('convert', [
+//     localFilePath,
+//     '-thumbnail',
+//     '260X175>',
+//     localFilePath,
+//   ]);
 
-  const metadata = { contentType: contentType };
-  const thumbFilePath = path.join('articleCoverThumbnails', articleId);
-  const bucket = gcs.bucket(fileBucket);
+//   const metadata = { contentType: contentType };
+//   const thumbFilePath = path.join('articleCoverThumbnails', articleId);
+//   const bucket = gcs.bucket(fileBucket);
 
-  // Upload the thumbnail
-  await bucket.upload(localFilePath, { destination: thumbFilePath, metadata });
-};
+//   // Upload the thumbnail
+//   await bucket.upload(localFilePath, { destination: thumbFilePath, metadata });
+// };
 
-/**
- * Convert the output of ImageMagick's `identify -verbose` command to a JavaScript Object.
- */
-const imageMagickOutputToObject = (input: string) => {
-  let previousLineIndent = 0;
-  const lines = input.match(/[^\r\n]+/g);
-  if (!lines) {
-    console.log('no lines to parse for exif');
+// /**
+//  * Convert the output of ImageMagick's `identify -verbose` command to a JavaScript Object.
+//  */
+// const imageMagickOutputToObject = (input: string) => {
+//   let previousLineIndent = 0;
+//   const lines = input.match(/[^\r\n]+/g);
+//   if (!lines) {
+//     console.log('no lines to parse for exif');
 
-    return;
-  }
+//     return;
+//   }
 
-  lines.shift(); // Remove First line
-  lines.forEach((currentLine, index) => {
-    if (!lines) {
-      console.error('lines dissolved while parsing for exif. Weird...');
+//   lines.shift(); // Remove First line
+//   lines.forEach((currentLine, index) => {
+//     if (!lines) {
+//       console.error('lines dissolved while parsing for exif. Weird...');
 
-      return;
-    }
+//       return;
+//     }
 
-    const currentIdent = currentLine.search(/\S/);
-    const line = currentLine.trim();
-    if (line.endsWith(':')) {
-      lines[index] = makeKeyFirebaseCompatible(`"${line.replace(':', '":{')}`);
-    } else {
-      const split = line.replace('"', '\\"').split(': ');
-      split[0] = makeKeyFirebaseCompatible(split[0]);
-      lines[index] = `"${split.join('":"')}",`;
-    }
-    if (currentIdent < previousLineIndent) {
-      lines[index - 1] = lines[index - 1].substring(
-        0,
-        lines[index - 1].length - 1,
-      );
-      lines[index] =
-        new Array(1 + (previousLineIndent - currentIdent) / 2).join('}') +
-        ',' +
-        lines[index];
-    }
-    previousLineIndent = currentIdent;
-  });
-  let output = lines.join('');
-  output = '{' + output.substring(0, output.length - 1) + '}'; // remove trailing comma.
-  output = JSON.parse(output);
+//     const currentIdent = currentLine.search(/\S/);
+//     const line = currentLine.trim();
+//     if (line.endsWith(':')) {
+//       lines[index] = makeKeyFirebaseCompatible(`"${line.replace(':', '":{')}`);
+//     } else {
+//       const split = line.replace('"', '\\"').split(': ');
+//       split[0] = makeKeyFirebaseCompatible(split[0]);
+//       lines[index] = `"${split.join('":"')}",`;
+//     }
+//     if (currentIdent < previousLineIndent) {
+//       lines[index - 1] = lines[index - 1].substring(
+//         0,
+//         lines[index - 1].length - 1,
+//       );
+//       lines[index] =
+//         new Array(1 + (previousLineIndent - currentIdent) / 2).join('}') +
+//         ',' +
+//         lines[index];
+//     }
+//     previousLineIndent = currentIdent;
+//   });
+//   let output = lines.join('');
+//   output = '{' + output.substring(0, output.length - 1) + '}'; // remove trailing comma.
+//   output = JSON.parse(output);
 
-  return output;
-};
+//   return output;
+// };
 
-/**
- * Makes sure the given string does not contain characters that can't be used as Firebase
- * Realtime Database keys such as '.' and replaces them by '*'.
- */
-const makeKeyFirebaseCompatible = (key: string) => {
-  return key.replace(/\./g, '*');
-};
+// /**
+//  * Makes sure the given string does not contain characters that can't be used as Firebase
+//  * Realtime Database keys such as '.' and replaces them by '*'.
+//  */
+// const makeKeyFirebaseCompatible = (key: string) => {
+//   return key.replace(/\./g, '*');
+// };
 
 // TODO: Figure out a good way to share models and functions between app and cloud
 interface IArticlePreview {

@@ -272,25 +272,82 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.patchValue({ tags });
   };
 
-  selectCoverImage = (file: File) => {
-    this.getExifOrientation(file).then(res => console.log(res));
+  selectCoverImage = async (file: File) => {
     const reader = new FileReader();
-    reader.onload = () => {
+    const orientation = await this.getExifOrientation(file);
+    reader.onload = async () => {
+      const rotatedImageUrl = await this.resetOrientation(
+        reader.result as string,
+        orientation,
+      );
       this.articleEditForm.markAsDirty();
-      this.articleEditForm.patchValue({ imageUrl: reader.result });
+      this.articleEditForm.patchValue({ imageUrl: rotatedImageUrl });
     };
     reader.readAsDataURL(file);
     this.coverImageFile = file;
   };
 
-  checkOrientationAndSwitchIt = (imageUrl: string) => {
+  /**
+   * algorithm paraphrased from https://stackoverflow.com/questions/20600800/js-client-side-exif-orientation-rotate-and-mirror-jpeg-images/31273162#31273162
+   */
+  resetOrientation = (srcBase64: string, srcOrientation: number) => {
     const img = new Image();
-    img.onload = () => {
-      const width = img.width,
-        height = img.height,
-        canvas = document.createElement('canvas'),
-        ctx = canvas.getContext('2d');
-    };
+    const promise = new Promise<string>((resolve, reject) => {
+      try {
+        img.onload = () => {
+          const width = img.width,
+            height = img.height,
+            canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+
+          // set proper canvas dimensions before transform & export
+          if (4 < srcOrientation && srcOrientation < 9) {
+            canvas.width = height;
+            canvas.height = width;
+          } else {
+            canvas.width = width;
+            canvas.height = height;
+          }
+
+          // transform context before drawing image
+          switch (srcOrientation) {
+            case 2:
+              ctx.transform(-1, 0, 0, 1, width, 0);
+              break;
+            case 3:
+              ctx.transform(-1, 0, 0, -1, width, height);
+              break;
+            case 4:
+              ctx.transform(1, 0, 0, -1, 0, height);
+              break;
+            case 5:
+              ctx.transform(0, 1, 1, 0, 0, 0);
+              break;
+            case 6:
+              ctx.transform(0, 1, -1, 0, height, 0);
+              break;
+            case 7:
+              ctx.transform(0, -1, -1, 0, height, width);
+              break;
+            case 8:
+              ctx.transform(0, -1, 1, 0, 0, width);
+              break;
+            default:
+              break;
+          }
+
+          // draw image
+          ctx.drawImage(img, 0, 0);
+
+          // export base64
+          resolve(canvas.toDataURL());
+        };
+      } catch (error) {
+        reject(error);
+      }
+    });
+    img.src = srcBase64;
+    return promise;
   };
 
   /**
@@ -438,7 +495,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
         this.coverImageUploadTask = task;
         task.then(() => {
           ref.getDownloadURL().subscribe(imageUrl => {
-            this.articleEditForm.patchValue({ imageUrl });
+            // Was reverting to wrong-orientation images before backend conversion
+            // this.articleEditForm.patchValue({ imageUrl });
+            this.articleState.imageUrl = imageUrl;
             this.coverImageFile = null;
             isComplete$.next(true);
           });

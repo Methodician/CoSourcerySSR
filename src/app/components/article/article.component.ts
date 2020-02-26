@@ -495,8 +495,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         this.coverImageUploadTask = task;
         task.then(() => {
           ref.getDownloadURL().subscribe(imageUrl => {
-            // Was reverting to wrong-orientation images before backend conversion
-            // this.articleEditForm.patchValue({ imageUrl });
             this.articleState.imageUrl = imageUrl;
             this.coverImageFile = null;
             isComplete$.next(true);

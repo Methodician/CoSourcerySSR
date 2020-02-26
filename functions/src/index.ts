@@ -314,12 +314,6 @@ interface IArticleDetail {
   isFlagged?: boolean;
 }
 
-// interface IBodyImageMeta {
-//   orientation: number;
-//   // Should remove path...
-//   path?: string;
-// }
-
 // interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}
 
 interface IKeyMap<T> {

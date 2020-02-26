@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'cos-cover-image-display',
@@ -8,9 +8,6 @@ import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 export class CoverImageDisplayComponent {
   @Input() imageUrl;
   @Input() imageAlt;
-  @Input() articleId: string;
-
-  @ViewChild('coverImage', { static: false }) coverImage;
 
   _imageUrl = 'assets/images/logo.svg';
   _imageAlt = 'Cover Image';

@@ -60,12 +60,9 @@ export class ArticleService {
   // end temp seeding code
 
   // RTDB REF BUILDERS
-  coverImageMetaRef = (articleId: string) =>
-    this.afd.object<ICoverImageMeta>(
-      `articleData/meta/${articleId}/imageData/coverImage`,
-    );
 
   slugIdRef = (slug: string) => this.afd.object(`articleData/slugs/${slug}`);
+
   // FIRESTORE REF BUILDERS
 
   articleDetailRef = (articleId: string) =>

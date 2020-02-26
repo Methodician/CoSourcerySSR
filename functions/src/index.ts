@@ -117,8 +117,15 @@ export const onWriteArticleDetail = functions.firestore
     }
   });
 
-export const onFileUpload = functions.storage
-  .object()
+// Often got memory limit exceeded (arbitrary for same photo sometimes and sometimes not)
+const generousRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 120,
+  memory: '512MB',
+};
+
+export const onFileUpload = functions
+  .runWith(generousRuntimeOptions)
+  .storage.object()
   .onFinalize(async object => {
     const { contentType, name: filePath } = object;
 
@@ -170,16 +177,44 @@ const handleCoverImageUpload = async (
     contentType || 'none',
   );
 
-  await createCoverImageThumbnail(
+  const coverImageThumbnailPromise = createCoverImageThumbnail(
     tempFilePath,
     articleId,
     contentType || 'none',
     fileBucket,
   );
 
+  const hackyArticleUpdatePromise = addQueryParamToUpdateImage(articleId);
+
+  await Promise.all([hackyArticleUpdatePromise, coverImageThumbnailPromise]);
+
   // Delete local file to free up space
   fs.unlinkSync(tempFilePath);
   return null;
+};
+
+const addQueryParamToUpdateImage = async (articleId: string) => {
+  // HACKY: Force update to articleData so the article refreshes with new image... Still leaves limbo moment for EXIF images. Gotta be a better way...
+  const articleRef = admin
+    .firestore()
+    .collection('articleData')
+    .doc('articles')
+    .collection('articles')
+    .doc(articleId);
+
+  const imageRotationMarker = Math.random()
+    .toString(36)
+    .substr(2, 5);
+
+  const snap = await articleRef.get();
+  const article = snap.data();
+
+  if (!article) return;
+
+  const coverImageUrl = article.imageUrl;
+  return articleRef.update({
+    imageUrl: `${coverImageUrl}&m=${imageRotationMarker}`,
+  });
 };
 
 const rotateUploadedImage = async (
@@ -189,7 +224,6 @@ const rotateUploadedImage = async (
   fileBucket: string,
   contentType: string,
 ) => {
-  console.log('object meta is', objectMeta);
   const bucket = gcs.bucket(fileBucket);
   if (objectMeta && objectMeta.autoOrient && objectMeta.autoOrient === 'done') {
     console.log('the image was already rotated.');
@@ -203,7 +237,9 @@ const rotateUploadedImage = async (
       metadata: { metadata: objectMeta },
     });
     console.log('uploaded rotated file');
+    return null;
   }
+  return null;
 };
 
 /**

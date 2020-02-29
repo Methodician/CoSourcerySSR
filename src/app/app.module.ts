@@ -73,6 +73,7 @@ import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-di
 import { ArticleHistoryComponent } from './components/article-history/article-history.component';
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
 import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
+import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
 // end components
 @NgModule({
   declarations: [
@@ -116,6 +117,7 @@ import { VersionPreviewCardComponent } from './components/article-history/versio
     ArticleHistoryComponent,
     VersionDetailComponent,
     VersionPreviewCardComponent,
+    VersionNavigationComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

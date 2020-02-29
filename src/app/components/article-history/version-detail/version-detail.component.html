@@ -1,6 +1,16 @@
-<section #formBoundingBox class="article-form">
+<cos-version-navigation
+  [articleSlug]="articleId"
+  [version]="versionId"
+></cos-version-navigation>
+<section
+  #formBoundingBox
+  class="article-form"
+>
   <!-- MAIN IMAGE -->
-  <cos-cover-image [imageUrl]="articleVersionState.imageUrl" [imageAlt]="articleVersionState.imageAlt">
+  <cos-cover-image
+    [imageUrl]="articleVersionState.imageUrl"
+    [imageAlt]="articleVersionState.imageAlt"
+  >
   </cos-cover-image>
   <!-- end main image -->
 
@@ -21,22 +31,36 @@
     </cos-intro>
 
     <!-- STATS -->
-    <cos-stats [commentCount]="articleVersionState.commentCount" [editCount]="articleVersionState.version"
-      [tagsCount]="articleVersionState.tags.length" [articleId]="articleId">
+    <cos-stats
+      [commentCount]="articleVersionState.commentCount"
+      [editCount]="articleVersionState.version"
+      [tagsCount]="articleVersionState.tags.length"
+      [articleId]="articleId"
+    >
     </cos-stats>
 
     <!-- ATTRIBUTIONS -->
     <section class="article-attributions">
-      <cos-contributors [creatorKey]="loggedInUser.uid" [editorMap]="articleVersionState.editors">
+      <cos-contributors
+        [creatorKey]="loggedInUser.uid"
+        [editorMap]="articleVersionState.editors"
+      >
       </cos-contributors>
     </section>
   </section>
 
   <!-- BODY and EDITOR -->
-  <section #ckeditorBoundingBox class="article-body" [ngClass]="{
+  <section
+    #ckeditorBoundingBox
+    class="article-body"
+    [ngClass]="{
         'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
-      }">
-    <cos-body [body]="articleVersionState.body" [articleId]="articleId"></cos-body>
+      }"
+  >
+    <cos-body
+      [body]="articleVersionState.body"
+      [articleId]="articleId"
+    ></cos-body>
 
     <!-- TAGS UI -->
     <cos-tags [tags]="articleVersionState.tags">
@@ -45,6 +69,9 @@
 
 
 
-    <cos-comments *ngIf="articleVersionState && !isArticleNew" [articleId]="articleVersionState.articleId">
+    <cos-comments
+      *ngIf="articleVersionState && !isArticleNew"
+      [articleId]="articleVersionState.articleId"
+    >
     </cos-comments>
   </section>

@@ -13,46 +13,39 @@
 
     <div class="stats__item">
       <mat-icon class="stats__icon">border_color</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ editCount }} Edit(s)</span>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ editCount }} Edit(s)</span
+      >
       <span class="stats__item-counter">{{ editCount }}</span>
     </div>
 
     <div class="stats__item">
       <mat-icon class="stats__icon">loyalty</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ tagsCount }} Tag(s)</span>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ tagsCount }} Tag(s)</span
+      >
       <span class="stats__item-counter">{{ tagsCount }}</span>
     </div>
   </div>
 
   <div class="stats-right">
-    <div
-      *ngIf="!isArticleNew"
-      class="stats__item stats__item_clickable"
-    >
-      <div>
-        <a routerLink="history">
-          <mat-icon class="stats__icon">history</mat-icon>
-        </a>
-        <span
-          class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-          style="right: 0;"
-        >
-          History
-        </span>
-      </div>
+    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
+      <a routerLink="history">
+        <mat-icon class="stats__icon">history</mat-icon>
+      </a>
+      <span
+        class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        style="right: 0;"
+      >
+        History
+      </span>
     </div>
 
-    <div
-      *ngIf="!isArticleNew"
-      class="stats__item stats__item_clickable"
-    >
+    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
       <div>
-        <mat-icon
-          class="stats__icon"
-          (click)="onBookmarkClicked()"
-        >{{
-      (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
-    }}</mat-icon>
+        <mat-icon class="stats__icon" (click)="onBookmarkClicked()">{{
+          (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
+        }}</mat-icon>
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="right: 0;"
@@ -61,6 +54,5 @@
         </span>
       </div>
     </div>
-
   </div>
 </section>

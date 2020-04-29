@@ -80,14 +80,3 @@ export interface IVersionDetail {
   isFeatured?: boolean;
   isFlagged?: boolean;
 }
-
-export interface ICoverImageMeta {
-  orientation?: number;
-}
-
-export interface IBodyImageMeta {
-  orientation: number;
-  path: string;
-}
-
-export interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}

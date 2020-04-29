@@ -126,6 +126,7 @@
     // ensures body images display nicely when outside CKEditor
     img {
       max-width: 100%;
+      image-orientation: from-image;
     }
   }
 }

@@ -3,12 +3,9 @@ import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { createVanillaStorageRef } from '@helpers/firebase';
-import { storage } from 'firebase/app';
 import 'firebase/storage';
-import * as exif from 'exif-js';
 
-import { IBodyImageMeta, IBodyImageMap } from '@models/article-info';
-import { ArticleService, orientationDegrees } from '@services/article.service';
+import { ArticleService } from '@services/article.service';
 
 @Component({
   selector: 'cos-body-edit',
@@ -19,7 +16,6 @@ export class BodyEditComponent implements OnInit {
   @Input() body: string;
   @Input() articleId: string;
   @Input() isActive: boolean;
-  @Input() bodyImages: IBodyImageMap;
 
   @Output() onBodyChange = new EventEmitter<string>();
 
@@ -78,7 +74,6 @@ export class BodyEditComponent implements OnInit {
   onCKEditorReady = editor => {
     editor.setData(this.body ? this.body : this.placeholder);
     this.isCkeditorReady = true;
-    this.processCKEditorImages();
   };
 
   onCKEditorChange = (change: ChangeEvent) => {
@@ -89,77 +84,5 @@ export class BodyEditComponent implements OnInit {
 
   changeBody = body => {
     this.onBodyChange.emit(body);
-    if (this.isCkeditorReady) {
-      // setTimeout with 0 delay still pushes this down the stack so we get the updated body.
-      // Otherwise when deleting an image, we'll still process the deleted image.
-      setTimeout(() => {
-        this.processCKEditorImages();
-      }, 0);
-    }
   };
-
-  processCKEditorImages = () => {
-    // HACKISH: the class name we're using is super generic and likely to cause conflict some day.
-    const figures = document.getElementsByClassName('image');
-    for (const key in figures) {
-      const fig = figures[key];
-      const img = fig.firstChild;
-      if (img && img instanceof HTMLImageElement) {
-        if (img.complete) {
-          // Processes image when for one reason or another they are already loaded but may not be rotated
-          this.rotateImage(img);
-        } else {
-          img.onload = _ => {
-            this.rotateImage(img);
-          };
-        }
-      }
-    }
-  };
-
-  rotateImage = async img => {
-    if (img.src.includes('data:image')) {
-      return;
-    }
-    const imgPath = storage().refFromURL(img.src).fullPath;
-    const imgCode = imgPath.split('/')[imgPath.split('/').length - 1];
-
-    let rotation: orientationDegrees = 0;
-    if (img.style.transform && img.style.transform.includes('rotate')) {
-      // It has been rotated. Don't do extra stuff
-      return;
-    } else if (this.bodyImages[imgCode]) {
-      // it's in the image map so set the rotation from DB
-      rotation = this.articleSvc.exifOrientationToDegrees(
-        this.bodyImages[imgCode].orientation,
-      );
-    } else {
-      // Find correct orientation and add it to the map
-      let orientation = await this.getExifOrientation(img);
-      orientation = orientation || 0;
-      rotation = this.articleSvc.exifOrientationToDegrees(orientation);
-
-      const imageMeta: IBodyImageMeta = {
-        path: imgPath,
-        orientation,
-      };
-      this.bodyImages[imgCode] = imageMeta;
-    }
-
-    img.setAttribute('style', `transform:rotate(${rotation}deg);`);
-  };
-
-  getExifOrientation(img) {
-    const promise = new Promise<number>((resolve, reject) => {
-      try {
-        exif.getData(img, function() {
-          const orientation = exif.getTag(this, 'Orientation');
-          return resolve(orientation);
-        });
-      } catch (error) {
-        return reject(error);
-      }
-    });
-    return promise;
-  }
 }

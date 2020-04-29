@@ -131,7 +131,6 @@ export const onFileUpload = functions
 
     if (contentType?.startsWith('image/')) {
       // An image was uploaded.
-      // await saveImageRotation(object);
       if (filePath?.startsWith('articleBodyImages/')) {
         // It was a body image
       }

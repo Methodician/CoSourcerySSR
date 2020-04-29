@@ -35,7 +35,7 @@ import { SeoService } from '@services/seo.service';
 import { ECtrlNames } from '../../article/article.component';
 
 const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
-  'articleVersionState'
+  'articleVersionState',
 );
 
 @Component({
@@ -43,8 +43,8 @@ const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
   templateUrl: './version-detail.component.html',
   styleUrls: [
     './version-detail.component.scss',
-    '../../article/article.component.scss'
-  ]
+    '../../article/article.component.scss',
+  ],
 })
 export class VersionDetailComponent implements OnInit {
   @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
@@ -73,7 +73,6 @@ export class VersionDetailComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(100)]],
     introduction: ['', [Validators.required, Validators.maxLength(300)]],
     body: 'This article is empty.',
-    bodyImages: {},
     imageUrl: '',
     imageAlt: ['', Validators.maxLength(100)],
     authorImageUrl: '',
@@ -102,7 +101,7 @@ export class VersionDetailComponent implements OnInit {
     private userSvc: UserService,
     private authSvc: AuthService,
     private dialogSvc: DialogService,
-    private seoSvc: SeoService
+    private seoSvc: SeoService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -147,8 +146,8 @@ export class VersionDetailComponent implements OnInit {
               observer.complete();
             });
           } else return this.watchArticleVersion$(id, version);
-        }
-      )
+        },
+      ),
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleVersionState = article;
@@ -162,16 +161,21 @@ export class VersionDetailComponent implements OnInit {
   watchArticleIdAndStatus$ = () => {
     return this.route.params.pipe(
       map(params => {
-        if (params['id'] && params['versionId']) return { id: params['id'], version: params['versionId'], isNew: false };
+        if (params['id'] && params['versionId'])
+          return {
+            id: params['id'],
+            version: params['versionId'],
+            isNew: false,
+          };
         else return { id: this.articleSvc.createArticleId(), isNew: true };
-      })
+      }),
     );
   };
 
   watchArticleVersion$ = (id, versionId) => {
     const preExisting: IVersionDetail = this.state.get(
       VERSION_STATE_KEY,
-      null as any
+      null as any,
     );
     const version$ = this.articleSvc
       .versionDetailRef(id, versionId)
@@ -180,12 +184,12 @@ export class VersionDetailComponent implements OnInit {
         map(version =>
           version
             ? (this.articleSvc.processArticleTimestamps(
-              version
-            ) as IVersionDetail)
-            : null
+                version,
+              ) as IVersionDetail)
+            : null,
         ),
         tap(version => this.state.set(VERSION_STATE_KEY, version)),
-        startWith(preExisting)
+        startWith(preExisting),
       );
     return version$;
   };
@@ -196,7 +200,7 @@ export class VersionDetailComponent implements OnInit {
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
-        takeUntil(this.unsubscribe)
+        takeUntil(this.unsubscribe),
       )
       .subscribe(keys => {
         const currentEditors = {};
@@ -220,7 +224,7 @@ export class VersionDetailComponent implements OnInit {
           } else {
             this.dialogSvc.openMessageDialog(
               'Must be signed in',
-              'You can not save changes without signing in or registering'
+              'You can not save changes without signing in or registering',
             );
           }
         });
@@ -230,15 +234,16 @@ export class VersionDetailComponent implements OnInit {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
-  updateUserEditingStatus = (status: boolean) => this.articleSvc.updateArticleEditStatus(
-    this.articleId,
-    this.loggedInUser.uid,
-    status
-  );
+  updateUserEditingStatus = (status: boolean) =>
+    this.articleSvc.updateArticleEditStatus(
+      this.articleId,
+      this.loggedInUser.uid,
+      status,
+    );
 
   resetEditStates = () => {
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;  
+    // this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
   };
@@ -281,7 +286,7 @@ export class VersionDetailComponent implements OnInit {
       if (!isSignedIn) {
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
-          'You can not save changes without signing in or registering'
+          'You can not save changes without signing in or registering',
         );
         return;
       }
@@ -291,16 +296,14 @@ export class VersionDetailComponent implements OnInit {
         if (this.articleVersionState.articleId) {
           // It's not new so just update existing and return
           try {
-            await this.articleSvc.updateArticle(
-              this.articleVersionState
-            );
+            await this.articleSvc.updateArticle(this.articleVersionState);
             this.resetEditSessionTimeout();
             this.resetEditStates();
           } catch (error) {
             this.dialogSvc.openMessageDialog(
               'Error saving article',
               'Attempting to save your changes returned the following error',
-              error.message || error
+              error.message || error,
             );
           } finally {
             coverImageSub.unsubscribe();
@@ -312,7 +315,7 @@ export class VersionDetailComponent implements OnInit {
             await this.articleSvc.createArticle(
               this.loggedInUser,
               this.articleVersionState,
-              this.articleId
+              this.articleId,
             );
             this.resetEditSessionTimeout();
             // TODO: Ensure unsaved changes are actually being checked upon route change
@@ -322,7 +325,7 @@ export class VersionDetailComponent implements OnInit {
             this.dialogSvc.openMessageDialog(
               'Error creating article',
               'Attempting to create the article returned the following error. If this persists, please let us know...',
-              `Error: ${error.message || error}`
+              `Error: ${error.message || error}`,
             );
           } finally {
             if (coverImageSub) coverImageSub.unsubscribe();
@@ -345,7 +348,7 @@ export class VersionDetailComponent implements OnInit {
       try {
         const { task, ref } = this.articleSvc.uploadCoverImage(
           this.articleId,
-          this.coverImageFile
+          this.coverImageFile,
         );
 
         this.coverImageUploadTask = task;
@@ -361,7 +364,7 @@ export class VersionDetailComponent implements OnInit {
           .openProgressDialog(
             'Uploading new cover image',
             'You can hide this dialog while you wait, or cancel the upload to go back to editing',
-            task.percentageChanges()
+            task.percentageChanges(),
           )
           .afterClosed()
           .subscribe(shouldCancel => {
@@ -402,7 +405,7 @@ export class VersionDetailComponent implements OnInit {
       'Are you still there?',
       'Your changes will be discarded and the page will reload so that others can have a chance to make edits.',
       "I'm done. Discard my changes now",
-      "I'm still working. Give me more time."
+      "I'm still working. Give me more time.",
     );
 
     response$.afterClosed().subscribe(shouldEndSession => {
@@ -418,7 +421,7 @@ export class VersionDetailComponent implements OnInit {
       .openConfirmDialog(
         'Undo Edits',
         'Any unsaved changes will be discarded and the page will refresh.',
-        'Are you sure?'
+        'Are you sure?',
       )
       .afterClosed();
 
@@ -452,7 +455,7 @@ export class VersionDetailComponent implements OnInit {
           this.dialogSvc.openMessageDialog(
             'Edit Locked',
             `The user "${cUser.displayName()}" is currently editing this article.`,
-            'Please try again later.'
+            'Please try again later.',
           );
         });
     } else {
@@ -513,5 +516,4 @@ export class VersionDetailComponent implements OnInit {
       .concat(cleanBody.substr(0, lengthToFill))
       .concat('...');
   };
-
 }

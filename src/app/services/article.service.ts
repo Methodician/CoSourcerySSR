@@ -8,7 +8,6 @@ import {
   IArticlePreview,
   IArticleDetail,
   IVersionDetail,
-  ICoverImageMeta,
 } from '@models/article-info';
 
 // RXJS stuff
@@ -225,8 +224,6 @@ export class ArticleService {
     articleToSave.lastUpdated = fsServerTimestamp;
     articleToSave.slug = newSlug;
     articleToSave.version++;
-    // TODO: Deterimine if we still need the cleanArticleImages action
-    // articleToSave.bodyImages = this.cleanArticleImages(articleToSave);
 
     // If slug has changed, do extra stuff
     if (newSlug !== article.slug) {
@@ -340,25 +337,6 @@ export class ArticleService {
   // end utility
 
   // HELPERS
-  exifOrientationToDegrees = (orientation): orientationDegrees => {
-    switch (orientation) {
-      case 1:
-      case 2:
-        return 0;
-      case 3:
-      case 4:
-        return 180;
-      case 5:
-      case 6:
-        return 90;
-      case 7:
-      case 8:
-        return 270;
-      default:
-        return 0;
-    }
-  };
-
   slugify = string => {
     const a =
       'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;';
@@ -387,5 +365,3 @@ export class ArticleService {
     return article;
   };
 }
-
-export type orientationDegrees = 0 | 90 | 180 | 270;

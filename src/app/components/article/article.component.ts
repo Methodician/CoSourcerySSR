@@ -272,9 +272,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.articleEditForm.patchValue({ tags });
   };
 
-  selectCoverImage = async (file: File) => {
+  selectCoverImage = (file: File) => {
     const reader = new FileReader();
-    reader.onload = async () => {
+    reader.onload = () => {
       this.articleEditForm.markAsDirty();
       this.articleEditForm.patchValue({ imageUrl: reader.result });
     };

@@ -2,6 +2,7 @@ img {
   max-width: 100%;
   display: block;
   margin: 0 auto;
+  image-orientation: from-image;
 
   @media screen and (min-width: 500px) {
     height: 466px;

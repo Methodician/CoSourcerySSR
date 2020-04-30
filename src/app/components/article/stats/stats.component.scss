@@ -14,15 +14,13 @@
   }
 }
 
-.counters {
+.stats {
   display: flex;
-  align-items: center;
 
   &__item {
     height: 40px;
     display: flex;
     align-items: center;
-    justify-content: center;
     position: relative;
     color: #fff;
     cursor: default;
@@ -35,7 +33,7 @@
       visibility: visible;
     }
 
-    &-stat {
+    &-counter {
       display: block;
       margin-left: 5px;
       font-size: 0.9rem;
@@ -61,9 +59,16 @@
     height: auto;
     width: auto;
     font-size: 1.2rem;
+    color: #fff;
 
     @media screen and (min-width: 500px) {
       font-size: 1.5rem;
     }
   }
+}
+
+.stats-right {
+  float: right;
+  display: flex;
+  margin: 0;
 }

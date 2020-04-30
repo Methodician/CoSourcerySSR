@@ -16,13 +16,11 @@
 
 .stats {
   display: flex;
-  // align-items: center; // I'm not seeing this having any effect.
 
   &__item {
     height: 40px;
     display: flex;
     align-items: center;
-    // justify-content: center;
     position: relative;
     color: #fff;
     cursor: default;

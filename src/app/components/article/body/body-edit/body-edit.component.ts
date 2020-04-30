@@ -51,7 +51,7 @@ export class BodyEditComponent implements OnInit {
     toggleBtnOffset: 0,
   };
 
-  constructor(private articleSvc: ArticleService) {
+  constructor() {
     this.importEditor();
   }
 

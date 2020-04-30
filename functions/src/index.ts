@@ -313,8 +313,6 @@ interface IArticleDetail {
   isFlagged?: boolean;
 }
 
-// interface IBodyImageMap extends IKeyMap<IBodyImageMeta> {}
-
 interface IKeyMap<T> {
   [key: string]: T;
 }

@@ -12,24 +12,26 @@ $size: 45px;
   background: transparentize($color: #000000, $amount: 0.9);
   display: inline-block;
   margin: 0;
+  cursor: pointer;
 }
 
 .right,
 .left {
   height: $size * 2;
   width: $size;
-  padding: 0;
 }
 
 .left {
   border-bottom-right-radius: $size * 2;
   border-top-right-radius: $size * 2;
+  padding: 25px 5px;
 }
 
 .right {
   border-bottom-left-radius: $size * 2;
   border-top-left-radius: $size * 2;
   float: right;
+  padding: 25px 10px;
 }
 
 .material-icons.md-36 {

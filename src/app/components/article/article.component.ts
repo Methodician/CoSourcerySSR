@@ -70,7 +70,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     title: ['', [Validators.required, Validators.maxLength(100)]],
     introduction: ['', [Validators.required, Validators.maxLength(300)]],
     body: 'This article is empty.',
-    bodyImages: {},
     imageUrl: '',
     imageAlt: ['', Validators.maxLength(100)],
     authorImageUrl: '',

@@ -12,7 +12,7 @@ import { IVersionPreview, IVersionDetail } from '@models/article-info';
 import { ArticleService } from '@services/article.service';
 
 const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
-  'allArticleVersions'
+  'allArticleVersions',
 );
 
 @Component({
@@ -21,10 +21,9 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
   styleUrls: [
     './article-history.component.scss',
     '../home/home.component.scss',
-  ]
+  ],
 })
 export class ArticleHistoryComponent implements OnInit {
-
   articleId: string;
   allArticleVersions$: Observable<IVersionPreview[]>;
 
@@ -32,19 +31,23 @@ export class ArticleHistoryComponent implements OnInit {
     private articleSvc: ArticleService,
     private state: TransferState,
     private route: ActivatedRoute,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.route.params.pipe(switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id']))).subscribe(id => {
-      this.articleId = id;
-      this.initializeArticles();
-    });
+    this.route.params
+      .pipe(
+        switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id'])),
+      )
+      .subscribe(id => {
+        this.articleId = id;
+        this.initializeArticles();
+      });
   }
 
   initializeArticles = () => {
     this.allArticleVersions$ = this.ssrArticleVersionCollection(
       this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges(),
-      ALL_ARTICLE_VERSIONS_KEY
+      ALL_ARTICLE_VERSIONS_KEY,
     );
   };
 
@@ -54,15 +57,17 @@ export class ArticleHistoryComponent implements OnInit {
 
   ssrArticleVersionCollection = (
     versions$: Observable<IVersionDetail[]>,
-    stateKey: StateKey<Observable<IVersionDetail[]>>
+    stateKey: StateKey<Observable<IVersionDetail[]>>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return versions$.pipe(
       map(versions =>
-        versions.map(version => this.articleSvc.processArticleTimestamps(version))
+        versions.map(version =>
+          this.articleSvc.processArticleTimestamps(version),
+        ),
       ),
       tap(versions => this.state.set(stateKey, versions)),
-      startWith(preExisting$)
+      startWith(preExisting$),
     );
   };
 }

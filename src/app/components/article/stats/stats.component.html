@@ -30,7 +30,7 @@
 
   <div class="stats-right">
     <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
-      <a [routerLink]="['/history']">
+      <a [routerLink]="['/article', slug, 'history']">
         <mat-icon class="stats__icon">history</mat-icon>
       </a>
       <span

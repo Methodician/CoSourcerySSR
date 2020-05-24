@@ -16,6 +16,7 @@ export class StatsComponent implements OnInit {
   @Input() tagsCount: number;
   @Input() articleId: string;
   @Input() isArticleNew: boolean;
+  @Input() slug: string;
 
   isBookmarked$: Observable<boolean>;
 

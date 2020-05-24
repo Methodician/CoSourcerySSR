@@ -327,6 +327,10 @@ export class ArticleService {
     return await Promise.all([trackerSet, articleUpdate]);
   };
 
+  // Checks RTDB for a slug => id reference
+  // if it finds it we assume we got a slug and return the result
+  // otherwise we assume we got an id and return what was passed in
+  // no significant performance implications because RTDB is low latency
   getIdFromSlugOrId = (slugOrId: string) =>
     this.slugIdRef(slugOrId)
       .valueChanges()

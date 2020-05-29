@@ -130,22 +130,14 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
 
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
-    const article$ = this.watchArticleIdAndStatus$().pipe(
-      tap(({ id, version, isNew }) => {
+    const article$ = this.watchArticleIdAndVersion$().pipe(
+      tap(({ id, version }) => {
         if (id) this.articleId = id;
         if (version) this.versionId = version;
-        if (isNew) {
-          this.isArticleNew = true;
-        } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, version, isNew }): Observable<IVersionDetail> => {
-          if (isNew) {
-            return Observable.create(observer => {
-              observer.next(this.articleEditForm.value);
-              observer.complete();
-            });
-          } else return this.watchArticleVersion$(id, version);
+        ({ id, version }): Observable<IVersionDetail> => {
+          return this.watchArticleVersion$(id, version);
         },
       ),
     );
@@ -158,19 +150,14 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     });
   };
 
-  watchArticleIdAndStatus$ = () => {
-    return this.route.params.pipe(
-      map(params => {
-        if (params['id'] && params['versionId'])
-          return {
-            id: params['id'],
-            version: params['versionId'],
-            isNew: false,
-          };
-        else return { id: this.articleSvc.createArticleId(), isNew: true };
-      }),
+  watchArticleIdAndVersion$ = () =>
+    this.route.params.pipe(
+      switchMap(params =>
+        this.articleSvc
+          .getIdFromSlugOrId(params['id'])
+          .pipe(map(id => ({ id, version: params['versionId'] }))),
+      ),
     );
-  };
 
   watchArticleVersion$ = (id, versionId) => {
     const preExisting: IVersionDetail = this.state.get(

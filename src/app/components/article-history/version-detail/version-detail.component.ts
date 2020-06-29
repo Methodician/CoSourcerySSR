@@ -54,11 +54,11 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
 
   //  // Cover Image State
   coverImageFile: File;
-
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
   articleId: string;
+  articleSlug: string;
   versionId: string;
   isArticleNew: boolean;
   articleSubscription: Subscription;
@@ -131,8 +131,9 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndVersion$().pipe(
-      tap(({ id, version }) => {
+      tap(({ id, slug, version }) => {
         if (id) this.articleId = id;
+        if (slug) this.articleSlug = slug;
         if (version) this.versionId = version;
       }),
       switchMap(
@@ -153,9 +154,13 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
   watchArticleIdAndVersion$ = () =>
     this.route.params.pipe(
       switchMap(params =>
-        this.articleSvc
-          .getIdFromSlugOrId(params['id'])
-          .pipe(map(id => ({ id, version: params['versionId'] }))),
+        this.articleSvc.getIdFromSlugOrId(params['id']).pipe(
+          map(id => ({
+            id,
+            slug: params['id'],
+            version: params['versionId'],
+          })),
+        ),
       ),
     );
 

@@ -1,8 +1,14 @@
 <cos-version-navigation
-  [articleSlug]="articleId"
+  *ngIf="articleId"
+  [articleSlug]="articleSlug"
+  [articleId]="articleId"
   [version]="versionId"
 ></cos-version-navigation>
-<section #formBoundingBox class="article-form" *ngIf="articleVersionState">
+<section
+  #formBoundingBox
+  class="article-form"
+  *ngIf="articleVersionState"
+>
   <!-- MAIN IMAGE -->
   <cos-cover-image
     [imageUrl]="articleVersionState.imageUrl"
@@ -18,12 +24,8 @@
 
     <!-- DATE -->
     <p class="article-date">
-      <span *ngIf="isArticleNew"
-        >Current Date: {{ tempTimestamp().toDate() | date }}</span
-      >
-      <span *ngIf="!isArticleNew"
-        >Last Updated: {{ articleVersionState.lastUpdated | date }}</span
-      >
+      <span *ngIf="isArticleNew">Current Date: {{ tempTimestamp().toDate() | date }}</span>
+      <span *ngIf="!isArticleNew">Last Updated: {{ articleVersionState.lastUpdated | date }}</span>
     </p>
 
     <!-- INTRO -->

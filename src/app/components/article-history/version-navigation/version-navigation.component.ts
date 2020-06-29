@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnChanges, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { ArticleService } from '@services/article.service';
 
 @Component({
@@ -7,46 +7,41 @@ import { ArticleService } from '@services/article.service';
   templateUrl: './version-navigation.component.html',
   styleUrls: ['./version-navigation.component.scss'],
 })
-export class VersionNavigationComponent implements OnInit {
+export class VersionNavigationComponent implements OnChanges {
+  @Input() articleId: string;
   @Input() articleSlug: string;
   @Input() version: string;
   numberOfVersions: number;
   url: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private articleSvc: ArticleService,
-  ) {}
+  constructor(private router: Router, private articleSvc: ArticleService) {}
 
-  ngOnInit() {
+  ngOnChanges() {
     this.articleSvc
-      .allArticleVersionsRef(this.articleSlug)
-      .get()
-      .forEach(snapShot => {
-        this.numberOfVersions = snapShot.docs.length;
-      });
+      .articleDetailRef(this.articleId)
+      .valueChanges()
+      .subscribe(article => (this.numberOfVersions = article.version));
   }
 
   onClickPrevious() {
-    let navigationCount: number =
+    let versionNumber: number =
       parseInt(this.version) === 1
         ? parseInt(this.version)
         : parseInt(this.version) - 1;
     this.router.navigateByUrl(
-      `article/${this.articleSlug}/history/${navigationCount}`,
+      `article/${this.articleSlug}/history/${versionNumber}`,
     );
-    this.url = `article/${this.articleSlug}/history/${navigationCount}`;
+    this.url = `article/${this.articleSlug}/history/${versionNumber}`;
   }
 
   onClickNext() {
-    let navigationCount: number =
+    let versionNumber: number =
       parseInt(this.version) === this.numberOfVersions
         ? parseInt(this.version)
         : parseInt(this.version) + 1;
     this.router.navigateByUrl(
-      `article/${this.articleSlug}/history/${navigationCount}`,
+      `article/${this.articleSlug}/history/${versionNumber}`,
     );
-    this.url = `article/${this.articleSlug}/history/${navigationCount}`;
+    this.url = `article/${this.articleSlug}/history/${versionNumber}`;
   }
 }

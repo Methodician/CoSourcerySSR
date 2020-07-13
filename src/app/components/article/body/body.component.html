@@ -1,6 +1,10 @@
-<section class="article-body__interior" [ngClass]="{ border: isActive }">
+<section
+  class="article-body__interior"
+  [ngClass]="{ border: isActive, 'is-editable': isEditable }"
+>
   <button
     class="mat-icon-btn"
+    *ngIf="isEditable"
     [ngClass]="{ active: isActive }"
     type="button"
     (click)="toggleCtrl()"

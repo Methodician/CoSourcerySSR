@@ -17,7 +17,7 @@ import { StorageService } from '@services/storage.service';
     '../../shared/article-preview-card/article-preview-card.component.scss',
   ],
 })
-export class VersionPreviewCardComponent implements OnInit {
+export class VersionPreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleVersionData: IVersionPreview;
   coverImageUrl = '';
   isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);

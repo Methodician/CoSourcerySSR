@@ -1,23 +1,19 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AngularFireUploadTask } from '@angular/fire/storage';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { Subscription, BehaviorSubject, Observable, Subject } from 'rxjs';
 import { tap, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
-import { AuthService } from '@services/auth.service';
-import { DialogService } from '@services/dialog.service';
+
 import { UserService } from '@services/user.service';
 
 // MODELS
 import { IVersionDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
-import { ECtrlNames } from '../../article/article.component';
 
 const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
   'articleVersionState',
@@ -32,60 +28,22 @@ const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
   ],
 })
 export class VersionDetailComponent implements OnInit, OnDestroy {
-  @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
-
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
-
-  //  // Cover Image State
-  coverImageFile: File;
-  coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
   articleId: string;
   articleSlug: string;
   versionId: string;
-  isArticleNew: boolean;
   articleSubscription: Subscription;
-  currentArticleEditors = {};
-
-  // Article Form State
-  editSessionTimeoutSubscription: Subscription;
-
-  articleEditForm: FormGroup = this.fb.group({
-    articleId: '',
-    authorId: '',
-    title: ['', [Validators.required, Validators.maxLength(100)]],
-    introduction: ['', [Validators.required, Validators.maxLength(300)]],
-    body: 'This article is empty.',
-    imageUrl: '',
-    imageAlt: ['', Validators.maxLength(100)],
-    authorImageUrl: '',
-    lastUpdated: null,
-    timestamp: 0,
-    lastEditorId: '',
-    version: 1,
-    commentCount: 0,
-    viewCount: 0,
-    tags: [[], Validators.maxLength(25)],
-    isFeatured: false,
-    editors: {},
-  });
 
   articleVersionState: IVersionDetail;
 
-  ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
-  ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
-
   constructor(
-    private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService,
-    private authSvc: AuthService,
-    private dialogSvc: DialogService,
     private seoSvc: SeoService,
   ) {
     this.userSvc.loggedInUser$
@@ -105,10 +63,6 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     this.state.set(VERSION_STATE_KEY, null);
   }
 
-  cancelUpload = (task: AngularFireUploadTask) => {
-    if (task) task.cancel();
-  };
-
   // FORM SETUP & BREAKDOWN
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndVersion$().pipe(
@@ -126,7 +80,6 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleVersionState = article;
       if (article) {
-        this.articleEditForm.patchValue(article);
         this.updateMetaTags(article);
       }
     });

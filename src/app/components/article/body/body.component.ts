@@ -17,6 +17,7 @@ export class BodyComponent {
   @Input() isActive: boolean;
   @Input() body: string;
   @Input() articleId: string;
+  @Input() isEditable = true;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();

@@ -4,32 +4,35 @@
   [articleId]="articleId"
   [version]="versionId"
 ></cos-version-navigation>
-<section
-  #formBoundingBox
-  class="article-form"
-  *ngIf="articleVersionState"
->
+<section class="article-form" *ngIf="articleVersionState">
   <!-- MAIN IMAGE -->
-  <cos-cover-image
-    [imageUrl]="articleVersionState.imageUrl"
-    [imageAlt]="articleVersionState.imageAlt"
-  >
-  </cos-cover-image>
+  <section class="cover-image-wrapper border-placeholder">
+    <cos-cover-image-display
+      [imageUrl]="articleVersionState.imageUrl"
+      [imageAlt]="articleVersionState.imageAlt"
+    ></cos-cover-image-display>
+  </section>
   <!-- end main image -->
 
   <!-- HEADER SECTION -->
   <section class="article-header">
     <!-- TITLE -->
-    <cos-title [title]="articleVersionState.title"> </cos-title>
+    <section class="title-wrapper border-placeholder">
+      <cos-title-display [title]="articleVersionState.title">
+      </cos-title-display>
+    </section>
 
     <!-- DATE -->
     <p class="article-date">
-      <span *ngIf="isArticleNew">Current Date: {{ tempTimestamp().toDate() | date }}</span>
-      <span *ngIf="!isArticleNew">Last Updated: {{ articleVersionState.lastUpdated | date }}</span>
+      <span>Last Updated: {{ articleVersionState.lastUpdated | date }}</span>
     </p>
 
     <!-- INTRO -->
-    <cos-intro [introduction]="articleVersionState.introduction"> </cos-intro>
+    <section class="intro-wrapper border-placeholder">
+      <cos-intro-display
+        [introduction]="articleVersionState.introduction"
+      ></cos-intro-display>
+    </section>
 
     <!-- STATS -->
     <cos-stats
@@ -51,25 +54,15 @@
   </section>
 
   <!-- BODY and EDITOR -->
-  <section
-    #ckeditorBoundingBox
-    class="article-body"
-    [ngClass]="{
-      'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
-    }"
-  >
+  <section class="article-body">
     <cos-body
       [body]="articleVersionState.body"
       [articleId]="articleId"
+      [isEditable]="false"
     ></cos-body>
 
     <!-- TAGS UI -->
     <cos-tags [tags]="articleVersionState.tags"> </cos-tags>
     <!-- end tags ui -->
-
-    <cos-comments
-      *ngIf="articleVersionState && !isArticleNew"
-      [articleId]="articleVersionState.articleId"
-    >
-    </cos-comments>
   </section>
+</section>

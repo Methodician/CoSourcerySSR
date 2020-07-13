@@ -1,0 +1,20 @@
+@import '../../../sass/vars.scss';
+
+.cover-image-wrapper {
+  margin-bottom: 5px;
+  padding: 2px;
+}
+
+.article-header {
+  margin-bottom: 24px;
+  padding: 0 20px 20px;
+  box-shadow: 0 2px 4px $light-gray-50;
+}
+
+.border-placeholder {
+  border: 1px solid #fff;
+  border-radius: 5px;
+}
+.article-body {
+  margin-top: 74px;
+}

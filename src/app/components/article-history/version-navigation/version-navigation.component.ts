@@ -12,36 +12,33 @@ export class VersionNavigationComponent implements OnChanges {
   @Input() articleSlug: string;
   @Input() version: string;
   numberOfVersions: number;
-  url: string;
 
   constructor(private router: Router, private articleSvc: ArticleService) {}
 
   ngOnChanges() {
     this.articleSvc
-      .articleDetailRef(this.articleId)
+      .articlePreviewRef(this.articleId)
       .valueChanges()
       .subscribe(article => (this.numberOfVersions = article.version));
   }
 
   onClickPrevious() {
-    let versionNumber: number =
+    let targetVersionNumber: number =
       parseInt(this.version) === 1
-        ? parseInt(this.version)
+        ? this.numberOfVersions
         : parseInt(this.version) - 1;
     this.router.navigateByUrl(
-      `article/${this.articleSlug}/history/${versionNumber}`,
+      `article/${this.articleSlug}/history/${targetVersionNumber}`,
     );
-    this.url = `article/${this.articleSlug}/history/${versionNumber}`;
   }
 
   onClickNext() {
     let versionNumber: number =
       parseInt(this.version) === this.numberOfVersions
-        ? parseInt(this.version)
+        ? 1
         : parseInt(this.version) + 1;
     this.router.navigateByUrl(
       `article/${this.articleSlug}/history/${versionNumber}`,
     );
-    this.url = `article/${this.articleSlug}/history/${versionNumber}`;
   }
 }

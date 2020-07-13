@@ -24,7 +24,6 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
   ],
 })
 export class ArticleHistoryComponent implements OnInit {
-  articleId: string;
   allArticleVersions$: Observable<IVersionPreview[]>;
 
   constructor(
@@ -38,22 +37,16 @@ export class ArticleHistoryComponent implements OnInit {
       .pipe(
         switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id'])),
       )
-      .subscribe(id => {
-        this.articleId = id;
-        this.initializeArticles();
-      });
+      .subscribe(id => this.initializeArticles(id));
   }
 
-  initializeArticles = () => {
-    this.allArticleVersions$ = this.ssrArticleVersionCollection(
-      this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges(),
+  initializeArticles = (articleId: string) =>
+    (this.allArticleVersions$ = this.ssrArticleVersionCollection(
+      this.articleSvc.allArticleVersionsRef(articleId).valueChanges(),
       ALL_ARTICLE_VERSIONS_KEY,
-    );
-  };
+    ));
 
-  clearArticleKeys = () => {
-    this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
-  };
+  clearArticleKeys = () => this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
 
   ssrArticleVersionCollection = (
     versions$: Observable<IVersionDetail[]>,

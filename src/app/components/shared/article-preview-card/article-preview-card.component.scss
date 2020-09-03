@@ -42,38 +42,43 @@
 }
 
 .card-icons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background-color: $accent-color-1-dark;
-  color: #fff;
-}
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  // padding: 0 20px;
+  color: gray;
+  border: 1px solid orange;
 
-.counter-icons {
-  display: flex;
-  align-items: center;
+  .icon-set-wrapper {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    border: 1px solid red;
 
-  &__item {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: default;
+    .counter-icons {
+      &__item {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        border: 1px solid green;
+        height: 40px;
+        // display: flex;
+        // align-items: center;
+        // justify-content: center;
+        // position: relative;
+        cursor: default;
 
-    &:not(:first-child) {
-      margin-left: 20px;
+        &:not(:first-child) {
+          margin-left: 20px;
+        }
+
+        &:hover .mat-icon-btn__tooltip {
+          visibility: visible;
+        }
+      }
+
+      &__stat {
+        //display: block;
+        //margin-left: 15px;
+      }
     }
-
-    &:hover .mat-icon-btn__tooltip {
-      visibility: visible;
-    }
-  }
-
-  &__stat {
-    display: block;
-    margin-left: 15px;
   }
 }
 

@@ -19,9 +19,10 @@
   </a>
 
   <section class="card-icons">
-    <div class="counter-icons">
+    <!-- <div class="counter-icons"> -->
+    <div class="icon-set-wrapper">
       <div class="counter-icons__item">
-        <mat-icon>comment</mat-icon>
+        <img src="../../assets/images/comment.svg" alt="comment" />
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="left: 0;"
@@ -31,30 +32,34 @@
         <span class="counter-icons__stat">{{ articleData.commentCount }}</span>
       </div>
       <div class="counter-icons__item">
-        <mat-icon>border_color</mat-icon>
+        <img src="../../assets/images/edit.svg" alt="edit" />
         <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           >{{ articleData.version }} Edit(s)</span
         >
         <span class="counter-icons__stat">{{ articleData.version }}</span>
       </div>
+    </div>
+    <div class="icon-set-wrapper"></div>
+    <div class="icon-set-wrapper">
       <div class="counter-icons__item">
-        <mat-icon>loyalty</mat-icon>
+        <img src="../../assets/images/loyalty.svg" alt="loyalty" />
         <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           >{{ articleData.tags.length }} Tag(s)</span
         >
         <span class="counter-icons__stat">{{ articleData.tags.length }}</span>
       </div>
-    </div>
-    <div (click)="onToggleBookmark()" class="counter-icons__item bookmark-icon">
-      <mat-icon>{{
-        isArticleBookmarked$.value ? "bookmark" : "bookmark_border"
-      }}</mat-icon>
-      <span
-        class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        style="right: 0;"
+      <div
+        (click)="onToggleBookmark()"
+        class="counter-icons__item bookmark-icon"
       >
-        {{ isArticleBookmarked$.value ? "Remove Bookmark" : "Bookmark" }}
-      </span>
+        <img src="../../assets/images/bookmark.svg" alt="bookmark" />
+        <span
+          class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+          style="right: 0;"
+        >
+          {{ isArticleBookmarked$.value ? 'Remove Bookmark' : 'Bookmark' }}
+        </span>
+      </div>
     </div>
   </section>
 </article>

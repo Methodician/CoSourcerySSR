@@ -44,7 +44,6 @@
 .card-icons {
   display: grid;
   grid-template-columns: 33% 33% 33%;
-  //padding: 0 20px;
   color: gray;
   border: 1px solid orange;
 
@@ -59,13 +58,7 @@
         display: inline-flex;
         height: 40px;
         align-items: center;
-        // position: relative;
         cursor: default;
-        // margin-left: 5px;
-
-        // &:not(:first-child) {
-        //   margin-left: 20px;
-        // }
 
         mat-icon {
           height: 15px;

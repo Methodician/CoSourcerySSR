@@ -1,12 +1,15 @@
 import { environment } from '../environments/environment';
 
+// MODULES
+
+// Angular
 import {
   BrowserModule,
   BrowserTransferStateModule,
 } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
-// MODULES
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -133,6 +136,7 @@ import { VersionNavigationComponent } from './components/article-history/version
     AngularFireDatabaseModule,
     AngularFireStorageModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    HttpClientModule,
     BrowserTransferStateModule,
     FormsModule,
     ReactiveFormsModule,

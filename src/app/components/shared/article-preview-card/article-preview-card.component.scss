@@ -45,7 +45,6 @@
   display: grid;
   grid-template-columns: 33% 33% 33%;
   color: gray;
-  border: 1px solid orange;
 
   .icon-set-wrapper {
     display: grid;
@@ -61,18 +60,19 @@
         cursor: default;
 
         mat-icon {
+          color: rgb(150, 150, 150);
           height: 15px;
         }
 
-        &:hover .mat-icon-btn__tooltip {
-          visibility: visible;
+        .highlighted {
+          color: #FFD80E
         }
-      }
 
-      &__stat {
-        display: block;
-        margin-left: 2px;
       }
+          &:hover .mat-icon-btn__tooltip {
+            visibility: visible;
+          }
+
     }
   }
 }

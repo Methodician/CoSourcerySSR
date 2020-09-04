@@ -44,29 +44,31 @@
 .card-icons {
   display: grid;
   grid-template-columns: 33% 33% 33%;
-  // padding: 0 20px;
+  //padding: 0 20px;
   color: gray;
   border: 1px solid orange;
 
   .icon-set-wrapper {
     display: grid;
     grid-template-columns: 50% 50%;
-    border: 1px solid red;
 
     .counter-icons {
       &__item {
-        display: grid;
-        grid-template-columns: 50% 50%;
-        border: 1px solid green;
+        justify-self: center;
+        font-size: 0.75em;
+        display: inline-flex;
         height: 40px;
-        // display: flex;
-        // align-items: center;
-        // justify-content: center;
+        align-items: center;
         // position: relative;
         cursor: default;
+        // margin-left: 5px;
 
-        &:not(:first-child) {
-          margin-left: 20px;
+        // &:not(:first-child) {
+        //   margin-left: 20px;
+        // }
+
+        mat-icon {
+          height: 15px;
         }
 
         &:hover .mat-icon-btn__tooltip {
@@ -75,8 +77,8 @@
       }
 
       &__stat {
-        //display: block;
-        //margin-left: 15px;
+        display: block;
+        margin-left: 2px;
       }
     }
   }

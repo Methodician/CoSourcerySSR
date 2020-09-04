@@ -9,6 +9,9 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StorageService } from '@services/storage.service';
 
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';
+
 @Component({
   selector: 'cos-article-preview-card',
   templateUrl: './article-preview-card.component.html',
@@ -24,7 +27,26 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private authSvc: AuthService,
     private storageSvc: StorageService,
-  ) {}
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      'comment',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/comment.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'edit',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'loyalty',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/loyalty.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'bookmark',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/bookmark.svg'),
+    );
+  }
 
   ngOnInit() {
     this.watchCoverImageUrl();

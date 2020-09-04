@@ -22,7 +22,7 @@
     <!-- <div class="counter-icons"> -->
     <div class="icon-set-wrapper">
       <div class="counter-icons__item">
-        <img src="../../assets/images/comment.svg" alt="comment" />
+        <mat-icon svgIcon="comment"></mat-icon>
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="left: 0;"
@@ -32,7 +32,7 @@
         <span class="counter-icons__stat">{{ articleData.commentCount }}</span>
       </div>
       <div class="counter-icons__item">
-        <img src="../../assets/images/edit.svg" alt="edit" />
+        <mat-icon svgIcon="edit"></mat-icon>
         <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           >{{ articleData.version }} Edit(s)</span
         >
@@ -42,7 +42,7 @@
     <div class="icon-set-wrapper"></div>
     <div class="icon-set-wrapper">
       <div class="counter-icons__item">
-        <img src="../../assets/images/loyalty.svg" alt="loyalty" />
+        <mat-icon svgIcon="loyalty"></mat-icon>
         <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           >{{ articleData.tags.length }} Tag(s)</span
         >
@@ -52,7 +52,7 @@
         (click)="onToggleBookmark()"
         class="counter-icons__item bookmark-icon"
       >
-        <img src="../../assets/images/bookmark.svg" alt="bookmark" />
+        <mat-icon svgIcon="bookmark"></mat-icon>
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="right: 0;"

@@ -67,11 +67,11 @@
         .highlighted {
           color: #FFD80E
         }
+        &:hover .mat-icon-btn__tooltip {
+          visibility: visible;
+        }
 
       }
-          &:hover .mat-icon-btn__tooltip {
-            visibility: visible;
-          }
 
     }
   }

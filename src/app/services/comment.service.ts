@@ -21,7 +21,7 @@ export class CommentService {
     this.NULL_COMMENT
   );
 
-  constructor(private afd: AngularFireDatabase) {}
+  constructor(private afd: AngularFireDatabase) { }
 
   enterEditCommentMode = (comment: IComment) =>
     this.commentState$.next({ ...comment })
@@ -88,6 +88,13 @@ export class CommentService {
     }
     return voteRef.set(EVoteDirections.up);
   }
+
+
+
+
+
+
+
 
   async downvoteComment(voterId: string, commentKey: string) {
     const voteRef = this.getVoteRef(voterId, commentKey);

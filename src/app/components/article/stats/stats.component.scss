@@ -1,9 +1,8 @@
 @import '../../../sass/vars.scss';
 
 .article-utils {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
   margin-top: 20px;
   padding: 0 15px;
   border-radius: 4px;
@@ -13,11 +12,13 @@
 }
 
 .stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: 50% 50%;
 
   &__item {
     height: 40px;
-    display: flex;
+    display: inline-flex;
+    justify-self: center;
     align-items: center;
     position: relative;
     color: gray;
@@ -66,7 +67,10 @@
 }
 
 .stats-right {
-  float: right;
-  display: flex;
-  margin: 0;
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+}
+
+.highlighted {
+  color: #ffd80e;
 }

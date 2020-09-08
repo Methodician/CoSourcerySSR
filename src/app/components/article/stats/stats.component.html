@@ -18,7 +18,11 @@
       >
       <span class="stats__item-counter">{{ editCount }}</span>
     </div>
+  </div>
 
+  <div class="stats"></div>
+
+  <div class="stats stats-right">
     <div class="stats__item">
       <mat-icon svgIcon="loyalty"></mat-icon>
       <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
@@ -26,9 +30,6 @@
       >
       <span class="stats__item-counter">{{ tagsCount }}</span>
     </div>
-  </div>
-
-  <div class="stats-right">
     <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
       <a [routerLink]="['/article', slug, 'history']">
         <mat-icon class="stats__icon">history</mat-icon>

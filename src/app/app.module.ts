@@ -10,7 +10,7 @@ import { NgModule } from '@angular/core';
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestoreModule, FirestoreSettingsToken } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -75,6 +75,7 @@ import { VersionDetailComponent } from './components/article-history/version-det
 import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
 // end components
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -145,7 +146,13 @@ import { VersionNavigationComponent } from './components/article-history/version
     MatProgressBarModule,
     CKEditorModule,
   ],
-  providers: [],
+  providers: [{
+    provide: FirestoreSettingsToken,
+    useValue: environment.shouldUseEmulator ? {
+      host: 'localhost:8080',
+      ssl: false
+    } : undefined
+  }],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

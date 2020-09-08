@@ -1,0 +1,208 @@
+[debug] [2020-09-08T20:51:53.618Z] ----------------------------------------------------------------------
+[debug] [2020-09-08T20:51:53.620Z] Command:       /usr/local/bin/node /usr/local/bin/firebase emulators:start --import=./localdb --export-on-exit
+[debug] [2020-09-08T20:51:53.621Z] CLI Version:   8.10.0
+[debug] [2020-09-08T20:51:53.621Z] Platform:      darwin
+[debug] [2020-09-08T20:51:53.621Z] Node Version:  v12.18.3
+[debug] [2020-09-08T20:51:53.622Z] Time:          Tue Sep 08 2020 13:51:53 GMT-0700 (Pacific Daylight Time)
+[debug] [2020-09-08T20:51:53.622Z] ----------------------------------------------------------------------
+[debug] [2020-09-08T20:51:53.622Z] 
+[debug] [2020-09-08T20:51:53.628Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-09-08T20:51:53.628Z] > authorizing via signed-in user
+[info] i  emulators: Starting emulators: functions, firestore, database, pubsub {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions, firestore, database, pubsub"}}
+[debug] [2020-09-08T20:51:53.687Z] [hub] writing locator at /var/folders/q3/kkqghrfn3dsggcjs2bg6z5200000gp/T/hub-cosourcerytest.json
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: hosting {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mhosting\u001b[22m"}}
+[warn] ⚠  Your requested "node" version "8" doesn't match your global version "12" {"metadata":{"emulator":{"name":"functions"},"message":"Your requested \"node\" version \"8\" doesn't match your global version \"12\""}}
+[debug] [2020-09-08T20:51:53.713Z] defaultcredentials: writing to file /Users/Methodician/.config/firebase/methodician_gmail_com_application_default_credentials.json
+[debug] [2020-09-08T20:51:53.715Z] Setting GAC to /Users/Methodician/.config/firebase/methodician_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /Users/Methodician/.config/firebase/methodician_gmail_com_application_default_credentials.json"}}
+[info] i  firestore: Importing data from /Users/Methodician/repos/CoSourcerySSR/functions/localdb/firestore_export/firestore_export.overall_export_metadata {"metadata":{"emulator":{"name":"firestore"},"message":"Importing data from /Users/Methodician/repos/CoSourcerySSR/functions/localdb/firestore_export/firestore_export.overall_export_metadata"}}
+[warn] ⚠  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file. {"metadata":{"emulator":{"name":"firestore"},"message":"Did not find a Cloud Firestore rules file specified in a firebase.json config file."}}
+[warn] ⚠  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"firestore"},"message":"The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[debug] [2020-09-08T20:51:53.721Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2020-09-08T20:51:53.722Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-09-08T20:51:53.722Z] Starting Firestore Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","/Users/Methodician/.cache/firebase/emulators/cloud-firestore-emulator-v1.11.7.jar","--host","localhost","--port",8080,"--seed_from_export","/Users/Methodician/repos/CoSourcerySSR/functions/localdb/firestore_export/firestore_export.overall_export_metadata","--functions_emulator","localhost:5001"],"optionalArgs":["port","webchannel_port","host","rules","functions_emulator","seed_from_export"],"joinArgs":false} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"/Users/Methodician/.cache/firebase/emulators/cloud-firestore-emulator-v1.11.7.jar\",\"--host\",\"localhost\",\"--port\",8080,\"--seed_from_export\",\"/Users/Methodician/repos/CoSourcerySSR/functions/localdb/firestore_export/firestore_export.overall_export_metadata\",\"--functions_emulator\",\"localhost:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"functions_emulator\",\"seed_from_export\"],\"joinArgs\":false}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2020-09-08T20:51:54.774Z] API endpoint: http://localhost {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://localhost"}}
+[debug] [2020-09-08T20:51:54.775Z] :8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=localhost:8080
+
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":":8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=localhost:8080\n\nDev App Server is now running.\n\n"}}
+[debug] [2020-09-08T20:51:54.995Z] database rules config:  [{"instance":"cosourcerytest","rules":"/Users/Methodician/repos/CoSourcerySSR/database.rules.json"}]
+[debug] [2020-09-08T20:51:54.998Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2020-09-08T20:51:54.998Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-09-08T20:51:54.998Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2020-09-08T20:51:54.998Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","/Users/Methodician/.cache/firebase/emulators/firebase-database-emulator-v4.5.0.jar","--host","localhost","--port",9000,"--functions_emulator_host","localhost","--functions_emulator_port",5001],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host"],"joinArgs":false} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"/Users/Methodician/.cache/firebase/emulators/firebase-database-emulator-v4.5.0.jar\",\"--host\",\"localhost\",\"--port\",9000,\"--functions_emulator_host\",\"localhost\",\"--functions_emulator_port\",5001],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\"],\"joinArgs\":false}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2020-09-08T20:51:55.509Z] WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/Methodician/.cache/firebase/emulators/firebase-database-emulator-v4.5.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+ {"metadata":{"emulator":{"name":"database"},"message":"WARNING: An illegal reflective access operation has occurred\nWARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/Methodician/.cache/firebase/emulators/firebase-database-emulator-v4.5.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys\nWARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil\nWARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\nWARNING: All illegal access operations will be denied in a future release\n"}}
+[debug] [2020-09-08T20:51:56.099Z] 13:51:56.097 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"13:51:56.097 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\n"}}
+[debug] [2020-09-08T20:51:56.229Z] 13:51:56.229 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"13:51:56.229 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000\n"}}
+[info] i  database: Importing data from /Users/Methodician/repos/CoSourcerySSR/functions/localdb/database_export/cosourcerytest.json {"metadata":{"emulator":{"name":"database"},"message":"Importing data from /Users/Methodician/repos/CoSourcerySSR/functions/localdb/database_export/cosourcerytest.json"}}
+[debug] [2020-09-08T20:51:57.018Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2020-09-08T20:51:57.018Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"pubsub"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-09-08T20:51:57.018Z] Starting Pub/Sub Emulator with command {"binary":"/Users/Methodician/.cache/firebase/emulators/pubsub-emulator-0.1.0/pubsub-emulator/bin/cloud-pubsub-emulator","args":["--host=localhost","--port=8085"],"optionalArgs":["port","host"],"joinArgs":true} {"metadata":{"emulator":{"name":"pubsub"},"message":"Starting Pub/Sub Emulator with command {\"binary\":\"/Users/Methodician/.cache/firebase/emulators/pubsub-emulator-0.1.0/pubsub-emulator/bin/cloud-pubsub-emulator\",\"args\":[\"--host=localhost\",\"--port=8085\"],\"optionalArgs\":[\"port\",\"host\"],\"joinArgs\":true}"}}
+[info] i  pubsub: Pub/Sub Emulator logging to pubsub-debug.log {"metadata":{"emulator":{"name":"pubsub"},"message":"Pub/Sub Emulator logging to \u001b[1mpubsub-debug.log\u001b[22m"}}
+[debug] [2020-09-08T20:51:57.228Z] This is the Google Pub/Sub fake.
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"This is the Google Pub/Sub fake.\n"}}
+[debug] [2020-09-08T20:51:57.228Z] Implementation may be incomplete or differ from the real system.
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"Implementation may be incomplete or differ from the real system.\n"}}
+[debug] [2020-09-08T20:51:57.272Z] Sep 08, 2020 1:51:57 PM com.google.cloud.pubsub.testing.v1.Main main
+INFO: IAM integration is disabled. IAM policy methods and ACL checks are not supported
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"Sep 08, 2020 1:51:57 PM com.google.cloud.pubsub.testing.v1.Main main\nINFO: IAM integration is disabled. IAM policy methods and ACL checks are not supported\n"}}
+[debug] [2020-09-08T20:51:57.621Z] Sep 08, 2020 1:51:57 PM io.gapi.emulators.netty.NettyUtil applyJava7LongHostnameWorkaround
+INFO: Unable to apply Java 7 long hostname workaround.
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"Sep 08, 2020 1:51:57 PM io.gapi.emulators.netty.NettyUtil applyJava7LongHostnameWorkaround\nINFO: Unable to apply Java 7 long hostname workaround.\n"}}
+[debug] [2020-09-08T20:51:57.706Z] Sep 08, 2020 1:51:57 PM com.google.cloud.pubsub.testing.v1.Main main
+INFO: Server started, listening on 8085
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"Sep 08, 2020 1:51:57 PM com.google.cloud.pubsub.testing.v1.Main main\nINFO: Server started, listening on 8085\n"}}
+[debug] [2020-09-08T20:51:57.798Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2020-09-08T20:51:57.799Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2020-09-08T20:51:57.799Z] Starting Emulator UI with command {"binary":"node","args":["/Users/Methodician/.cache/firebase/emulators/ui-v1.1.1/server.bundle.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/Methodician/.cache/firebase/emulators/ui-v1.1.1/server.bundle.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2020-09-08T20:51:57.860Z] Sep 08, 2020 1:51:57 PM io.gapi.emulators.grpc.GrpcServer$3 operationComplete
+INFO: Adding handler(s) to newly registered Channel.
+ {"metadata":{"emulator":{"name":"pubsub"},"message":"Sep 08, 2020 1:51:57 PM io.gapi.emulators.grpc.GrpcServer$3 operationComplete\nINFO: Adding handler(s) to newly registered Channel.\n"}}
+[debug] [2020-09-08T20:51:57.885Z] Web / API server started at http://localhost:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at http://localhost:4000\n"}}
+[info] i  functions: Watching "/Users/Methodician/repos/CoSourcerySSR/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/Methodician/repos/CoSourcerySSR/functions\" for Cloud Functions..."}}
+[debug] [2020-09-08T20:51:58.066Z] [worker-pool] addWorker(~diagnostic~) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(~diagnostic~)"}}
+[debug] [2020-09-08T20:51:58.066Z] [worker-pool] Adding worker with key ~diagnostic~, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key ~diagnostic~, total=1"}}
+[debug] [2020-09-08T20:51:58.066Z] [worker-pool] submitWork(triggerId=) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitWork(triggerId=)"}}
+[debug] [2020-09-08T20:51:58.067Z] [worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: Assigning socketPath: /var/folders/q3/kkqghrfn3dsggcjs2bg6z5200000gp/T/fire_emu_1745.sock {"metadata":{"emulator":{"name":"functions"},"message":"[worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: Assigning socketPath: /var/folders/q3/kkqghrfn3dsggcjs2bg6z5200000gp/T/fire_emu_1745.sock"}}
+[debug] [2020-09-08T20:51:58.067Z] [worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: BUSY {"metadata":{"emulator":{"name":"functions"},"message":"[worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: BUSY"}}
+[debug] [2020-09-08T20:51:58.297Z] [runtime-status] [1745] Functions runtime initialized. {"cwd":"/Users/Methodician/repos/CoSourcerySSR/functions","node_version":"12.18.3"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Functions runtime initialized. {\"cwd\":\"/Users/Methodician/repos/CoSourcerySSR/functions\",\"node_version\":\"12.18.3\"}"}}
+[debug] [2020-09-08T20:51:58.302Z] [runtime-status] [1745] Disabled runtime features: undefined {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Disabled runtime features: undefined"}}
+[debug] [2020-09-08T20:51:58.303Z] [runtime-status] [1745] Resolved module firebase-admin {"declared":true,"installed":true,"version":"9.1.1","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"9.1.1\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.303Z] [runtime-status] [1745] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.303Z] [runtime-status] [1745] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.303Z] [runtime-status] [1745] Set PUBSUB_EMULATOR_HOST to localhost:8085 {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Set PUBSUB_EMULATOR_HOST to localhost:8085"}}
+[debug] [2020-09-08T20:51:58.304Z] [runtime-status] [1745] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2020-09-08T20:51:58.305Z] [runtime-status] [1745] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.339Z] [runtime-status] [1745] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Checked functions.config() {\"config\":{}}"}}
+[debug] [2020-09-08T20:51:58.340Z] [runtime-status] [1745] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"}} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}}"}}
+[debug] [2020-09-08T20:51:58.340Z] [runtime-status] [1745] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.341Z] [runtime-status] [1745] Resolved module firebase-admin {"declared":true,"installed":true,"version":"9.1.1","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"9.1.1\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.341Z] [runtime-status] [1745] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.11.0","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"3.11.0\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-functions/lib/index.js\"}"}}
+[debug] [2020-09-08T20:51:58.341Z] [runtime-status] [1745] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"9.1.1","resolution":"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js"}} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"9.1.1\",\"resolution\":\"/Users/Methodician/repos/CoSourcerySSR/functions/node_modules/firebase-admin/lib/index.js\"}}"}}
+[debug] [2020-09-08T20:51:58.487Z] [runtime-status] [1745] initializeApp(DEFAULT) {"databaseURL":"http://localhost:9000?ns=cosourcerytest","storageBucket":"cosourcerytest.appspot.com","projectId":"cosourcerytest"} {"metadata":{"emulator":{"name":"functions"},"message":"[runtime-status] [1745] initializeApp(DEFAULT) {\"databaseURL\":\"http://localhost:9000?ns=cosourcerytest\",\"storageBucket\":\"cosourcerytest.appspot.com\",\"projectId\":\"cosourcerytest\"}"}}
+[debug] [2020-09-08T20:51:58.638Z] addDatabaseTrigger[cosourcerytest] "{\"name\":\"projects/cosourcerytest/locations/_/functions/trackCommentVotes\",\"path\":\"/commentData/votesByUser/{userId}/{commentKey}\",\"event\":\"providers/google.firebase.database/eventTypes/ref.write\",\"topic\":\"projects/cosourcerytest/topics/trackCommentVotes\"}"
+[debug] [2020-09-08T20:51:58.639Z] >>> HTTP REQUEST POST http://localhost:9000/.settings/functionTriggers.json?ns=cosourcerytest  
+ {"name":"projects/cosourcerytest/locations/_/functions/trackCommentVotes","path":"/commentData/votesByUser/{userId}/{commentKey}","event":"providers/google.firebase.database/eventTypes/ref.write","topic":"projects/cosourcerytest/topics/trackCommentVotes"}
+[debug] [2020-09-08T20:51:58.640Z] [worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: IDLE {"metadata":{"emulator":{"name":"functions"},"message":"[worker-~diagnostic~-30b12ebd-b7b4-4edb-ab44-196b47104145]: IDLE"}}
+[debug] [2020-09-08T20:51:58.692Z] <<< HTTP RESPONSE 200 {"content-length":"15","content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-cache","x-firebase-project-id":"cosourcerytest","x-firebase-project-number":"123456789","x-firebase-uuid":"deec120c-a343-42dd-9155-6f6d66797f79"}
+[debug] [2020-09-08T20:51:58.693Z] addDatabaseTrigger[cosourcerytest] "{\"name\":\"projects/cosourcerytest/locations/_/functions/trackCommentDeletions\",\"path\":\"/commentData/comments/{commentKey}/removedAt\",\"event\":\"providers/google.firebase.database/eventTypes/ref.create\",\"topic\":\"projects/cosourcerytest/topics/trackCommentDeletions\"}"
+[debug] [2020-09-08T20:51:58.693Z] >>> HTTP REQUEST POST http://localhost:9000/.settings/functionTriggers.json?ns=cosourcerytest  
+ {"name":"projects/cosourcerytest/locations/_/functions/trackCommentDeletions","path":"/commentData/comments/{commentKey}/removedAt","event":"providers/google.firebase.database/eventTypes/ref.create","topic":"projects/cosourcerytest/topics/trackCommentDeletions"}
+[debug] [2020-09-08T20:51:58.701Z] <<< HTTP RESPONSE 200 {"content-length":"15","content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-cache","x-firebase-project-id":"cosourcerytest","x-firebase-project-number":"123456789","x-firebase-uuid":"deec120c-a343-42dd-9155-6f6d66797f79"}
+[debug] [2020-09-08T20:51:58.702Z] addFirestoreTrigger "{\"eventTrigger\":{\"resource\":\"projects/cosourcerytest/databases/(default)/documents/articleData/articles/articles/{articleId}\",\"eventType\":\"providers/cloud.firestore/eventTypes/document.create\",\"service\":\"firestore.googleapis.com\"}}"
+[debug] [2020-09-08T20:51:58.702Z] >>> HTTP REQUEST PUT http://localhost:8080/emulator/v1/projects/cosourcerytest/triggers/onCreateArticleDetail  
+ {"eventTrigger":{"resource":"projects/cosourcerytest/databases/(default)/documents/articleData/articles/articles/{articleId}","eventType":"providers/cloud.firestore/eventTypes/document.create","service":"firestore.googleapis.com"}}
+[debug] [2020-09-08T20:51:58.735Z] Sep 08, 2020 1:51:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:51:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2020-09-08T20:51:58.906Z] Sep 08, 2020 1:51:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:51:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2020-09-08T20:51:59.721Z] <<< HTTP RESPONSE 200 {"content-type":"application/json","content-length":"4"}
+[debug] [2020-09-08T20:51:59.722Z] addFirestoreTrigger "{\"eventTrigger\":{\"resource\":\"projects/cosourcerytest/databases/(default)/documents/articleData/articles/articles/{articleId}\",\"eventType\":\"providers/cloud.firestore/eventTypes/document.write\",\"service\":\"firestore.googleapis.com\"}}"
+[debug] [2020-09-08T20:51:59.722Z] >>> HTTP REQUEST PUT http://localhost:8080/emulator/v1/projects/cosourcerytest/triggers/onWriteArticleDetail  
+ {"eventTrigger":{"resource":"projects/cosourcerytest/databases/(default)/documents/articleData/articles/articles/{articleId}","eventType":"providers/cloud.firestore/eventTypes/document.write","service":"firestore.googleapis.com"}}
+[debug] [2020-09-08T20:51:59.735Z] Sep 08, 2020 1:51:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:51:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2020-09-08T20:51:59.743Z] <<< HTTP RESPONSE 200 {"content-type":"application/json","content-length":"4"}
+[debug] [2020-09-08T20:51:59.743Z] Unsupported trigger: {"timeout":"120s","availableMemoryMb":512,"eventTrigger":{"resource":"projects/_/buckets/cosourcerytest.appspot.com","eventType":"google.storage.object.finalize","service":"storage.googleapis.com"},"name":"onFileUpload","entryPoint":"onFileUpload"} {"metadata":{"emulator":{"name":"functions"},"message":"Unsupported trigger: {\"timeout\":\"120s\",\"availableMemoryMb\":512,\"eventTrigger\":{\"resource\":\"projects/_/buckets/cosourcerytest.appspot.com\",\"eventType\":\"google.storage.object.finalize\",\"service\":\"storage.googleapis.com\"},\"name\":\"onFileUpload\",\"entryPoint\":\"onFileUpload\"}"}}
+[info] ✔  functions[trackCommentVotes]: database function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mdatabase\u001b[22m function initialized."}}
+[info] ✔  functions[trackCommentDeletions]: database function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mdatabase\u001b[22m function initialized."}}
+[info] ✔  functions[onCreateArticleDetail]: firestore function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mfirestore\u001b[22m function initialized."}}
+[info] ✔  functions[onWriteArticleDetail]: firestore function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mfirestore\u001b[22m function initialized."}}
+[info] i  functions[onFileUpload]: function ignored because the storage emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the storage emulator does not exist or is not running."}}
+[debug] [2020-09-08T20:51:59.746Z] >>> HTTP REQUEST PUT http://localhost:9000/.settings/rules.json?ns=cosourcerytest  
+ {
+  "rules": {
+    ".read": "true",
+    "articleData": {
+      "userBookmarksPerArticle": {
+        "$articleId": {
+          "$uid": {
+            ".write": "auth.uid == $uid"
+          }
+        }
+      },
+      "editStatus": {
+        ".write": "auth != null"
+      },
+      "slugs": {
+        ".write": "true",
+        ".read": "true"
+      }
+    },
+    "commentData": {
+      "comments": {
+        "$commentId": {
+          ".write": "auth != null && (!data.exists() || auth.uid === data.child('authorId').val())"
+        }
+      },
+      "votesByUser": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      }
+    },
+    "userInfo": {
+      "articleBookmarksPerUser": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      },
+      "open": {
+        "$uid": {
+          ".write": "auth.uid == $uid"
+        }
+      }
+    }
+  }
+}
+
+[debug] [2020-09-08T20:51:59.783Z] <<< HTTP RESPONSE 200 {"content-length":"15","content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-cache","x-firebase-project-id":"cosourcerytest","x-firebase-project-number":"123456789","x-firebase-uuid":"deec120c-a343-42dd-9155-6f6d66797f79"}
+[info] 
+┌───────────────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! View status and logs at http://localhost:4000 │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ localhost:5001 │ http://localhost:4000/functions │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Firestore │ localhost:8080 │ http://localhost:4000/firestore │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Database  │ localhost:9000 │ http://localhost:4000/database  │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Pub/Sub   │ localhost:8085 │ n/a                             │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Other reserved ports: 4400, 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2020-09-08T20:52:05.957Z] Sep 08, 2020 1:52:05 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:52:05 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2020-09-08T20:52:06.009Z] Sep 08, 2020 1:52:06 PM com.google.cloud.datastore.emulator.impl.context.EmulatorAuthorization warnAboutSecuredJwt
+WARNING: expected an unsecured JWT, the emulator does not validate JWTs and IS NOT SECURE
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:52:06 PM com.google.cloud.datastore.emulator.impl.context.EmulatorAuthorization warnAboutSecuredJwt\nWARNING: expected an unsecured JWT, the emulator does not validate JWTs and IS NOT SECURE\n"}}
+[debug] [2020-09-08T20:52:06.243Z] Sep 08, 2020 1:52:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:52:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2020-09-08T20:53:06.269Z] Sep 08, 2020 1:53:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 08, 2020 1:53:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}

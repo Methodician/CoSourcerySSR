@@ -2,75 +2,73 @@
 
 .article-utils {
   display: grid;
-  grid-template-columns: 33% 33% 33%;
-  margin-top: 20px;
-  padding: 0 15px;
-  border-radius: 4px;
-  @media screen and (min-width: 500px) {
-    padding: 0 20px;
-  }
-}
+  grid-template-columns: 165px auto 90px;
 
-.stats {
-  display: grid;
-  grid-template-columns: 50% 50%;
+  .stats {
+    display: flex;
 
-  &__item {
-    height: 40px;
-    display: inline-flex;
-    justify-self: center;
-    align-items: center;
-    position: relative;
-    color: gray;
-    cursor: default;
+    &__item {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      color: gray;
+      // relative positioning allows tooltip to show up?
+      position: relative;
 
-    &:not(:first-child) {
-      margin-left: 15px;
-    }
-
-    &:hover .mat-icon-btn__tooltip {
-      visibility: visible;
-    }
-
-    &-counter {
-      display: block;
-      margin-left: 5px;
-      font-size: 0.9rem;
-    }
-
-    &_clickable {
-      cursor: pointer;
-    }
-
-    @media screen and (min-width: 500px) {
-      &:not(:first-child) {
-        margin-left: 20px;
+      &:hover .mat-icon-btn__tooltip {
+        visibility: visible;
       }
 
-      &-stat {
-        margin-left: 15px;
-        font-size: 1rem;
+      &-counter {
+        display: block;
+        margin-left: 5px;
+        font-size: 0.9rem;
+      }
+
+      &_clickable {
+        cursor: pointer;
+      }
+
+      mat-icon {
+        height: 1.2em;
+      }
+
+      @media screen and (min-width: 500px) {
+        mat-icon {
+          height: 1.5em;
+        }
+      }
+    }
+
+    &__icon {
+      height: auto;
+      width: auto;
+      font-size: 1.2rem;
+      color: gray;
+
+      @media screen and (min-width: 500px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    &__left {
+      display: flex;
+
+      .stats__item {
+        margin-left: 10px;
+      }
+    }
+    &__right {
+      display: flex;
+      justify-content: flex-end;
+
+      .stats__item {
+        margin-right: 10px;
       }
     }
   }
 
-  &__icon {
-    height: auto;
-    width: auto;
-    font-size: 1.2rem;
-    color: gray;
-
-    @media screen and (min-width: 500px) {
-      font-size: 1.5rem;
-    }
+  .highlighted {
+    color: #ffd80e;
   }
-}
-
-.stats-right {
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
-}
-
-.highlighted {
-  color: #ffd80e;
 }

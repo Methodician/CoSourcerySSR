@@ -58,6 +58,8 @@
         height: 40px;
         align-items: center;
         cursor: default;
+        // relative positioning allows tooltip to show up?
+        position: relative;
 
         mat-icon {
           color: rgb(150, 150, 150);
@@ -67,6 +69,7 @@
         .highlighted {
           color: #FFD80E
         }
+        
         &:hover .mat-icon-btn__tooltip {
           visibility: visible;
         }

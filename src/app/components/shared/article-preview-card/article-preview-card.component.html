@@ -55,7 +55,7 @@
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="right: 0;"
         >
-          {{ isArticleBookmarked$.value ? 'Remove Bookmark' : 'Bookmark' }}
+          {{ (isArticleBookmarked$ | async) ? 'Remove Bookmark' : 'Bookmark' }}
         </span>
       </div>
     </div>

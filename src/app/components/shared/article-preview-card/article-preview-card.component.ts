@@ -1,10 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
 import { ArticleService } from '@services/article.service';
 import { IArticlePreview } from '@models/article-info';
 import { AuthService } from '@services/auth.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, combineLatest, Observable } from 'rxjs';
 import { StorageService } from '@services/storage.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -17,7 +16,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() articleData: IArticlePreview;
   coverImageUrl = '';
-  isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  isArticleBookmarked$: Observable<boolean>;
   private unsubscribe: Subject<void> = new Subject();
 
   constructor(
@@ -47,11 +46,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.watchCoverImageUrl();
-    this.isArticleBookmarked()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(val => {
-        this.isArticleBookmarked$.next(val);
-      });
+    this.watchArticleBookmark();
   }
 
   ngOnDestroy() {
@@ -65,6 +60,17 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
       .subscribe(url => {
         this.coverImageUrl = url;
       });
+  };
+
+  watchArticleBookmark = () => {
+    this.isArticleBookmarked$ = this.authSvc.authInfo$.pipe(
+      switchMap(info =>
+        this.articleSvc
+          .singleBookmarkRef(info.uid, this.articleData.articleId)
+          .valueChanges(),
+      ),
+      map(bookmark => !!bookmark),
+    );
   };
 
   isValidUrl = (str: string) => {
@@ -88,14 +94,14 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   onToggleBookmark = () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
-        const uid = this.authSvc.authInfo$.value.uid,
-          aid = this.articleData.articleId,
-          isbookmarked = this.isArticleBookmarked$.value;
-        if (isbookmarked) {
-          this.articleSvc.unBookmarkArticle(uid, aid);
-        } else {
-          this.articleSvc.bookmarkArticle(uid, aid);
-        }
+        combineLatest([this.authSvc.authInfo$, this.isArticleBookmarked$])
+          .pipe(take(1))
+          .subscribe(([loggedInUser, isBookmarked]) => {
+            const { uid } = loggedInUser,
+              { articleId } = this.articleData;
+            if (isBookmarked) this.articleSvc.unBookmarkArticle(uid, articleId);
+            else this.articleSvc.bookmarkArticle(uid, articleId);
+          });
       }
     });
   };

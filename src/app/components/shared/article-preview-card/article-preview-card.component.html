@@ -9,7 +9,7 @@
         [alt]="articleData.imageAlt ? articleData.imageAlt : 'Cover Image'"
       />
       <h2 class="card-content__title">
-        {{ articleData.title | truncateString: 20 }}
+        {{ articleData.title }}
       </h2>
       <p class="card-content__date">
         Last Updated: {{ articleData?.lastUpdated | date }}

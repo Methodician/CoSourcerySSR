@@ -20,12 +20,12 @@
         "
       />
       <h2 class="card-content__title">
-        {{ articleVersionData.title | truncateString: 20 }}
+        {{ articleVersionData.title }}
       </h2>
       <p class="card-content__date">
         Last Updated: {{ articleVersionData?.lastUpdated | date }}
       </p>
-      <p>{{ articleVersionData.introduction | truncateString: 100 }}</p>
+      <p>{{ articleVersionData.introduction | truncateString: 140 }}</p>
     </section>
   </a>
 

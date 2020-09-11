@@ -32,6 +32,9 @@
     margin-bottom: 0;
     color: $primary-color;
     font-size: 1.375rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__date {
@@ -67,15 +70,13 @@
         }
 
         .highlighted {
-          color: #FFD80E
+          color: #ffd80e;
         }
-        
+
         &:hover .mat-icon-btn__tooltip {
           visibility: visible;
         }
-
       }
-
     }
   }
 }

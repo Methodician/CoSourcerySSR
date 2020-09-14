@@ -75,7 +75,6 @@ import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialo
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { ArticleHistoryComponent } from './components/article-history/article-history.component';
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
-import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 // end components
@@ -120,7 +119,6 @@ import { PreviewCardStatsComponent } from './components/shared/preview-card-stat
     CountdownDialogComponent,
     ArticleHistoryComponent,
     VersionDetailComponent,
-    VersionPreviewCardComponent,
     VersionNavigationComponent,
     PreviewCardStatsComponent,
   ],

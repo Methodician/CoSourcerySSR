@@ -1,5 +1,5 @@
 <article class="preview-card">
-  <a [routerLink]="'/article/' + articleData.slug">
+  <a [routerLink]="linkTo">
     <section class="card-content">
       <img
         class="card-content__image"
@@ -14,7 +14,7 @@
       <p class="card-content__date">
         Last Updated: {{ articleData?.lastUpdated | date }}
       </p>
-      <p>{{ articleData.introduction | truncateString: 100 }}</p>
+      <p>{{ articleData.introduction | truncateString: 140 }}</p>
     </section>
   </a>
 

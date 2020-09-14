@@ -11,11 +11,11 @@ import { ArticleService } from '@services/article.service';
 import { UserService } from '@services/user.service';
 
 // MODELS
-import { IVersionDetail } from '@models/article-info';
+import { IArticleDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
 
-const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IVersionDetail>>(
+const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   'articleVersionState',
 );
 
@@ -37,7 +37,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
   versionId: string;
   articleSubscription: Subscription;
 
-  articleVersionState: IVersionDetail;
+  articleVersionState: IArticleDetail;
 
   constructor(
     private route: ActivatedRoute,
@@ -72,7 +72,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
         if (version) this.versionId = version;
       }),
       switchMap(
-        ({ id, version }): Observable<IVersionDetail> => {
+        ({ id, version }): Observable<IArticleDetail> => {
           return this.watchArticleVersion$(id, version);
         },
       ),
@@ -99,7 +99,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     );
 
   watchArticleVersion$ = (id, versionId) => {
-    const preExisting: IVersionDetail = this.state.get(
+    const preExisting: IArticleDetail = this.state.get(
       VERSION_STATE_KEY,
       null as any,
     );
@@ -111,7 +111,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
           version
             ? (this.articleSvc.processArticleTimestamps(
                 version,
-              ) as IVersionDetail)
+              ) as IArticleDetail)
             : null,
         ),
         tap(version => this.state.set(VERSION_STATE_KEY, version)),
@@ -123,7 +123,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
 
   // ===OTHER
 
-  updateMetaTags = (article: IVersionDetail) => {
+  updateMetaTags = (article: IArticleDetail) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();

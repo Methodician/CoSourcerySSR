@@ -16,27 +16,23 @@
 </cos-filter-menu>
 
 <!-- ARTICLE COLLECTIONS -->
-<section
-  id="latest-articles"
-  *ngIf="filterMenu.isTabSelected('Latest')"
->
+<section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
   <div class="article-grid">
     <cos-article-preview-card
       *ngFor="let article of latestArticles$ | async"
       [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
     >
     </cos-article-preview-card>
   </div>
 </section>
 
-<section
-  id="all-articles"
-  *ngIf="filterMenu.isTabSelected('All')"
->
+<section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
   <div class="article-grid">
     <cos-article-preview-card
       *ngFor="let article of allArticles$ | async"
       [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
     >
     </cos-article-preview-card>
   </div>
@@ -60,6 +56,7 @@
     <cos-article-preview-card
       *ngFor="let article of bookmarkedArticles$ | async"
       [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
     >
     </cos-article-preview-card>
   </div>

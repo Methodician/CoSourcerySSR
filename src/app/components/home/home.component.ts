@@ -135,4 +135,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   };
   //end home filter functionality
+
+  // HELPERS
+  createPreviewLink = (article: IArticlePreview) => `/article/${article.slug}`;
+  // end helpers
 }

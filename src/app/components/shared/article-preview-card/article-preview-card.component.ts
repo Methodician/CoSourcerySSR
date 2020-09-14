@@ -14,6 +14,7 @@ import { MatIconRegistry } from '@angular/material/icon';
   styleUrls: ['./article-preview-card.component.scss'],
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
+  @Input() linkTo: string;
   @Input() articleData: IArticlePreview;
   coverImageUrl = '';
   isArticleBookmarked$: Observable<boolean>;

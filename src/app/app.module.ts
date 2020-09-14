@@ -77,6 +77,7 @@ import { ArticleHistoryComponent } from './components/article-history/article-hi
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
 import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
+import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 // end components
 @NgModule({
   declarations: [
@@ -121,6 +122,7 @@ import { VersionNavigationComponent } from './components/article-history/version
     VersionDetailComponent,
     VersionPreviewCardComponent,
     VersionNavigationComponent,
+    PreviewCardStatsComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

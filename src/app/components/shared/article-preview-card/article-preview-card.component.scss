@@ -10,10 +10,6 @@
 
   &:hover {
     box-shadow: 0 4px 10px $dark-gray-50;
-
-    .card-icons {
-      background-color: $primary-color;
-    }
   }
 }
 
@@ -32,6 +28,9 @@
     margin-bottom: 0;
     color: $primary-color;
     font-size: 1.375rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__date {
@@ -39,47 +38,4 @@
     color: $medium-gray;
     font-size: 0.875rem;
   }
-}
-
-.card-icons {
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
-  color: gray;
-
-  .icon-set-wrapper {
-    display: grid;
-    grid-template-columns: 50% 50%;
-
-    .counter-icons {
-      &__item {
-        justify-self: center;
-        font-size: 0.75em;
-        display: inline-flex;
-        height: 40px;
-        align-items: center;
-        cursor: default;
-        // relative positioning allows tooltip to show up?
-        position: relative;
-
-        mat-icon {
-          color: rgb(150, 150, 150);
-          height: 15px;
-        }
-
-        .highlighted {
-          color: #FFD80E
-        }
-        
-        &:hover .mat-icon-btn__tooltip {
-          visibility: visible;
-        }
-
-      }
-
-    }
-  }
-}
-
-.bookmark-icon {
-  cursor: pointer;
 }

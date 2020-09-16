@@ -77,6 +77,7 @@ import { ArticleHistoryComponent } from './components/article-history/article-hi
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
+import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 // end components
 @NgModule({
   declarations: [
@@ -121,6 +122,7 @@ import { PreviewCardStatsComponent } from './components/shared/preview-card-stat
     VersionDetailComponent,
     VersionNavigationComponent,
     PreviewCardStatsComponent,
+    TimeElapsedPipe,
   ],
   entryComponents: [
     LoginDialogComponent,

@@ -2,8 +2,16 @@
 @import '../../../sass/vars.scss';
 
 .preview-card {
-  background: #fff;
-  box-shadow: 0 2px 5px $light-gray-50;
+  width: 256px;
+  height: 256px;
+  // left: 172px;
+  // top: 550px;
+
+  background: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+
+  // background: #fff;
+  // box-shadow: 0 2px 5px $light-gray-50;
   transition: box-shadow 0.25s;
 
   // TODO: Add some better background, shadow, or other to help connect the bottom banner to the card content on mobile.
@@ -11,31 +19,38 @@
   &:hover {
     box-shadow: 0 4px 10px $dark-gray-50;
   }
-}
 
-.card-content {
-  height: 400px;
-  padding: 20px 20px 0;
+  .card-content {
+    // height: 400px;
+    // padding: 20px 20px 0;
+    width: 256px;
+    height: 216px;
+    display: grid;
+    grid-template-rows: 144px 50px 22px;
 
-  &__image {
-    height: 175px;
-    width: 100%;
-    display: block;
-    object-fit: cover;
-  }
+    img {
+      object-fit: cover;
+      height: 144px;
+      width: 100%;
+    }
 
-  &__title {
-    margin-bottom: 0;
-    color: $primary-color;
-    font-size: 1.375rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .title {
+      h2 {
+        margin: 5px 16px;
+        // justify-self: center;
+        color: black;
+        // color: $primary-color;
+        font-size: 18px;
+        // white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
-  &__date {
-    margin-top: 5px;
-    color: $medium-gray;
-    font-size: 0.875rem;
+    .date-updated {
+      margin: 0 16px;
+      color: $medium-gray;
+      font-size: 0.875rem;
+    }
   }
 }

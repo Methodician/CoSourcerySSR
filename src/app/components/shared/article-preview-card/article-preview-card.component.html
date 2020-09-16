@@ -1,22 +1,23 @@
-<article class="preview-card">
+<main class="preview-card">
   <a [routerLink]="linkTo">
     <section class="card-content">
       <img
-        class="card-content__image"
         [src]="
           coverImageUrl !== '' ? coverImageUrl : '../../assets/images/logo.svg'
         "
         [alt]="articleData.imageAlt ? articleData.imageAlt : 'Cover Image'"
       />
-      <h2 class="card-content__title">
-        {{ articleData.title }}
-      </h2>
-      <p class="card-content__date">
-        Last Updated: {{ articleData?.lastUpdated | date }}
-      </p>
-      <p>{{ articleData.introduction | truncateString: 140 }}</p>
+      <section class="title">
+        <h2>
+          {{ articleData.title | truncateString: 38 }}
+        </h2>
+      </section>
+      <section class="date-updated">
+        <p>Updated {{ articleData?.lastUpdated | timeElapsed }}</p>
+      </section>
+      <!-- <p>{{ articleData.introduction | truncateString: 140 }}</p> -->
     </section>
   </a>
 
   <cos-preview-card-stats [articleData]="articleData"></cos-preview-card-stats>
-</article>
+</main>

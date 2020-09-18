@@ -1,6 +1,8 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../sass/vars.scss';
 
+$card-gap: 32px;
+
 .banner {
   display: none;
 
@@ -22,7 +24,7 @@
 .article-collections {
   background-color: #fdfdfd;
   .collection-text {
-    margin: 24px 0 0;
+    margin: $card-gap 0 0;
     text-align: center;
 
     &_accent {
@@ -38,23 +40,23 @@
   .article-grid {
     display: grid;
     grid-template-rows: auto;
-    grid-gap: 24px;
+    grid-gap: $card-gap;
     justify-content: center;
-    padding: 24px 0;
+    padding: $card-gap 0;
 
-    @media screen and (min-width: calc(#{$preview-card-height} * 2 + 75px)) {
+    @media screen and (min-width: calc(#{$preview-card-height * 2} + #{$card-gap * 3} + 2px)) {
       grid-template-areas: 'a a';
     }
 
-    @media screen and (min-width: calc(#{$preview-card-height} * 3 + 100px)) {
+    @media screen and (min-width: calc(#{$preview-card-height * 3} + #{$card-gap * 4} + 2px)) {
       grid-template-areas: 'a a a';
     }
 
-    @media screen and (min-width: calc(#{$preview-card-height} * 4 + 125px)) {
+    @media screen and (min-width: calc(#{$preview-card-height * 4} + #{$card-gap * 5} + 2px)) {
       grid-template-areas: 'a a a a';
     }
 
-    @media screen and (min-width: calc(#{$preview-card-height} * 5 + 150px)) {
+    @media screen and (min-width: calc(#{$preview-card-height * 5} + #{$card-gap * 6} + 2px)) {
       grid-template-areas: 'a a a a a';
     }
   }

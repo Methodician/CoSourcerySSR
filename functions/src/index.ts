@@ -14,6 +14,29 @@ admin.initializeApp();
 const adminFS = admin.firestore();
 const adminDB = admin.database();
 
+export const FIREBASE_DATABASE_EMULATOR_HOST = "localhost:9000"
+
+export const trackCommentVotes = functions.database.ref(`commentData/votesByUser/{userId}/{commentKey}`).onWrite(async (change, context) => {
+  console.log('tracking a comment vote')
+  const before = change.before.val();
+  const after = change.after.val();
+  const diff = after - before;
+  console.log('before', before, 'after', after, 'diff', diff)
+  const commentKey = context.params['commentKey'];
+  const commentRef = adminDB.ref(`commentData/comments/${commentKey}`);
+  return commentRef.transaction((commmentToUpdate: IComment) => {
+    if (!commmentToUpdate) {
+      return null;
+    }
+    const oldCount = commmentToUpdate.voteCount || 0;
+    const newCount = oldCount + diff;
+    commmentToUpdate.voteCount = newCount;
+    console.log('commentToUpdate', commmentToUpdate)
+    return commmentToUpdate;
+  });
+});
+
+
 export const trackCommentDeletions = functions.database
   .ref('commentData/comments/{commentKey}/removedAt')
   .onCreate(async (snap, context) => {
@@ -316,3 +339,26 @@ interface IArticleDetail {
 interface IKeyMap<T> {
   [key: string]: T;
 }
+
+export interface IComment {
+  authorId: string;
+  parentKey: string;
+  text: string;
+  replyCount: number;
+  parentType: EParentTypes;
+  voteCount: number;
+  key?: string;
+  timestamp?: number;
+  lastUpdated?: number;
+}
+
+export enum EParentTypes {
+  article = 'article',
+  comment = 'comment',
+}
+
+export enum EVoteDirections {
+  up = 1,
+  down = -1,
+}
+

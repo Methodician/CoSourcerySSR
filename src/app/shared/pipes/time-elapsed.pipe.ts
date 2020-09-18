@@ -22,28 +22,34 @@ export class TimeElapsedPipe implements PipeTransform {
     const msMinute = 60000;
     const ms10Minute = msMinute * 10;
 
-    return msElapsed >= ms10Year
-      ? `${Math.floor(msElapsed / msYear)} years ago`
-      : msElapsed >= msYear
-      ? `${(msElapsed / msYear).toFixed(1)} years ago`
-      : msElapsed >= ms10Month
-      ? `${Math.floor(msElapsed / msMonth)} months ago`
-      : msElapsed >= msMonth
-      ? `${(msElapsed / msMonth).toFixed(1)} months ago`
-      : msElapsed >= msWeek
-      ? `${(msElapsed / msWeek).toFixed(1)} weeks ago`
-      : msElapsed >= ms10Day
-      ? `${Math.floor(msElapsed / msDay)} days ago`
-      : msElapsed >= msDay
-      ? `${(msElapsed / msDay).toFixed(1)} days ago`
-      : msElapsed >= ms10Hour
-      ? `${Math.floor(msElapsed / msHour)} hours ago`
-      : msElapsed >= msHour
-      ? `${(msElapsed / msHour).toFixed(1)} hours ago`
-      : msElapsed >= ms10Minute
-      ? `${Math.floor(msElapsed / msMinute)} minutes ago`
-      : msElapsed >= msMinute
-      ? `${(msElapsed / msMinute).toFixed(1)} minutes ago`
-      : 'just now';
+    const rawString =
+      msElapsed >= ms10Year
+        ? `${Math.floor(msElapsed / msYear)} years ago`
+        : msElapsed >= msYear
+        ? `${(msElapsed / msYear).toFixed(1)} years ago`
+        : msElapsed >= ms10Month
+        ? `${Math.floor(msElapsed / msMonth)} months ago`
+        : msElapsed >= msMonth
+        ? `${(msElapsed / msMonth).toFixed(1)} months ago`
+        : msElapsed >= msWeek
+        ? `${(msElapsed / msWeek).toFixed(1)} weeks ago`
+        : msElapsed >= ms10Day
+        ? `${Math.floor(msElapsed / msDay)} days ago`
+        : msElapsed >= msDay
+        ? `${(msElapsed / msDay).toFixed(1)} days ago`
+        : msElapsed >= ms10Hour
+        ? `${Math.floor(msElapsed / msHour)} hours ago`
+        : msElapsed >= msHour
+        ? `${(msElapsed / msHour).toFixed(1)} hours ago`
+        : msElapsed >= ms10Minute
+        ? `${Math.floor(msElapsed / msMinute)} minutes ago`
+        : msElapsed >= msMinute
+        ? `${(msElapsed / msMinute).toFixed(1)} minutes ago`
+        : 'just now';
+
+    // Removes annoying trailing ".0" that comes up (may be better solution)
+    const cleanString = rawString.replace('.0', '');
+
+    return cleanString;
   }
 }

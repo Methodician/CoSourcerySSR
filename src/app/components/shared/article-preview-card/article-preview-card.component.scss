@@ -1,17 +1,20 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../../sass/vars.scss';
 
+$content-height: 226px;
+$img-height: 160px;
+$title-height: 50px;
+$date-height: 16px;
+
 .preview-card {
-  width: 256px;
-  height: 256px;
-  // left: 172px;
-  // top: 550px;
+  width: $preview-card-height;
+  height: $preview-card-height;
+
+  display: grid;
+  grid-template-rows: $content-height 1fr;
 
   background: #ffffff;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-
-  // background: #fff;
-  // box-shadow: 0 2px 5px $light-gray-50;
   transition: box-shadow 0.25s;
 
   // TODO: Add some better background, shadow, or other to help connect the bottom banner to the card content on mobile.
@@ -21,36 +24,34 @@
   }
 
   .card-content {
-    // height: 400px;
-    // padding: 20px 20px 0;
-    width: 256px;
-    height: 216px;
+    width: $preview-card-height;
+    height: $content-height;
     display: grid;
-    grid-template-rows: 144px 50px 22px;
+    grid-template-rows: $img-height $title-height $date-height;
 
     img {
       object-fit: cover;
-      height: 144px;
+      height: $img-height;
       width: 100%;
     }
 
     .title {
       h2 {
         margin: 5px 16px;
-        // justify-self: center;
-        color: black;
-        // color: $primary-color;
+        font-weight: 800;
+        color: $dark-gray;
         font-size: 18px;
-        // white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
     }
 
     .date-updated {
       margin: 0 16px;
-      color: $medium-gray;
-      font-size: 0.875rem;
+      font-size: 0.74em;
+      p {
+        color: $accent-color-1-dark;
+        margin: 0;
+        font-weight: 600;
+      }
     }
   }
 }

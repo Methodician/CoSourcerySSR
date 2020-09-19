@@ -1,82 +1,57 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../../sass/vars.scss';
 
+$content-height: 226px;
+$img-height: 160px;
+$title-height: 50px;
+$date-height: 16px;
+
 .preview-card {
-  background: #fff;
-  box-shadow: 0 2px 5px $light-gray-50;
+  width: $preview-card-height;
+  height: $preview-card-height;
+
+  display: grid;
+  grid-template-rows: $content-height 1fr;
+
+  background: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.25s;
 
   // TODO: Add some better background, shadow, or other to help connect the bottom banner to the card content on mobile.
 
   &:hover {
     box-shadow: 0 4px 10px $dark-gray-50;
-
-    .card-icons {
-      background-color: $primary-color;
-    }
-  }
-}
-
-.card-content {
-  height: 400px;
-  padding: 20px 20px 0;
-
-  &__image {
-    height: 175px;
-    width: 100%;
-    display: block;
-    object-fit: cover;
   }
 
-  &__title {
-    margin-bottom: 0;
-    color: $primary-color;
-    font-size: 1.375rem;
-  }
+  .card-content {
+    width: $preview-card-height;
+    height: $content-height;
+    display: grid;
+    grid-template-rows: $img-height $title-height $date-height;
 
-  &__date {
-    margin-top: 5px;
-    color: $medium-gray;
-    font-size: 0.875rem;
-  }
-}
-
-.card-icons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background-color: $accent-color-1-dark;
-  color: #fff;
-}
-
-.counter-icons {
-  display: flex;
-  align-items: center;
-
-  &__item {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: default;
-
-    &:not(:first-child) {
-      margin-left: 20px;
+    img {
+      object-fit: cover;
+      height: $img-height;
+      width: 100%;
     }
 
-    &:hover .mat-icon-btn__tooltip {
-      visibility: visible;
+    .title {
+      h2 {
+        margin: 5px 16px;
+        font-weight: 800;
+        color: $dark-gray;
+        font-size: 18px;
+      }
+    }
+
+    .date-updated {
+      margin: 0 16px;
+      font-size: 0.74em;
+      p {
+        color: $accent-color-1-dark;
+        margin: 0;
+        font-weight: 600;
+      }
     }
   }
-
-  &__stat {
-    display: block;
-    margin-left: 15px;
-  }
-}
-
-.bookmark-icon {
-  cursor: pointer;
 }

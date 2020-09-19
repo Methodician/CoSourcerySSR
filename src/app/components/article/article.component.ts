@@ -3,7 +3,6 @@ import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import {
   Subscription,
   BehaviorSubject,
@@ -20,6 +19,8 @@ import {
   takeUntil,
   take,
 } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -100,12 +101,30 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private authSvc: AuthService,
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(user => {
         this.loggedInUser = user;
       });
+    iconRegistry.addSvgIcon(
+      'comment',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/comment.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'edit',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'loyalty',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/loyalty.svg'),
+    );
+    iconRegistry.addSvgIcon(
+      'bookmark',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/bookmark.svg'),
+    );
   }
 
   ngOnInit() {

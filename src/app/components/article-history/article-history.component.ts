@@ -8,10 +8,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap, startWith, switchMap } from 'rxjs/operators';
 
-import { IVersionPreview, IVersionDetail } from '@models/article-info';
+import { IArticleDetail } from '@models/article-info';
 import { ArticleService } from '@services/article.service';
 
-const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
+const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IArticleDetail[]>>(
   'allArticleVersions',
 );
 
@@ -24,7 +24,7 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
   ],
 })
 export class ArticleHistoryComponent implements OnInit {
-  allArticleVersions$: Observable<IVersionPreview[]>;
+  allArticleVersions$: Observable<IArticleDetail[]>;
 
   constructor(
     private articleSvc: ArticleService,
@@ -49,8 +49,8 @@ export class ArticleHistoryComponent implements OnInit {
   clearArticleKeys = () => this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
 
   ssrArticleVersionCollection = (
-    versions$: Observable<IVersionDetail[]>,
-    stateKey: StateKey<Observable<IVersionDetail[]>>,
+    versions$: Observable<IArticleDetail[]>,
+    stateKey: StateKey<Observable<IArticleDetail[]>>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return versions$.pipe(
@@ -63,4 +63,9 @@ export class ArticleHistoryComponent implements OnInit {
       startWith(preExisting$),
     );
   };
+
+  // HELPERS
+  createPreviewLink = (article: IArticleDetail) =>
+    `/article/${article.slug}/history/${article.version}`;
+  // end helpers
 }

@@ -1,12 +1,15 @@
 import { environment } from '../environments/environment';
 
+// MODULES
+
+// Angular
 import {
   BrowserModule,
   BrowserTransferStateModule,
 } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
-// MODULES
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -72,8 +75,9 @@ import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialo
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { ArticleHistoryComponent } from './components/article-history/article-history.component';
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
-import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
+import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
+import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 // end components
 
 @NgModule({
@@ -117,8 +121,9 @@ import { VersionNavigationComponent } from './components/article-history/version
     CountdownDialogComponent,
     ArticleHistoryComponent,
     VersionDetailComponent,
-    VersionPreviewCardComponent,
     VersionNavigationComponent,
+    PreviewCardStatsComponent,
+    TimeElapsedPipe,
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -134,6 +139,7 @@ import { VersionNavigationComponent } from './components/article-history/version
     AngularFireDatabaseModule,
     AngularFireStorageModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    HttpClientModule,
     BrowserTransferStateModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { UserService } from '@services/user.service';
 import { ArticleService } from '@services/article.service';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { switchMap, map, take } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 
@@ -21,20 +20,11 @@ export class StatsComponent implements OnInit {
   isBookmarked$: Observable<boolean>;
 
   constructor(
-    private userSvc: UserService,
     private authSvc: AuthService,
-    private articleSvc: ArticleService
+    private articleSvc: ArticleService,
   ) {}
   ngOnInit() {
-    this.isBookmarked$ = this.userSvc.loggedInUser$
-      .pipe(
-        switchMap(user =>
-          this.articleSvc
-            .singleBookmarkRef(user.uid, this.articleId)
-            .valueChanges()
-        )
-      )
-      .pipe(map(timestamp => !!timestamp));
+    this.watchArticleBookmark();
   }
 
   onBookmarkClicked = () => {
@@ -43,15 +33,26 @@ export class StatsComponent implements OnInit {
     });
   };
 
+  watchArticleBookmark = () => {
+    this.isBookmarked$ = this.authSvc.authInfo$
+      .pipe(
+        switchMap(user =>
+          this.articleSvc
+            .singleBookmarkRef(user.uid, this.articleId)
+            .valueChanges(),
+        ),
+      )
+      .pipe(map(timestamp => !!timestamp));
+  };
+
   toggleBookmark = () => {
-    this.isBookmarked$.pipe(take(1)).subscribe(isBookmarked => {
-      this.userSvc.loggedInUser$.pipe(take(1)).subscribe(user => {
-        if (isBookmarked) {
-          this.articleSvc.unBookmarkArticle(user.uid, this.articleId);
-        } else {
-          this.articleSvc.bookmarkArticle(user.uid, this.articleId);
-        }
+    combineLatest([this.isBookmarked$, this.authSvc.authInfo$])
+      .pipe(take(1))
+      .subscribe(([isBookmarked, authInfo]) => {
+        const { uid } = authInfo,
+          { articleId } = this;
+        if (isBookmarked) this.articleSvc.unBookmarkArticle(uid, articleId);
+        else this.articleSvc.bookmarkArticle(uid, articleId);
       });
-    });
   };
 }

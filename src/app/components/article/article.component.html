@@ -46,6 +46,15 @@
       (onClickOut)="clickoutCtrl(ECtrlNames.intro)"
     ></cos-intro>
 
+    <!-- ATTRIBUTIONS -->
+    <section class="article-attributions">
+      <cos-contributors
+        [creatorKey]="loggedInUser.uid"
+        [editorMap]="articleState.editors"
+      >
+      </cos-contributors>
+    </section>
+
     <!-- STATS -->
     <cos-stats
       [commentCount]="articleState.commentCount"
@@ -55,15 +64,6 @@
       [isArticleNew]="isArticleNew"
       [slug]="articleState.slug"
     ></cos-stats>
-
-    <!-- ATTRIBUTIONS -->
-    <section class="article-attributions">
-      <cos-contributors
-        [creatorKey]="loggedInUser.uid"
-        [editorMap]="articleState.editors"
-      >
-      </cos-contributors>
-    </section>
   </section>
 
   <!-- BODY and EDITOR -->

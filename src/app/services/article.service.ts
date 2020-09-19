@@ -4,11 +4,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import {
-  IArticlePreview,
-  IArticleDetail,
-  IVersionDetail,
-} from '@models/article-info';
+import { IArticlePreview, IArticleDetail } from '@models/article-info';
 
 // RXJS stuff
 import { switchMap, take, map } from 'rxjs/operators';
@@ -89,13 +85,13 @@ export class ArticleService {
     );
 
   allArticleVersionsRef = (articleId: string) =>
-    this.afs.collection<IVersionDetail>(
+    this.afs.collection<IArticleDetail>(
       `/articleData/articles/articles/${articleId}/history`,
       ref => ref.orderBy('version', 'desc'),
     );
 
   articleVersionDetailRef = (articleId: string, version: string) =>
-    this.afs.doc<IVersionDetail>(
+    this.afs.doc<IArticleDetail>(
       `articleData/articles/articles/${articleId}/history/${version}`,
     );
 

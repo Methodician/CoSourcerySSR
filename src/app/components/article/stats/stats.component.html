@@ -1,7 +1,7 @@
 <section class="article-utils">
-  <div class="stats">
+  <div class="stats stats__left">
     <div class="stats__item">
-      <mat-icon class="stats__icon">comment</mat-icon>
+      <mat-icon svgIcon="comment"></mat-icon>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
         style="left: 0;"
@@ -12,24 +12,26 @@
     </div>
 
     <div class="stats__item">
-      <mat-icon class="stats__icon">border_color</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        >{{ editCount }} Edit(s)</span
-      >
+      <mat-icon svgIcon="edit"></mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ editCount }} Edit(s)</span>
       <span class="stats__item-counter">{{ editCount }}</span>
     </div>
 
     <div class="stats__item">
-      <mat-icon class="stats__icon">loyalty</mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        >{{ tagsCount }} Tag(s)</span
-      >
+      <mat-icon svgIcon="loyalty"></mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ tagsCount }} Tag(s)</span>
       <span class="stats__item-counter">{{ tagsCount }}</span>
     </div>
+
   </div>
 
-  <div class="stats-right">
-    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
+  <div class="stats"></div>
+
+  <div class="stats stats__right">
+    <div
+      *ngIf="!isArticleNew"
+      class="stats__item stats__item_clickable"
+    >
       <a [routerLink]="['/article', slug, 'history']">
         <mat-icon class="stats__icon">history</mat-icon>
       </a>
@@ -41,11 +43,18 @@
       </span>
     </div>
 
-    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
+    <div
+      *ngIf="!isArticleNew"
+      class="stats__item stats__item_clickable"
+    >
       <div>
-        <mat-icon class="stats__icon" (click)="onBookmarkClicked()">{{
-          (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
-        }}</mat-icon>
+        <mat-icon
+          [ngClass]="{ 'highlighted' : (isBookmarked$ | async) }"
+          svgIcon="bookmark"
+          (click)="onBookmarkClicked()"
+        >{{
+            (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
+          }}</mat-icon>
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="right: 0;"

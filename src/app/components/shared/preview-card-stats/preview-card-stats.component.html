@@ -1,0 +1,43 @@
+<main>
+  <div class="set-wrapper">
+    <div class="stat-item">
+      <mat-icon svgIcon="comment"></mat-icon>
+      <span
+        class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        style="left: 0;"
+      >
+        {{ articleData.commentCount }} Comment(s)
+      </span>
+      <span class="stat-number">{{ articleData.commentCount }}</span>
+    </div>
+    <div class="stat-item">
+      <mat-icon svgIcon="edit"></mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ articleData.version }} Edit(s)</span
+      >
+      <span class="stat-number">{{ articleData.version }}</span>
+    </div>
+  </div>
+  <div class="set-wrapper"></div>
+  <div class="set-wrapper">
+    <div class="stat-item">
+      <mat-icon svgIcon="loyalty"></mat-icon>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ articleData.tags.length }} Tag(s)</span
+      >
+      <span class="stat-number">{{ articleData.tags.length }}</span>
+    </div>
+    <div (click)="onToggleBookmark()" class="stat-item bookmark-icon">
+      <mat-icon
+        [ngClass]="{ highlighted: isArticleBookmarked$ | async }"
+        svgIcon="bookmark"
+      ></mat-icon>
+      <span
+        class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        style="right: 0;"
+      >
+        {{ (isArticleBookmarked$ | async) ? 'Remove Bookmark' : 'Bookmark' }}
+      </span>
+    </div>
+  </div>
+</main>

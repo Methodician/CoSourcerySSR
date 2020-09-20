@@ -14,9 +14,6 @@ import {
   styleUrls: ['./filter-menu.component.scss'],
 })
 export class FilterMenuComponent implements OnChanges {
-  // ViewChild may not be needed if we go with accordion
-  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
-  @ViewChild('filterMenu', { static: true }) filterMenu;
   @Input() tabList: ITabList = [
     { name: 'Tab 1', selected: true },
     { name: 'Tab 2', selected: false },
@@ -24,9 +21,6 @@ export class FilterMenuComponent implements OnChanges {
 
   @Output() onTabSelected = new EventEmitter<number>();
   @Output() onTabAdded = new EventEmitter<ITabList>();
-
-  filterContainerHeight: number;
-  filterMenuIsSticky: boolean;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.tabList && changes.tabList.currentValue) {
@@ -63,25 +57,6 @@ export class FilterMenuComponent implements OnChanges {
   isTabSelected = (tabName: string): boolean => {
     const tab: ITabItem = this.getTabByName(tabName);
     return tab && tab.selected;
-  };
-
-  checkScrollPosition = () => {
-    const yCoordinate = window.scrollY;
-    if (document.body.clientWidth >= 482) {
-      this.filterMenuIsSticky = yCoordinate >= 200 ? true : false;
-    } else {
-      this.filterMenuIsSticky = true;
-    }
-  };
-
-  adjustFilterContainerOnResize = () => {
-    this.checkScrollPosition();
-    this.setFilterContainerHeight();
-  };
-
-  setFilterContainerHeight = () => {
-    // May not be needed if we go with accordion
-    this.filterContainerHeight = this.filterMenu.nativeElement.clientHeight;
   };
 }
 

@@ -3,61 +3,63 @@
 
 $card-gap: 32px;
 
-.banner {
-  display: none;
+main {
+  .banner {
+    display: none;
 
-  &__title {
-    color: $accent-color-1-dark;
-    line-height: 1.5;
-  }
-
-  @media screen and (min-width: 500px) {
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 25px;
-    background-color: $light-gray-50;
-  }
-}
-
-.article-collections {
-  background-color: #fdfdfd;
-  .collection-text {
-    margin: $card-gap 0 0;
-    text-align: center;
-
-    &_accent {
-      color: $accent-color-1;
+    &__title {
+      color: $accent-color-1-dark;
+      line-height: 1.5;
     }
 
-    &_underline {
-      color: $accent-color-1;
-      text-decoration: underline;
+    @media screen and (min-width: 500px) {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+      background-color: $light-gray-50;
     }
   }
 
-  .article-grid {
-    display: grid;
-    grid-template-rows: auto;
-    grid-gap: $card-gap;
-    justify-content: center;
-    padding: $card-gap 0;
+  .article-collections {
+    background-color: #fdfdfd;
+    .collection-text {
+      margin: $card-gap 0 0;
+      text-align: center;
 
-    @media screen and (min-width: calc(#{$preview-card-height * 2} + #{$card-gap * 3} + 2px)) {
-      grid-template-areas: 'a a';
+      &_accent {
+        color: $accent-color-1;
+      }
+
+      &_underline {
+        color: $accent-color-1;
+        text-decoration: underline;
+      }
     }
 
-    @media screen and (min-width: calc(#{$preview-card-height * 3} + #{$card-gap * 4} + 2px)) {
-      grid-template-areas: 'a a a';
-    }
+    .article-grid {
+      display: grid;
+      grid-template-rows: auto;
+      grid-gap: $card-gap;
+      justify-content: center;
+      padding: $card-gap 0;
 
-    @media screen and (min-width: calc(#{$preview-card-height * 4} + #{$card-gap * 5} + 2px)) {
-      grid-template-areas: 'a a a a';
-    }
+      @media screen and (min-width: calc(#{$preview-card-height * 2} + #{$card-gap * 3} + 2px)) {
+        grid-template-areas: 'a a';
+      }
 
-    @media screen and (min-width: calc(#{$preview-card-height * 5} + #{$card-gap * 6} + 2px)) {
-      grid-template-areas: 'a a a a a';
+      @media screen and (min-width: calc(#{$preview-card-height * 3} + #{$card-gap * 4} + 2px)) {
+        grid-template-areas: 'a a a';
+      }
+
+      @media screen and (min-width: calc(#{$preview-card-height * 4} + #{$card-gap * 5} + 2px)) {
+        grid-template-areas: 'a a a a';
+      }
+
+      @media screen and (min-width: calc(#{$preview-card-height * 5} + #{$card-gap * 6} + 2px)) {
+        grid-template-areas: 'a a a a a';
+      }
     }
   }
 }

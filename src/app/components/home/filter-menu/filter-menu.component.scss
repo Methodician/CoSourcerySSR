@@ -1,53 +1,49 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../../sass/vars.scss';
+main {
+  position: sticky;
+  top: $navbar-height;
+  z-index: 1000;
 
-.filter-menu {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 15px;
-  background-color: $accent-color-1-dark;
-
-  &_sticky {
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: $navbar-height;
-    box-shadow: 0 2px 5px $light-gray-50;
-    z-index: 20;
-  }
-
-  &__item {
-    list-style: none;
-    padding: 0 15px;
-    border: 2px solid $accent-color-1;
-    border-radius: 25px;
-    background-color: $accent-color-1;
-    color: #fff;
-    font-size: 1.375rem;
-    cursor: pointer;
-
-    &:not(:last-child) {
-      margin-bottom: 10px;
-    }
-
-    &.active {
-      background-color: $accent-color-1-dark;
-      color: #fff;
-      cursor: default;
-    }
-  }
-
-  @media screen and (min-width: 768px) {
-    flex-direction: row;
+  .filter-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px;
+    background-color: $accent-color-1-dark;
 
     &__item {
-      &:not(:first-child) {
-        margin-left: 15px;
-      }
+      list-style: none;
+      padding: 0 15px;
+      border: 2px solid $accent-color-1;
+      border-radius: 25px;
+      background-color: $accent-color-1;
+      color: #fff;
+      font-size: 1.375rem;
+      cursor: pointer;
 
       &:not(:last-child) {
-        margin-bottom: 0;
+        margin-bottom: 10px;
+      }
+
+      &.active {
+        background-color: $accent-color-1-dark;
+        color: #fff;
+        cursor: default;
+      }
+    }
+
+    @media screen and (min-width: 768px) {
+      flex-direction: row;
+
+      &__item {
+        &:not(:first-child) {
+          margin-left: 15px;
+        }
+
+        &:not(:last-child) {
+          margin-bottom: 0;
+        }
       }
     }
   }

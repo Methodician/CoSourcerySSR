@@ -8,3 +8,5 @@ Sep 20, 2020 10:08:11 AM com.google.cloud.pubsub.testing.v1.Main main
 INFO: Server started, listening on 8085
 Sep 20, 2020 10:08:11 AM io.gapi.emulators.grpc.GrpcServer$3 operationComplete
 INFO: Adding handler(s) to newly registered Channel.
+*** shutting down gRPC server since JVM is shutting down
+*** server shut down

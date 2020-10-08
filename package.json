@@ -17,7 +17,7 @@
     "serve:ssr": "node dist/server",
     "build:ssr": "npm run build:client-and-server-bundles && npm run compile:server",
     "build:client-and-server-bundles": "ng build --prod && ng run cosourcery:server:production",
-    "emulate": "cd functions && firebase emulators:start --import=./localdb --export-on-exit && cd ..",
+    "emulate": "cd functions && firebase emulators:start --import=./testdb --export-on-exit && cd ..",
     "import:testdb": "gcloud firestore export gs://cosourcerytest.appspot.com/rawFirestore && cd functions && gsutil -m cp -r gs://cosourcerytest.appspot.com/rawFirestore . && cd ..",
     "import:proddb": "echo we have not set this up yet"
   },

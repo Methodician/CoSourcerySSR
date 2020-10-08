@@ -20,11 +20,14 @@
     *ngIf="!isBrowser"
     [innerHTML]="body"
   ></article>
-  <cos-body-edit
+  <textarea onchange="changeBody($event)" cols="30" rows="30">{{
+    body
+  }}</textarea>
+  <!-- <cos-body-edit
     *ngIf="isBrowser && articleId"
     (onBodyChange)="changeBody($event)"
     [body]="body"
     [isActive]="isActive"
     [articleId]="articleId"
-  ></cos-body-edit>
+  ></cos-body-edit> -->
 </section>

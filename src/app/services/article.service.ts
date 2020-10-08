@@ -52,6 +52,30 @@ export class ArticleService {
         }
       });
   };
+
+  // Work-around for Firestore emulator suite bug:
+  addPointlessDocuments = async () => {
+    console.log('adding pointless stuff');
+    const firstPoint = await this.afs
+      .collection('articleData')
+      .doc('articles')
+      .set({ pointless: 'thing' }, { merge: true });
+    console.log('should have set articles', firstPoint);
+
+    const secondPoint = await this.afs
+      .collection('fileUploads')
+      .doc('articleUploads')
+      .set({ pointless: 'thing' });
+
+    console.log('should have set articleUploads', secondPoint);
+
+    const lastPoint = await this.afs
+      .collection('fileUploads')
+      .doc('profileUploads')
+      .set({ pointless: 'thing' });
+    console.log('should have set profileUploads', lastPoint);
+    return { firstPoint, secondPoint, lastPoint };
+  };
   // end temp seeding code
 
   // RTDB REF BUILDERS

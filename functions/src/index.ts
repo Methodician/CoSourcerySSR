@@ -11,31 +11,34 @@ import * as fs from 'fs';
 import * as cpp from 'child-process-promise';
 
 admin.initializeApp();
+
 const adminFS = admin.firestore();
 const adminDB = admin.database();
 
-export const FIREBASE_DATABASE_EMULATOR_HOST = "localhost:9000"
+export const FIREBASE_DATABASE_EMULATOR_HOST = 'localhost:9000';
+export const FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
-export const trackCommentVotes = functions.database.ref(`commentData/votesByUser/{userId}/{commentKey}`).onWrite(async (change, context) => {
-  console.log('tracking a comment vote')
-  const before = change.before.val();
-  const after = change.after.val();
-  const diff = after - before;
-  console.log('before', before, 'after', after, 'diff', diff)
-  const commentKey = context.params['commentKey'];
-  const commentRef = adminDB.ref(`commentData/comments/${commentKey}`);
-  return commentRef.transaction((commmentToUpdate: IComment) => {
-    if (!commmentToUpdate) {
-      return null;
-    }
-    const oldCount = commmentToUpdate.voteCount || 0;
-    const newCount = oldCount + diff;
-    commmentToUpdate.voteCount = newCount;
-    console.log('commentToUpdate', commmentToUpdate)
-    return commmentToUpdate;
+export const trackCommentVotes = functions.database
+  .ref(`commentData/votesByUser/{userId}/{commentKey}`)
+  .onWrite(async (change, context) => {
+    console.log('tracking a comment vote');
+    const before = change.before.val();
+    const after = change.after.val();
+    const diff = after - before;
+    console.log('before', before, 'after', after, 'diff', diff);
+    const commentKey = context.params['commentKey'];
+    const commentRef = adminDB.ref(`commentData/comments/${commentKey}`);
+    return commentRef.transaction((commmentToUpdate: IComment) => {
+      if (!commmentToUpdate) {
+        return null;
+      }
+      const oldCount = commmentToUpdate.voteCount || 0;
+      const newCount = oldCount + diff;
+      commmentToUpdate.voteCount = newCount;
+      console.log('commentToUpdate', commmentToUpdate);
+      return commmentToUpdate;
+    });
   });
-});
-
 
 export const trackCommentDeletions = functions.database
   .ref('commentData/comments/{commentKey}/removedAt')
@@ -361,4 +364,3 @@ export enum EVoteDirections {
   up = 1,
   down = -1,
 }
-

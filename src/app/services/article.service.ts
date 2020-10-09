@@ -30,7 +30,7 @@ export class ArticleService {
   ) {}
 
   // TEMP SEEDING CODE
-  // (simply call this in constructor)
+  // (simply call this in constructor or elsewhere)
   trackAllSlugs = () => {
     this.afs
       .collection<IArticlePreview>('articleData/articles/previews')

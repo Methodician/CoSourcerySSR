@@ -18,6 +18,93 @@ const adminDB = admin.database();
 export const FIREBASE_DATABASE_EMULATOR_HOST = 'localhost:9000';
 export const FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
+// COMMENT trigger FUNCTIONS
+
+export const onCommentCreated = functions.database
+  .ref('commentData/comments/{commentKey}')
+  .onCreate((snap, context) => {
+    const comment: CommentI = snap.val();
+    const { parentKey, authorId, parentType } = comment;
+    const { commentKey } = context.params;
+    const commentRef = snap.ref;
+
+    const setCommentsByParent = commentRef
+      .parent!.parent!.child(`commentsByParent/${parentKey}/${commentKey}`)
+      .set(true);
+
+    const setCommentsByAuthor = commentRef
+      .parent!.parent!.child(`commentsByAuthor/${authorId}/${commentKey}`)
+      .set(true);
+
+    const incrementCommentCount = async () => {
+      const articleDocRef = adminFS
+        .collection('articleData')
+        .doc('articles')
+        .collection('articles')
+        .doc(parentKey);
+
+      await articleDocRef.update({
+        commentCount: admin.firestore.FieldValue.increment(1),
+      });
+
+      return;
+    };
+
+    const incrementReplyCount = () => {
+      const replyCountRef = adminDB.ref(
+        `commentData/comments/${parentKey}/replyCount`,
+      );
+
+      return replyCountRef.set(admin.database.ServerValue.increment(1));
+    };
+
+    const incrementCount =
+      parentType === ParentTypesE.article
+        ? incrementCommentCount()
+        : incrementReplyCount();
+
+    return Promise.all([
+      setCommentsByParent,
+      setCommentsByAuthor,
+      incrementCount,
+    ]);
+  });
+
+export const onReplyCountUpdate = functions.database
+  .ref('commentData/comments/{commentKey}/replyCount')
+  .onUpdate(async (_, context) => {
+    const { commentKey } = context.params;
+    const parentCommentRef = adminDB.ref(`commentData/comments/${commentKey}`);
+    const snap = await parentCommentRef.once('value').then();
+    const comment = snap.val();
+    const { parentType, parentKey } = comment as CommentI;
+
+    const incrementReplyCount = () => {
+      const replyCountRef = adminDB.ref(
+        `commentData/comments/${parentKey}/replyCount`,
+      );
+
+      return replyCountRef.set(admin.database.ServerValue.increment(1));
+    };
+
+    const incrementCommentCount = async () => {
+      const articleRef = adminFS
+        .collection('articleData')
+        .doc('articles')
+        .collection('articles')
+        .doc(parentKey);
+      await articleRef.update({
+        commentCount: admin.firestore.FieldValue.increment(1),
+      });
+
+      return;
+    };
+
+    return parentType === ParentTypesE.article
+      ? incrementCommentCount()
+      : incrementReplyCount();
+  });
+
 export const trackCommentVotes = functions.database
   .ref(`commentData/votesByUser/{userId}/{commentKey}`)
   .onWrite(async (change, context) => {
@@ -28,15 +115,15 @@ export const trackCommentVotes = functions.database
     console.log('before', before, 'after', after, 'diff', diff);
     const commentKey = context.params['commentKey'];
     const commentRef = adminDB.ref(`commentData/comments/${commentKey}`);
-    return commentRef.transaction((commmentToUpdate: IComment) => {
-      if (!commmentToUpdate) {
+    return commentRef.transaction(commentToUpdate => {
+      if (!commentToUpdate) {
         return null;
       }
-      const oldCount = commmentToUpdate.voteCount || 0;
+      const oldCount = commentToUpdate.voteCount || 0;
       const newCount = oldCount + diff;
-      commmentToUpdate.voteCount = newCount;
-      console.log('commentToUpdate', commmentToUpdate);
-      return commmentToUpdate;
+      commentToUpdate.voteCount = newCount;
+      console.log('commentToUpdate', commentToUpdate);
+      return commentToUpdate;
     });
   });
 
@@ -59,6 +146,9 @@ export const trackCommentDeletions = functions.database
     ]);
   });
 
+// end comment trigger functions
+
+// ARTICLE TRIGGER FUNCTIONS
 const trackArticleAuthorship = (article: any) => {
   const authorId = article.authorId;
   const articleId = article.articleId;
@@ -76,7 +166,7 @@ const createArticlePreview = (article: any, id: string) => {
   return previewRef.set(preview).catch(error => console.log(error));
 };
 
-const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
+const previewFromArticle = (articleObject: ArticleDetailI): ArticlePreviewI => {
   const {
     articleId,
     authorId,
@@ -95,7 +185,7 @@ const previewFromArticle = (articleObject: IArticleDetail): IArticlePreview => {
   } = articleObject;
   const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
 
-  const preview: IArticlePreview = {
+  const preview: ArticlePreviewI = {
     articleId,
     authorId,
     title,
@@ -299,7 +389,7 @@ const createCoverImageThumbnail = async (
 };
 
 // TODO: Figure out a good way to share models and functions between app and cloud
-interface IArticlePreview {
+interface ArticlePreviewI {
   articleId: string;
   authorId: string;
   title: string;
@@ -317,7 +407,7 @@ interface IArticlePreview {
   isFlagged?: boolean;
 }
 
-interface IArticleDetail {
+interface ArticleDetailI {
   articleId: string;
   authorId: string;
   title: string;
@@ -343,24 +433,24 @@ interface IKeyMap<T> {
   [key: string]: T;
 }
 
-export interface IComment {
+interface CommentI {
   authorId: string;
   parentKey: string;
   text: string;
   replyCount: number;
-  parentType: EParentTypes;
+  parentType: ParentTypesE;
   voteCount: number;
   key?: string;
   timestamp?: number;
   lastUpdated?: number;
 }
 
-export enum EParentTypes {
+export enum ParentTypesE {
   article = 'article',
   comment = 'comment',
 }
 
-export enum EVoteDirections {
-  up = 1,
-  down = -1,
-}
+// export enum EVoteDirections {
+//   up = 1,
+//   down = -1,
+// }

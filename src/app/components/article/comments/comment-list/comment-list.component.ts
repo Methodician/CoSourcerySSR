@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import { IComment, EVoteDirections, EParentTypes } from '@models/comment';
+import { CommentI, EVoteDirections, EParentTypes } from '@models/comment';
 import { IKeyMap } from '@models/shared';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,23 +9,23 @@ import { AuthService } from '@services/auth.service';
 @Component({
   selector: 'cos-comment-list',
   templateUrl: './comment-list.component.html',
-  styleUrls: ['./comment-list.component.scss']
+  styleUrls: ['./comment-list.component.scss'],
 })
 export class CommentListComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   @Input() isUnderComment = true;
   @Input() parentKey: string;
-  comments: Array<IComment>;
+  comments: Array<CommentI>;
   votesMap: IKeyMap<EVoteDirections> = {};
   unfurlMap: IKeyMap<boolean> = {};
 
   constructor(
     private commentSvc: CommentService,
     private userSvc: UserService,
-    private authSvc: AuthService
-  ) { }
+    private authSvc: AuthService,
+  ) {}
 
-  commentState$ = this.commentSvc.commentState$;
+  commentState: CommentI;
   loggedInUser$ = this.userSvc.loggedInUser$;
   authInfo$ = this.authSvc.authInfo$;
 
@@ -33,6 +33,9 @@ export class CommentListComponent implements OnInit, OnDestroy {
     if (!this.parentKey) {
       throw new Error('CommentList cannot function without a parentKey input');
     }
+    this.commentSvc.commentState$.subscribe(
+      comment => (this.commentState = comment),
+    );
     this.watchComments();
     this.watchUserVotes();
   }
@@ -44,44 +47,44 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   enterEditMode = comment => this.commentSvc.enterEditCommentMode(comment);
 
-  onSaveEdits = () => this.commentSvc.saveCommentEdits();
+  onSaveEdits = () => this.commentSvc.saveCommentEdits(this.commentState);
 
   enterNewCommentMode = parentKey =>
     this.commentSvc.enterNewCommentMode(
       this.authSvc.authInfo$.value.uid,
       parentKey,
-      EParentTypes.comment
-    )
+      EParentTypes.comment,
+    );
 
-  onAddComment = () => this.commentSvc.saveNewComment();
+  onAddComment = () => this.commentSvc.saveNewComment(this.commentState);
 
   onCancelComment = () => this.commentSvc.resetCommentState();
 
   onRemoveComment = (commentKey: string) =>
-    this.commentSvc.removeComment(commentKey)
+    this.commentSvc.removeComment(commentKey);
 
   onUpvoteComment = (commentKey: string) =>
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
         this.commentSvc.upvoteComment(
           this.authSvc.authInfo$.value.uid,
-          commentKey
+          commentKey,
         );
       }
-    })
+    });
 
   onDownvoteComment = (commentKey: string) =>
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       if (isSignedIn) {
         this.commentSvc.downvoteComment(
           this.authSvc.authInfo$.value.uid,
-          commentKey
+          commentKey,
         );
       }
-    })
+    });
 
   onToggleUnfurl = (key: string) =>
-    (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true)
+    (this.unfurlMap[key] = this.unfurlMap[key] ? !this.unfurlMap[key] : true);
 
   watchUserVotes = () => {
     this.commentSvc
@@ -96,32 +99,35 @@ export class CommentListComponent implements OnInit, OnDestroy {
         }
         this.votesMap = votesMap;
       });
-  }
+  };
 
   watchComments = () => {
     this.commentSvc
       .watchCommentsByParent(this.parentKey)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(comments => {
+        console.log(comments, this.parentKey);
         if (!this.isUnderComment) {
           this.comments = comments.reverse();
         } else {
           this.comments = comments;
         }
       });
-  }
+  };
 
   wasVoteCast = (parentKey: string, direction: EVoteDirections) =>
-    this.votesMap[parentKey] && this.votesMap[parentKey] === direction
+    this.votesMap[parentKey] && this.votesMap[parentKey] === direction;
 
   isLoggedIn = () => !!this.authSvc.authInfo$.value.isLoggedIn();
 
-  isCommentNew = () => {
-    return this.commentState$.value.parentKey && !this.commentState$.value.key;
-  }
+  isCommentNew = () =>
+    !!this.commentState &&
+    this.commentState.parentKey &&
+    !this.commentState.key;
 
-  isCommentBeingEdited = (key: string) => this.commentState$.value.key === key;
+  isCommentBeingEdited = (key: string) =>
+    !!this.commentState && this.commentState.key === key;
 
   isChildBeingEdited = (key: string) =>
-    this.commentState$.value.parentKey === key
+    !!this.commentState && this.commentState.parentKey === key;
 }

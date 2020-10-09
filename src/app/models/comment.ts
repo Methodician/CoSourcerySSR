@@ -1,4 +1,4 @@
-export interface IComment {
+export interface CommentI {
   authorId: string;
   parentKey: string;
   text: string;

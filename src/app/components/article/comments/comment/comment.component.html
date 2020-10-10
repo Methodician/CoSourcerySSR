@@ -1,4 +1,4 @@
-<section class="comment">
+<section class="comment" [ngClass]="{ removed_comment: !!comment.removedAt }">
   <section *ngIf="authorInfo" class="comment__header">
     <img
       class="comment__author-image"
@@ -13,7 +13,10 @@
         >
       </p>
       <p class="comment__author-detail comment__author-detail_light">
-        <em>Last Updated</em> {{ comment.lastUpdated | date }}
+        <em *ngIf="!!comment.removedAt">Removed on</em>
+        {{ comment.removedAt | date }}
+        <em *ngIf="!comment.removedAt">Last Updated</em>
+        {{ comment.lastUpdated | date }}
       </p>
     </div>
   </section>

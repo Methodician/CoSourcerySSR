@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import { EParentTypes, IComment } from '@models/comment';
+import { CommentI, EParentTypes } from '@models/comment';
 import { AuthService } from '@services/auth.service';
 
 @Component({
@@ -18,13 +18,17 @@ export class CommentsComponent implements OnInit {
   constructor(
     private commentSvc: CommentService,
     private userSvc: UserService,
-    private authSvc: AuthService
+    private authSvc: AuthService,
   ) {}
 
-  commentState$ = this.commentSvc.commentState$;
+  commentState: CommentI;
   loggedInUser$ = this.userSvc.loggedInUser$;
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.commentSvc.commentState$.subscribe(
+      comment => (this.commentState = comment),
+    );
+  }
 
   enterNewCommentMode = () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
@@ -32,21 +36,21 @@ export class CommentsComponent implements OnInit {
         this.commentSvc.enterNewCommentMode(
           this.authSvc.authInfo$.value.uid,
           this.articleId,
-          EParentTypes.article
+          EParentTypes.article,
         );
     });
   };
 
   onCancelComment = () => this.commentSvc.resetCommentState();
 
-  saveNewComment = () => this.commentSvc.saveNewComment();
+  saveNewComment = () => this.commentSvc.saveNewComment(this.commentState);
 
   // Helpers etc
   isTopLevelCommentBeingCreated = () => {
     return (
       this.authSvc.authInfo$.value.uid &&
-      this.commentState$.value.parentKey === this.articleId &&
-      !this.commentState$.value.key
+      this.commentState.parentKey === this.articleId &&
+      !this.commentState.key
     );
   };
 }

@@ -49,12 +49,15 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   onSaveEdits = () => this.commentSvc.saveCommentEdits(this.commentState);
 
-  enterNewCommentMode = parentKey =>
-    this.commentSvc.enterNewCommentMode(
+  enterNewCommentMode = parentKey => {
+    this.unfurlMap[parentKey] = true;
+
+    return this.commentSvc.enterNewCommentMode(
       this.authSvc.authInfo$.value.uid,
       parentKey,
       EParentTypes.comment,
     );
+  };
 
   onAddComment = () => this.commentSvc.saveNewComment(this.commentState);
 
@@ -106,7 +109,6 @@ export class CommentListComponent implements OnInit, OnDestroy {
       .watchCommentsByParent(this.parentKey)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(comments => {
-        console.log(comments, this.parentKey);
         if (!this.isUnderComment) {
           this.comments = comments.reverse();
         } else {
@@ -130,4 +132,6 @@ export class CommentListComponent implements OnInit, OnDestroy {
 
   isChildBeingEdited = (key: string) =>
     !!this.commentState && this.commentState.parentKey === key;
+
+  trackCommentsBy = (_, comment: CommentI) => comment.key;
 }

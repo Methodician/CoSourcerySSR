@@ -1,6 +1,6 @@
 <!-- Comment Loop for Current Parent -->
 <section
-  *ngFor="let comment of comments"
+  *ngFor="let comment of comments; trackBy: trackCommentsBy"
   class="comment-wrapper"
   [ngClass]="{ 'comment-wrapper_root': !isUnderComment }"
 >

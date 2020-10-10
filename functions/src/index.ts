@@ -28,14 +28,17 @@ export const onCommentCreated = functions.database
     const { commentKey } = context.params;
     const commentRef = snap.ref;
 
+    // track comment for lookup map
     const setCommentsByParent = commentRef
       .parent!.parent!.child(`commentsByParent/${parentKey}/${commentKey}`)
       .set(true);
 
+    // track author for lookup map
     const setCommentsByAuthor = commentRef
       .parent!.parent!.child(`commentsByAuthor/${authorId}/${commentKey}`)
       .set(true);
 
+    // count comment (triggers bubble up)
     const incrementCommentCount = async () => {
       const articleDocRef = adminFS
         .collection('articleData')
@@ -79,6 +82,7 @@ export const onReplyCountUpdate = functions.database
     const comment = snap.val();
     const { parentType, parentKey } = comment as CommentI;
 
+    // bubble up counts
     const incrementReplyCount = () => {
       const replyCountRef = adminDB.ref(
         `commentData/comments/${parentKey}/replyCount`,
@@ -105,14 +109,13 @@ export const onReplyCountUpdate = functions.database
       : incrementReplyCount();
   });
 
-export const trackCommentVotes = functions.database
+export const onCommentVoteWrite = functions.database
   .ref(`commentData/votesByUser/{userId}/{commentKey}`)
   .onWrite(async (change, context) => {
-    console.log('tracking a comment vote');
+    // track comment votes
     const before = change.before.val();
     const after = change.after.val();
     const diff = after - before;
-    console.log('before', before, 'after', after, 'diff', diff);
     const commentKey = context.params['commentKey'];
     const commentRef = adminDB.ref(`commentData/comments/${commentKey}`);
     return commentRef.transaction(commentToUpdate => {
@@ -122,12 +125,11 @@ export const trackCommentVotes = functions.database
       const oldCount = commentToUpdate.voteCount || 0;
       const newCount = oldCount + diff;
       commentToUpdate.voteCount = newCount;
-      console.log('commentToUpdate', commentToUpdate);
       return commentToUpdate;
     });
   });
 
-export const trackCommentDeletions = functions.database
+export const onCommentDeletionTriggered = functions.database
   .ref('commentData/comments/{commentKey}/removedAt')
   .onCreate(async (snap, context) => {
     const commentKey = context.params.commentKey;
@@ -139,7 +141,9 @@ export const trackCommentDeletions = functions.database
     const archiveRef = commentRef.parent.parent.child(
       `commentArchive/${commentKey}`,
     );
-    const commentSnap = await commentRef.once('value').then();
+
+    const commentSnap = await commentRef.once('value');
+
     return Promise.all([
       archiveRef.set(commentSnap.val()),
       commentRef.update({ text: 'This comment was removed.' }),

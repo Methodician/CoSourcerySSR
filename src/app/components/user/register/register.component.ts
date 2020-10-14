@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { UserService } from '@services/user.service';
-import { MatDialog, MatDialogConfig } from '@angular/material';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IArticlePreview } from '@models/article-info';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, combineLatest } from 'rxjs';
 import { AuthService } from '@services/auth.service';

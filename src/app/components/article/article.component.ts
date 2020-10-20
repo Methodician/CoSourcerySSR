@@ -45,8 +45,7 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
-  @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
+  @ViewChild('formBoundingBox') formBoundingBox;
 
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });

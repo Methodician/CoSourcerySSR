@@ -6,8 +6,9 @@ export interface CommentI {
   parentType: EParentTypes;
   voteCount: number;
   key?: string;
-  timestamp?: number;
-  lastUpdated?: number;
+  timestamp?: any;
+  lastUpdated?: any;
+  removedAt?: any;
 }
 
 export enum EParentTypes {

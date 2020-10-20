@@ -2,20 +2,18 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-const getDatabaseUrl = () =>
-  location.hostname === 'localhost'
-    ? 'http://localhost:9000/?ns=cosourcerytest'
-    : 'https://cosourcerytest.firebaseio.com';
-const getShouldUserEmulator = () => location.hostname === 'localhost';
-
 export const environment = {
   production: false,
-  shouldUseEmulator: getShouldUserEmulator(),
+  shouldUseEmulator: location.hostname === 'localhost',
   // shouldUseEmulator: false,
   firebase: {
     apiKey: 'AIzaSyAb3L-t-WB0rf6A9j8gVSRB9STJJvLUEfw',
     authDomain: 'cosourcerytest.firebaseapp.com',
-    databaseURL: getDatabaseUrl(),
+    // databaseURL: 'https://cosourcerytest.firebaseio.com',
+    databaseURL:
+      location.hostname === 'localhost'
+        ? 'http://localhost:9000/?ns=cosourcerytest'
+        : 'https://cosourcerytest.firebaseio.com',
     projectId: 'cosourcerytest',
     storageBucket: 'cosourcerytest.appspot.com',
     messagingSenderId: '146479623747',

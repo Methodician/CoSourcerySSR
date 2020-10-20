@@ -1,9 +1,16 @@
 export const environment = {
   production: true,
+  // shouldUseEmulator: location.hostname === 'localhost', // does not work in production build
+  shouldUseEmulator: false,
   firebase: {
     apiKey: 'AIzaSyD-0e29imJ2TI3N0Wen2njZdBESwOxI6kM',
     authDomain: 'cosourcery.firebaseapp.com',
     databaseURL: 'https://cosourcery.firebaseio.com',
+    // databaseURL:
+    //   location.hostname === 'localhost'
+    //     ? 'http://localhost:9000/?ns=cosourcerytest'
+    //     : 'https://cosourcery.firebaseio.com',
+    // // does not work in production build
     projectId: 'cosourcery',
     storageBucket: 'cosourcery.appspot.com',
     messagingSenderId: '141292210727',

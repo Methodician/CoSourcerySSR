@@ -9,11 +9,11 @@ export const environment = {
   firebase: {
     apiKey: 'AIzaSyAb3L-t-WB0rf6A9j8gVSRB9STJJvLUEfw',
     authDomain: 'cosourcerytest.firebaseapp.com',
-    databaseURL: 'https://cosourcerytest.firebaseio.com',
-    // databaseURL:
-    //   location.hostname === 'localhost'
-    //     ? 'http://localhost:9000/?ns=cosourcerytest'
-    //     : 'https://cosourcerytest.firebaseio.com',
+    // databaseURL: 'https://cosourcerytest.firebaseio.com',
+    databaseURL:
+      location.hostname === 'localhost'
+        ? 'http://localhost:9000/?ns=cosourcerytest'
+        : 'https://cosourcerytest.firebaseio.com',
     projectId: 'cosourcerytest',
     storageBucket: 'cosourcerytest.appspot.com',
     messagingSenderId: '146479623747',

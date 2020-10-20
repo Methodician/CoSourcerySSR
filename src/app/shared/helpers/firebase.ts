@@ -1,7 +1,7 @@
 import * as firebase from 'firebase/app';
-import '@firebase/storage';
-import '@firebase/firestore';
-import '@firebase/database';
+import 'firebase/storage';
+import 'firebase/firestore';
+import 'firebase/database';
 
 /**
  * Quick access to vanilla Firebase storage reference (as opposed to AngularFire as used elsewhere)

@@ -13,10 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import {
-  AngularFirestoreModule,
-  FirestoreSettingsToken,
-} from '@angular/fire/firestore';
+import { AngularFirestoreModule, SETTINGS } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -155,14 +152,18 @@ import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
     MatProgressBarModule,
     CKEditorModule,
   ],
-  providers: [],
-  // providers: [{
-  //   provide: FirestoreSettingsToken,
-  //   useValue: environment.shouldUseEmulator ? {
-  //     host: 'localhost:8080',
-  //     ssl: false
-  //   } : undefined
-  // }],
+  // providers: [],
+  providers: [
+    {
+      provide: SETTINGS,
+      useValue: environment.shouldUseEmulator
+        ? {
+            host: 'localhost:8080',
+            ssl: false,
+          }
+        : undefined,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

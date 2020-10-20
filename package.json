@@ -33,7 +33,7 @@
     "@angular/common": "~9.1.12",
     "@angular/compiler": "~9.1.12",
     "@angular/core": "~9.1.12",
-    "@angular/fire": "^5.2.1",
+    "@angular/fire": "^6.0.3",
     "@angular/forms": "~9.1.12",
     "@angular/material": "^9.2.4",
     "@angular/platform-browser": "~9.1.12",
@@ -47,7 +47,7 @@
     "axios": "^0.19.2",
     "core-js": "^2.5.4",
     "express": "^4.17.1",
-    "firebase": "^6.2.0",
+    "firebase": "^7.23.0",
     "rxjs": "~6.6.2",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

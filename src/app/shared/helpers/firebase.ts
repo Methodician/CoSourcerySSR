@@ -1,4 +1,4 @@
-import firebase from '@firebase/app';
+import * as firebase from 'firebase/app';
 import '@firebase/storage';
 import '@firebase/firestore';
 import '@firebase/database';
@@ -22,7 +22,7 @@ const fsServerTimestamp = firebase.firestore.FieldValue.serverTimestamp();
 const fsTimestampNow = firebase.firestore.Timestamp.now;
 
 /**
- * Inserts instructions for Firebase/RTDB to relpace this with a server-side timestamp upon upload
+ * Inserts instructions for Firebase/RTDB to replace this with a server-side timestamp upon upload
  */
 const rtServerTimestamp = firebase.database.ServerValue.TIMESTAMP;
 

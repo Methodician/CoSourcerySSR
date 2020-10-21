@@ -1,7 +1,9 @@
 import * as firebase from 'firebase/app';
+// import {firestore} from 'firebase/app';
 import 'firebase/storage';
-import 'firebase/firestore';
+// import 'firebase/firestore';
 import 'firebase/database';
+
 
 /**
  * Quick access to vanilla Firebase storage reference (as opposed to AngularFire as used elsewhere)
@@ -14,12 +16,12 @@ const createVanillaStorageRef = (path: string) => {
 /**
  * Inserts instructions for Firebase/Firestore to replace this with a server-side timestamp upon upload
  */
-const fsServerTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+// const fsServerTimestamp = firestore.FieldValue.serverTimestamp();
 
 /**
  * Callable function to create a timestamp object representing the current moment
  */
-const fsTimestampNow = firebase.firestore.Timestamp.now;
+// const fsTimestampNow = firestore.Timestamp.now;
 
 /**
  * Inserts instructions for Firebase/RTDB to replace this with a server-side timestamp upon upload
@@ -28,7 +30,7 @@ const rtServerTimestamp = firebase.database.ServerValue.TIMESTAMP;
 
 export {
   createVanillaStorageRef,
-  fsServerTimestamp,
-  fsTimestampNow,
+  // fsServerTimestamp,
+  // fsTimestampNow,
   rtServerTimestamp,
 };

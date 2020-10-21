@@ -28,7 +28,7 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
-import { fsTimestampNow } from '@helpers/firebase';
+// import { fsTimestampNow } from '@helpers/firebase';
 
 // MODELS
 import { IArticleDetail } from '@models/article-info';
@@ -523,7 +523,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     Object.keys(this.currentArticleEditors).length > 0;
 
   // ===OTHER
-  tempTimestamp = () => fsTimestampNow();
+  tempTimestamp = () => this.articleSvc.fsTimestampNow();
 
   updateMetaTags = (article: IArticleDetail) => {
     const { title, introduction, body, tags, imageUrl } = article;

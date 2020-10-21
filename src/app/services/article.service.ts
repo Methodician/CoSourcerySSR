@@ -13,10 +13,11 @@ import { combineLatest } from 'rxjs';
 // Internal stuff
 import {
   rtServerTimestamp,
-  fsServerTimestamp,
+  // fsServerTimestamp,
 } from '../shared/helpers/firebase';
 import { IUserInfo } from '@models/user-info';
 import { AuthService } from './auth.service';
+// import { FieldValue, Timestamp } from '@google-cloud/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,12 @@ export class ArticleService {
     private afd: AngularFireDatabase,
     private storage: AngularFireStorage,
     private authSvc: AuthService,
-  ) {}
+  ) { }
+
+  // Work-around for lame SSR bug (I hope)
+  fsServerTimestamp = () => (this.afs.firestore.app as any).firebase_.firestore.FieldValue.serverTimestamp() as () => any;
+  fsTimestampNow = () => (this.afs.firestore.app as any).firebase_.firestore.Timestamp.now() as () => any;
+
 
   // TEMP SEEDING CODE
   // (simply call this in constructor or elsewhere)
@@ -241,7 +247,7 @@ export class ArticleService {
     editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
-    articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.lastUpdated = this.fsServerTimestamp();
     articleToSave.slug = newSlug;
     articleToSave.version++;
 
@@ -302,8 +308,8 @@ export class ArticleService {
       editors: {},
       authorId,
       articleId,
-      lastUpdated: fsServerTimestamp,
-      timestamp: fsServerTimestamp,
+      lastUpdated: this.fsServerTimestamp(),
+      timestamp: this.fsServerTimestamp(),
       lastEditorId: authorId,
       slug: newSlug,
       authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',

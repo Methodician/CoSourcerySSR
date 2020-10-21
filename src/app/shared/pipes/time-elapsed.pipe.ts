@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class TimeElapsedPipe implements PipeTransform {
   transform(date: any, ...args: any[]): any {
+    if (!date) return null;
     const msElapsed = Date.now() - date;
 
     // Some sources say there are 31556952000 ms in a year

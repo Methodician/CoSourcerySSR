@@ -11,13 +11,10 @@ import { switchMap, take, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 
 // Internal stuff
-import {
-  rtServerTimestamp,
-  // fsServerTimestamp,
-} from '../shared/helpers/firebase';
+
+import { FirebaseService } from '@services/firebase.service';
 import { IUserInfo } from '@models/user-info';
 import { AuthService } from './auth.service';
-// import { FieldValue, Timestamp } from '@google-cloud/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -28,12 +25,8 @@ export class ArticleService {
     private afd: AngularFireDatabase,
     private storage: AngularFireStorage,
     private authSvc: AuthService,
-  ) { }
-
-  // Work-around for lame SSR bug (I hope)
-  fsServerTimestamp = () => (this.afs.firestore.app as any).firebase_.firestore.FieldValue.serverTimestamp() as () => any;
-  fsTimestampNow = () => (this.afs.firestore.app as any).firebase_.firestore.Timestamp.now() as () => any;
-
+    private fbSvc: FirebaseService,
+  ) {}
 
   // TEMP SEEDING CODE
   // (simply call this in constructor or elsewhere)
@@ -152,9 +145,7 @@ export class ArticleService {
         // switchMap is like map but removes observable nesting
         const keys = bookmarkSnaps.map(snap => snap.key);
         const articleSnapshots = keys.map(key =>
-          this.articlePreviewRef(key)
-            .valueChanges()
-            .pipe(take(1)),
+          this.articlePreviewRef(key).valueChanges().pipe(take(1)),
         );
         return combineLatest(articleSnapshots);
       }),
@@ -172,10 +163,10 @@ export class ArticleService {
     const updates = {};
     updates[
       `userInfo/articleBookmarksPerUser/${uid}/${articleId}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     updates[
       `articleData/userBookmarksPerArticle/${articleId}/${uid}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     this.afd.database.ref().update(updates);
   };
   // end bookmark stuff
@@ -247,7 +238,7 @@ export class ArticleService {
     editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
-    articleToSave.lastUpdated = this.fsServerTimestamp();
+    articleToSave.lastUpdated = this.fbSvc.fsServerTimestamp();
     articleToSave.slug = newSlug;
     articleToSave.version++;
 
@@ -308,8 +299,8 @@ export class ArticleService {
       editors: {},
       authorId,
       articleId,
-      lastUpdated: this.fsServerTimestamp(),
-      timestamp: this.fsServerTimestamp(),
+      lastUpdated: this.fbSvc.fsServerTimestamp(),
+      timestamp: this.fbSvc.fsServerTimestamp(),
       lastEditorId: authorId,
       slug: newSlug,
       authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',

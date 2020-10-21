@@ -28,11 +28,10 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
-// import { fsTimestampNow } from '@helpers/firebase';
-
 // MODELS
 import { IArticleDetail } from '@models/article-info';
 import { CUserInfo } from '@models/user-info';
+import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
@@ -100,6 +99,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private authSvc: AuthService,
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
+    private fbSvc: FirebaseService,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
   ) {
@@ -523,7 +523,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     Object.keys(this.currentArticleEditors).length > 0;
 
   // ===OTHER
-  tempTimestamp = () => this.articleSvc.fsTimestampNow();
+  tempTimestamp = () => this.fbSvc.fsTimestampNow();
 
   updateMetaTags = (article: IArticleDetail) => {
     const { title, introduction, body, tags, imageUrl } = article;

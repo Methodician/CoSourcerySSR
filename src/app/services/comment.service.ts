@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
-import { CommentI, EParentTypes, EVoteDirections } from '@models/comment';
-import { rtServerTimestamp } from '../shared/helpers/firebase';
 import { switchMap, map } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
+
+// Internal stuff
+import { CommentI, EParentTypes, EVoteDirections } from '@models/comment';
+import { FirebaseService } from './firebase.service';
 
 const NULL_COMMENT: CommentI = {
   authorId: null,
@@ -19,7 +21,10 @@ const NULL_COMMENT: CommentI = {
 export class CommentService {
   commentState$: BehaviorSubject<CommentI> = new BehaviorSubject(NULL_COMMENT);
 
-  constructor(private afd: AngularFireDatabase) {}
+  constructor(
+    private afd: AngularFireDatabase,
+    private fbSvc: FirebaseService,
+  ) {}
 
   enterEditCommentMode = (comment: CommentI) =>
     this.commentState$.next({ ...comment });
@@ -99,20 +104,20 @@ export class CommentService {
   createComment = (comment: CommentI) =>
     this.afd.list('commentData/comments').push({
       ...comment,
-      lastUpdated: rtServerTimestamp,
-      timestamp: rtServerTimestamp,
+      lastUpdated: this.fbSvc.rtServerTimestamp,
+      timestamp: this.fbSvc.rtServerTimestamp,
     }).key;
 
   updateComment = (comment: CommentI) =>
     this.afd.object(this.singleCommentPath(comment.key)).update({
-      lastUpdated: rtServerTimestamp,
+      lastUpdated: this.fbSvc.rtServerTimestamp,
       text: comment.text,
     });
 
   removeComment = (commentKey: string) =>
     this.afd
       .object(this.singleCommentPath(commentKey))
-      .update({ removedAt: rtServerTimestamp });
+      .update({ removedAt: this.fbSvc.rtServerTimestamp });
 
   // May be deprecated in light of Firebase's caching...
   watchCommentsByParent = (parentKey: string) => {

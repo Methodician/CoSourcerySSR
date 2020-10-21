@@ -2,10 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { createVanillaStorageRef } from '@helpers/firebase';
-import 'firebase/storage';
 
-import { ArticleService } from '@services/article.service';
+import { FirebaseService } from '@services/firebase.service';
 
 @Component({
   selector: 'cos-body-edit',
@@ -51,12 +49,12 @@ export class BodyEditComponent implements OnInit {
     toggleBtnOffset: 0,
   };
 
-  constructor() {
+  constructor(private fbSvc: FirebaseService) {
     this.importEditor();
   }
 
   ngOnInit() {
-    const storageRef = createVanillaStorageRef(
+    const storageRef = this.fbSvc.createVanillaStorageRef(
       `articleBodyImages/${this.articleId}`,
     );
     this.ckeditor.config.fbImageStorage = { storageRef };

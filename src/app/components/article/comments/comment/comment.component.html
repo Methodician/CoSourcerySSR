@@ -13,10 +13,13 @@
         >
       </p>
       <p class="comment__author-detail comment__author-detail_light">
-        <em *ngIf="!!comment.removedAt">Removed on</em>
-        {{ comment.removedAt | date }}
-        <em *ngIf="!comment.removedAt">Last Updated</em>
-        {{ comment.lastUpdated | date }}
+        <em *ngIf="!!comment.removedAt"
+          >Removed {{ comment.removedAt | timeElapsed }}</em
+        >
+
+        <em *ngIf="!comment.removedAt"
+          >Updated {{ comment.lastUpdated | timeElapsed }}</em
+        >
       </p>
     </div>
   </section>

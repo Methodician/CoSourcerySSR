@@ -19,8 +19,6 @@ import {
   takeUntil,
   take,
 } from 'rxjs/operators';
-import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -100,30 +98,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
     private fbSvc: FirebaseService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(user => {
         this.loggedInUser = user;
       });
-    iconRegistry.addSvgIcon(
-      'comment',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/comment.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'edit',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'loyalty',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/loyalty.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'bookmark',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/bookmark.svg'),
-    );
   }
 
   ngOnInit() {
@@ -440,7 +420,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     response$.afterClosed().subscribe(shouldEndSession => {
       if (shouldEndSession) {
         this.resetEditStates();
-        location.reload();
+        // location.reload();
       } else this.setEditSessionTimeout();
     });
   };
@@ -457,7 +437,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     response$.subscribe(shouldCancel => {
       if (shouldCancel) {
         this.resetEditStates();
-        location.reload();
+        // location.reload();
       }
     });
   };

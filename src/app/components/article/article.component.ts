@@ -10,6 +10,7 @@ import {
   Subject,
   timer,
   of,
+  Observer,
 } from 'rxjs';
 import {
   tap,
@@ -42,20 +43,18 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  @ViewChild('formBoundingBox') formBoundingBox;
-
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
-  //  // Cover Image State
+  // Cover Image State
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
+  articleState: IArticleDetail;
   articleId: string;
   isArticleNew: boolean;
-  articleSubscription: Subscription;
   currentArticleEditors = {};
 
   // Article Form State
@@ -81,8 +80,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     isFeatured: false,
     editors: {},
   });
-
-  articleState: IArticleDetail;
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -127,6 +124,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
+        if (!!id) {
+          this.watchArticleEditors(id);
+        }
         if (id) this.articleId = id;
         if (isNew) {
           this.isArticleNew = true;
@@ -135,7 +135,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       switchMap(
         ({ id, isNew }): Observable<IArticleDetail> => {
           if (isNew) {
-            return Observable.create(observer => {
+            return new Observable((observer: Observer<IArticleDetail>) => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
@@ -143,6 +143,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         },
       ),
     );
+
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleState = article;
       if (article) {
@@ -155,25 +156,20 @@ export class ArticleComponent implements OnInit, OnDestroy {
   watchArticleIdAndStatus$: () => Observable<{
     id: any;
     isNew: boolean;
-  }> = () => {
-    return this.route.params.pipe(
+  }> = () =>
+    this.route.params.pipe(
       switchMap(params => {
         let status$ = of({ id: null, isNew: false });
-        if (params['id'])
+        if (params['id']) {
           status$ = this.articleSvc
             .getIdFromSlugOrId(params['id'])
             .pipe(map(id => ({ id, isNew: false })));
-        else
+        } else {
           status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
-        status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
-          if (!!status.id) {
-            this.watchArticleEditors(status.id);
-          }
-        });
+        }
         return status$;
       }),
     );
-  };
 
   watchArticle$ = id => {
     const preExisting: IArticleDetail = this.state.get(
@@ -197,9 +193,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return article$;
   };
 
-  watchArticleEditors = id => {
+  watchArticleEditors = articleId =>
     this.articleSvc
-      .currentEditorsRef(id)
+      .currentEditorsRef(articleId)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
@@ -212,7 +208,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
         this.currentArticleEditors = currentEditors;
       });
-  };
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
@@ -246,7 +241,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   resetEditStates = () => {
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;
+    this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
   };
@@ -420,7 +415,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     response$.afterClosed().subscribe(shouldEndSession => {
       if (shouldEndSession) {
         this.resetEditStates();
-        // location.reload();
+        location.reload();
       } else this.setEditSessionTimeout();
     });
   };
@@ -437,7 +432,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     response$.subscribe(shouldCancel => {
       if (shouldCancel) {
         this.resetEditStates();
-        // location.reload();
+        location.reload();
       }
     });
   };

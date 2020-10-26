@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 
 // AnguilarFire Stuff
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -15,6 +15,7 @@ import { combineLatest } from 'rxjs';
 import { FirebaseService } from '@services/firebase.service';
 import { IUserInfo } from '@models/user-info';
 import { AuthService } from './auth.service';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class ArticleService {
     private storage: AngularFireStorage,
     private authSvc: AuthService,
     private fbSvc: FirebaseService,
+    @Inject(PLATFORM_ID) private platform: Object,
   ) {}
 
   // TEMP SEEDING CODE
@@ -180,6 +182,10 @@ export class ArticleService {
     editorId: string,
     status: boolean,
   ) => {
+    // the onDisconnect stuff seems to rely on browser API, I thin setTimeout()
+    // and none of this needs to happen server-side anyway...
+    if (isPlatformServer(this.platform)) return;
+
     const editorsPath = `articleData/editStatus/editorsByArticle/${articleId}/${editorId}`;
     const articlesPath = `articleData/editStatus/articlesByEditor/${editorId}/${articleId}`;
 

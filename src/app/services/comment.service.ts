@@ -4,7 +4,8 @@ import { switchMap, map } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 
 // Internal stuff
-import { CommentI, EParentTypes, EVoteDirections } from '@models/comment';
+import { ParentTypesE, CommentI, VoteDirectionsE } from '@shared_models/index';
+
 import { FirebaseService } from './firebase.service';
 
 const NULL_COMMENT: CommentI = {
@@ -32,7 +33,7 @@ export class CommentService {
   enterNewCommentMode = (
     authorId: string,
     parentKey: string,
-    parentType: EParentTypes,
+    parentType: ParentTypesE,
   ) => {
     const newComment = this.createCommentStub(authorId, parentKey, parentType);
     this.commentState$.next(newComment);
@@ -55,7 +56,7 @@ export class CommentService {
   createCommentStub = (
     authorId: string,
     parentKey: string,
-    parentType: EParentTypes,
+    parentType: ParentTypesE,
   ) => {
     const newComment: CommentI = {
       authorId,
@@ -69,16 +70,16 @@ export class CommentService {
   };
 
   userVotesRef(userId: string) {
-    return this.afd.list<EVoteDirections>(this.userVotesPath(userId));
+    return this.afd.list<VoteDirectionsE>(this.userVotesPath(userId));
   }
 
   getVoteRef(voterId: string, commentKey: string) {
-    return this.afd.object<EVoteDirections>(
+    return this.afd.object<VoteDirectionsE>(
       `${this.userVotesPath(voterId)}/${commentKey}`,
     );
   }
 
-  async getExistingVote(voteRef: AngularFireObject<EVoteDirections>) {
+  async getExistingVote(voteRef: AngularFireObject<VoteDirectionsE>) {
     const existingVoteSnap = await voteRef.query.once('value');
     return existingVoteSnap.val();
   }
@@ -86,19 +87,19 @@ export class CommentService {
   async upvoteComment(voterId: string, commentKey: string) {
     const voteRef = this.getVoteRef(voterId, commentKey);
     const oldVote = await this.getExistingVote(voteRef);
-    if (oldVote && oldVote === EVoteDirections.up) {
+    if (oldVote && oldVote === VoteDirectionsE.up) {
       return voteRef.set(null);
     }
-    return voteRef.set(EVoteDirections.up);
+    return voteRef.set(VoteDirectionsE.up);
   }
 
   async downvoteComment(voterId: string, commentKey: string) {
     const voteRef = this.getVoteRef(voterId, commentKey);
     const oldVote = await this.getExistingVote(voteRef);
-    if (oldVote && oldVote === EVoteDirections.down) {
+    if (oldVote && oldVote === VoteDirectionsE.down) {
       return voteRef.set(null);
     }
-    return voteRef.set(EVoteDirections.down);
+    return voteRef.set(VoteDirectionsE.down);
   }
 
   createComment = (comment: CommentI) =>

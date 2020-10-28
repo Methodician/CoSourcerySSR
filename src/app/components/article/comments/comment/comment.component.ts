@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UserService } from '@services/user.service';
 import { CUserInfo } from '@models/user-info';
-import { CommentI } from '@models/comment';
+import { CommentI } from '@shared_models/index';
 import { Subscription } from 'rxjs';
 @Component({
   selector: 'cos-comment',

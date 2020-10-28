@@ -3,7 +3,7 @@ export interface CommentI {
   parentKey: string;
   text: string;
   replyCount: number;
-  parentType: EParentTypes;
+  parentType: ParentTypesE;
   voteCount: number;
   key?: string;
   timestamp?: any;
@@ -11,12 +11,12 @@ export interface CommentI {
   removedAt?: any;
 }
 
-export enum EParentTypes {
+export enum ParentTypesE {
   article = 'article',
   comment = 'comment',
 }
 
-export enum EVoteDirections {
+export enum VoteDirectionsE {
   up = 1,
   down = -1,
 }

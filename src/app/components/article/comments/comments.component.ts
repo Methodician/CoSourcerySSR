@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
-import { CommentI, EParentTypes } from '@models/comment';
+import { CommentI, ParentTypesE } from '@shared_models/index';
 import { AuthService } from '@services/auth.service';
 
 @Component({
@@ -36,7 +36,7 @@ export class CommentsComponent implements OnInit {
         this.commentSvc.enterNewCommentMode(
           this.authSvc.authInfo$.value.uid,
           this.articleId,
-          EParentTypes.article,
+          ParentTypesE.article,
         );
     });
   };

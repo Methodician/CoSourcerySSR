@@ -165,7 +165,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
             .getIdFromSlugOrId(params['id'])
             .pipe(map(id => ({ id, isNew: false })));
         } else {
-          status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
+          status$ = of({ id: this.articleSvc.createId(), isNew: true });
         }
         return status$;
       }),

@@ -383,7 +383,7 @@ export class ArticleService {
       .replace(/-+$/, ''); // Trim - from end of text
   };
 
-  createArticleId = () => this.afs.createId();
+  createId = () => this.afs.createId();
 
   processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {
     const { timestamp, lastUpdated } = article;

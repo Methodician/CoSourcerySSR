@@ -28,12 +28,12 @@ import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
 // MODELS
-import { IArticleDetail } from '@models/article-info';
+import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
 import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleState',
 );
 
@@ -52,7 +52,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
-  articleState: IArticleDetail;
+  articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
   currentArticleEditors = {};
@@ -133,9 +133,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, isNew }): Observable<ArticleDetailI> => {
           if (isNew) {
-            return new Observable((observer: Observer<IArticleDetail>) => {
+            return new Observable((observer: Observer<ArticleDetailI>) => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
@@ -172,7 +172,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     );
 
   watchArticle$ = id => {
-    const preExisting: IArticleDetail = this.state.get(
+    const preExisting: ArticleDetailI = this.state.get(
       ARTICLE_STATE_KEY,
       null as any,
     );
@@ -184,7 +184,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           article
             ? (this.articleSvc.processArticleTimestamps(
                 article,
-              ) as IArticleDetail)
+              ) as ArticleDetailI)
             : null,
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
@@ -500,7 +500,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===OTHER
   tempTimestamp = () => this.fbSvc.fsTimestampNow();
 
-  updateMetaTags = (article: IArticleDetail) => {
+  updateMetaTags = (article: ArticleDetailI) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();

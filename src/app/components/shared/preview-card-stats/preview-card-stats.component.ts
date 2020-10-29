@@ -8,7 +8,7 @@ import { switchMap, map, take } from 'rxjs/operators';
 
 import { AuthService } from '@services/auth.service';
 import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/article-info';
+import { ArticlePreviewI } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-preview-card-stats',
@@ -16,7 +16,7 @@ import { IArticlePreview } from '@models/article-info';
   styleUrls: ['./preview-card-stats.component.scss'],
 })
 export class PreviewCardStatsComponent implements OnInit {
-  @Input() articleData: IArticlePreview;
+  @Input() articleData: ArticlePreviewI;
   isArticleBookmarked$: Observable<boolean>;
 
   constructor(

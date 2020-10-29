@@ -1,4 +1,4 @@
-import { IKeyMap } from './index';
+import { KeyMapI } from './index';
 
 export interface ArticlePreviewI {
   articleId: string;
@@ -10,7 +10,7 @@ export interface ArticlePreviewI {
   lastUpdated: any;
   timestamp: any;
   version: number;
-  editors: IKeyMap<number>;
+  editors: KeyMapI<number>;
   slug: string;
   commentCount?: number;
   viewCount?: number;
@@ -31,7 +31,7 @@ export interface ArticleDetailI {
   timestamp: any;
   lastEditorId: string;
   version: number;
-  editors: IKeyMap<number>;
+  editors: KeyMapI<number>;
   slug: string;
   commentCount?: number;
   viewCount?: number;

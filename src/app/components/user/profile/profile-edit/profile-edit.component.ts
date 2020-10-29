@@ -5,7 +5,7 @@ import { AuthService } from '@services/auth.service';
 import { UserService } from '@services/user.service';
 import { switchMap, take, takeUntil, map } from 'rxjs/operators';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { IHtmlInputEvent } from '@models/shared';
+import { HtmlInputEventI } from '@shared_models/index';
 import { DialogService } from '@services/dialog.service';
 import { Router } from '@angular/router';
 
@@ -26,7 +26,7 @@ export class ProfileEditComponent implements OnInit {
     private router: Router,
     private userSvc: UserService,
     private authSvc: AuthService,
-    private dialogSvc: DialogService
+    private dialogSvc: DialogService,
   ) {}
 
   ngOnInit() {
@@ -67,7 +67,7 @@ export class ProfileEditComponent implements OnInit {
     });
   };
 
-  onSelectProfileImage = (e: IHtmlInputEvent) => {
+  onSelectProfileImage = (e: HtmlInputEventI) => {
     const reader = new FileReader();
     reader.onload = () => {
       this.form.markAsDirty();
@@ -87,7 +87,7 @@ export class ProfileEditComponent implements OnInit {
       try {
         const { task, ref } = this.userSvc.uploadProfileImage(
           uid,
-          this.profileImageFile
+          this.profileImageFile,
         );
         this.imageUploadTask = task;
         task.then(() => {
@@ -101,7 +101,7 @@ export class ProfileEditComponent implements OnInit {
           .openProgressDialog(
             'Uploading profile image',
             'You can hide this dialog while you wait, or cancel the upload to go back to editing',
-            task.percentageChanges()
+            task.percentageChanges(),
           )
           .afterClosed()
           .subscribe(shouldCancel => {
@@ -127,13 +127,13 @@ export class ProfileEditComponent implements OnInit {
           if (!isSignedIn) return of(null);
           return this.authSvc.authInfo$.pipe(map(info => info.uid));
         }),
-        take(1)
+        take(1),
       )
       .subscribe((uid: string | null) => {
         if (!uid || uid !== this.form.value.uid) {
           this.dialogSvc.openMessageDialog(
             'Must be signed in',
-            'You can not save changes without being signed in as the user you are editing'
+            'You can not save changes without being signed in as the user you are editing',
           );
           return;
         }
@@ -147,13 +147,13 @@ export class ProfileEditComponent implements OnInit {
               this.dialogSvc.openMessageDialog(
                 'Error saving changes',
                 'Attempting to save your profile changes returned the following error',
-                error.message || error
+                error.message || error,
               );
             } finally {
               if (profileImageSub) profileImageSub.unsubscribe();
               return;
             }
-          }
+          },
         );
       });
   };

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { IHtmlInputEvent } from '@models/shared';
+import { HtmlInputEventI } from '@shared_models/index';
 
 @Component({
   selector: 'cos-cover-image-edit',
@@ -11,6 +11,6 @@ export class CoverImageEditComponent {
   @Input() parentForm: FormGroup;
   @Output() onCoverImageSelected = new EventEmitter<File>();
 
-  selectCoverImage = (e: IHtmlInputEvent) =>
+  selectCoverImage = (e: HtmlInputEventI) =>
     this.onCoverImageSelected.emit(e.target.files[0]);
 }

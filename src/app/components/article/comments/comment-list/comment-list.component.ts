@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommentService } from '@services/comment.service';
 import { UserService } from '@services/user.service';
 import { CommentI, VoteDirectionsE, ParentTypesE } from '@shared_models/index';
-import { IKeyMap } from '@models/shared';
+import { KeyMapI } from '@shared_models/index';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
@@ -16,8 +16,8 @@ export class CommentListComponent implements OnInit, OnDestroy {
   @Input() isUnderComment = true;
   @Input() parentKey: string;
   comments: Array<CommentI>;
-  votesMap: IKeyMap<VoteDirectionsE> = {};
-  unfurlMap: IKeyMap<boolean> = {};
+  votesMap: KeyMapI<VoteDirectionsE> = {};
+  unfurlMap: KeyMapI<boolean> = {};
 
   constructor(
     private commentSvc: CommentService,

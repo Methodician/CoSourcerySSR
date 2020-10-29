@@ -1,6 +1,6 @@
-import { IKeyMap } from '@models/shared';
+import { KeyMapI } from './index';
 
-export interface IArticlePreview {
+export interface ArticlePreviewI {
   articleId: string;
   authorId: string;
   title: string;
@@ -10,7 +10,7 @@ export interface IArticlePreview {
   lastUpdated: any;
   timestamp: any;
   version: number;
-  editors: IKeyMap<number>;
+  editors: KeyMapI<number>;
   slug: string;
   commentCount?: number;
   viewCount?: number;
@@ -18,7 +18,7 @@ export interface IArticlePreview {
   isFlagged?: boolean;
 }
 
-export interface IArticleDetail {
+export interface ArticleDetailI {
   articleId: string;
   authorId: string;
   title: string;
@@ -31,7 +31,7 @@ export interface IArticleDetail {
   timestamp: any;
   lastEditorId: string;
   version: number;
-  editors: IKeyMap<number>;
+  editors: KeyMapI<number>;
   slug: string;
   commentCount?: number;
   viewCount?: number;

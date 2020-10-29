@@ -1,22 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 
 // AnguilarFire Stuff
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { IArticlePreview, IArticleDetail } from '@models/article-info';
+import { ArticlePreviewI, ArticleDetailI } from '@shared_models/article.models';
 
 // RXJS stuff
 import { switchMap, take, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 
 // Internal stuff
-import {
-  rtServerTimestamp,
-  fsServerTimestamp,
-} from '../shared/helpers/firebase';
+
+import { FirebaseService } from '@services/firebase.service';
 import { IUserInfo } from '@models/user-info';
 import { AuthService } from './auth.service';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -27,13 +26,15 @@ export class ArticleService {
     private afd: AngularFireDatabase,
     private storage: AngularFireStorage,
     private authSvc: AuthService,
+    private fbSvc: FirebaseService,
+    @Inject(PLATFORM_ID) private platform: Object,
   ) {}
 
   // TEMP SEEDING CODE
-  // (simply call this in constructor)
+  // (simply call this in constructor or elsewhere)
   trackAllSlugs = () => {
     this.afs
-      .collection<IArticlePreview>('articleData/articles/previews')
+      .collection<ArticlePreviewI>('articleData/articles/previews')
       .get()
       .pipe(
         map(querySnaps =>
@@ -85,23 +86,23 @@ export class ArticleService {
   // FIRESTORE REF BUILDERS
 
   articleDetailRef = (articleId: string) =>
-    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
+    this.afs.doc<ArticleDetailI>(`articleData/articles/articles/${articleId}`);
 
   versionDetailRef = (articleId: string, versionId: string) =>
-    this.afs.doc<IArticleDetail>(
+    this.afs.doc<ArticleDetailI>(
       `articleData/articles/articles/${articleId}/history/${versionId}`,
     );
 
   articlePreviewRef = (articleId: string) =>
-    this.afs.doc<IArticlePreview>(`articleData/articles/previews/${articleId}`);
+    this.afs.doc<ArticlePreviewI>(`articleData/articles/previews/${articleId}`);
 
   allArticlesRef = () =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false),
     );
 
   latestArticlesRef = () =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
@@ -109,25 +110,25 @@ export class ArticleService {
     );
 
   allArticleVersionsRef = (articleId: string) =>
-    this.afs.collection<IArticleDetail>(
+    this.afs.collection<ArticleDetailI>(
       `/articleData/articles/articles/${articleId}/history`,
       ref => ref.orderBy('version', 'desc'),
     );
 
   articleVersionDetailRef = (articleId: string, version: string) =>
-    this.afs.doc<IArticleDetail>(
+    this.afs.doc<ArticleDetailI>(
       `articleData/articles/articles/${articleId}/history/${version}`,
     );
 
   // TODO: Either re-structure data to duplicate editors (array of IDs and map of edit counts) or store edit counts in RTDB or other doc?
   // Explanation: Compound queries still seem not to work. I can not do .where(`editors.${editorId}`) in addition to ordering by lastUpdated and filtering out flagged content...
   articlesByEditorRef = (editorId: string) =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.where(`editors.${editorId}`, '>', 0),
     );
 
   articlesByAuthorRef = (authorId: string) =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.where('authorId', '==', authorId).orderBy('timestamp', 'desc'),
     );
 
@@ -146,9 +147,7 @@ export class ArticleService {
         // switchMap is like map but removes observable nesting
         const keys = bookmarkSnaps.map(snap => snap.key);
         const articleSnapshots = keys.map(key =>
-          this.articlePreviewRef(key)
-            .valueChanges()
-            .pipe(take(1)),
+          this.articlePreviewRef(key).valueChanges().pipe(take(1)),
         );
         return combineLatest(articleSnapshots);
       }),
@@ -166,10 +165,10 @@ export class ArticleService {
     const updates = {};
     updates[
       `userInfo/articleBookmarksPerUser/${uid}/${articleId}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     updates[
       `articleData/userBookmarksPerArticle/${articleId}/${uid}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     this.afd.database.ref().update(updates);
   };
   // end bookmark stuff
@@ -183,6 +182,10 @@ export class ArticleService {
     editorId: string,
     status: boolean,
   ) => {
+    // the onDisconnect stuff seems to rely on browser API, I thin setTimeout()
+    // and none of this needs to happen server-side anyway...
+    if (isPlatformServer(this.platform)) return;
+
     const editorsPath = `articleData/editStatus/editorsByArticle/${articleId}/${editorId}`;
     const articlesPath = `articleData/editStatus/articlesByEditor/${editorId}/${articleId}`;
 
@@ -224,7 +227,7 @@ export class ArticleService {
     return batch;
   };
 
-  updateArticle = async (article: IArticleDetail) => {
+  updateArticle = async (article: ArticleDetailI) => {
     const editorId = this.authSvc.authInfo$.value.uid;
     if (!editorId)
       throw new Error(
@@ -241,7 +244,7 @@ export class ArticleService {
     editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
-    articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.lastUpdated = this.fbSvc.fsServerTimestamp();
     articleToSave.slug = newSlug;
     articleToSave.version++;
 
@@ -276,11 +279,11 @@ export class ArticleService {
 
   createArticle = async (
     author: IUserInfo,
-    article: IArticleDetail,
+    article: ArticleDetailI,
     articleId: string,
   ) => {
     if (article.articleId || !articleId)
-      throw "we can't create an article without an ID, and the IArticleDetail should lack an ID";
+      throw "we can't create an article without an ID, and the ArticleDetailI should lack an ID";
 
     const authorId = this.authSvc.authInfo$.value.uid;
     if (!author || !authorId)
@@ -302,8 +305,8 @@ export class ArticleService {
       editors: {},
       authorId,
       articleId,
-      lastUpdated: fsServerTimestamp,
-      timestamp: fsServerTimestamp,
+      lastUpdated: this.fbSvc.fsServerTimestamp(),
+      timestamp: this.fbSvc.fsServerTimestamp(),
       lastEditorId: authorId,
       slug: newSlug,
       authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',
@@ -335,7 +338,7 @@ export class ArticleService {
     const trackerDocRef = this.afs.doc(
       `fileUploads/articleUploads/coverThumbnails/${articleId}`,
     );
-    const articleDocRef = this.afs.doc<IArticlePreview>(
+    const articleDocRef = this.afs.doc<ArticlePreviewI>(
       `articleData/articles/previews/${articleId}`,
     );
 
@@ -380,9 +383,9 @@ export class ArticleService {
       .replace(/-+$/, ''); // Trim - from end of text
   };
 
-  createArticleId = () => this.afs.createId();
+  createId = () => this.afs.createId();
 
-  processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {
+  processArticleTimestamps = (article: ArticlePreviewI | ArticleDetailI) => {
     const { timestamp, lastUpdated } = article;
     if (timestamp) article.timestamp = timestamp.toDate();
     if (lastUpdated) article.lastUpdated = lastUpdated.toDate();

@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UserService } from '@services/user.service';
 import { CUserInfo } from '@models/user-info';
-import { IComment } from '@models/comment';
+import { CommentI } from '@shared_models/index';
 import { Subscription } from 'rxjs';
 @Component({
   selector: 'cos-comment',
   templateUrl: './comment.component.html',
-  styleUrls: ['./comment.component.scss']
+  styleUrls: ['./comment.component.scss'],
 })
 export class CommentComponent implements OnInit, OnDestroy {
-  @Input() comment: IComment;
+  @Input() comment: CommentI;
   @Input() isBeingEdited = false;
 
   authorSubscription: Subscription;
@@ -32,5 +32,5 @@ export class CommentComponent implements OnInit, OnDestroy {
       .subscribe(user => {
         this.authorInfo = new CUserInfo(user);
       });
-  }
+  };
 }

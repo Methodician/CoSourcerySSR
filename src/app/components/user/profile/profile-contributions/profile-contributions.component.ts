@@ -9,7 +9,7 @@ import {
 import { ArticleService } from '@services/article.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { IArticlePreview } from '@models/article-info';
+import { ArticlePreviewI } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-profile-contributions',
@@ -22,8 +22,8 @@ export class ProfileContributionsComponent
 
   isAuthoredExpanded = false;
   isEditedExpanded = false;
-  authoredArticles$: Observable<IArticlePreview[]>;
-  editedArticles$: Observable<IArticlePreview[]>;
+  authoredArticles$: Observable<ArticlePreviewI[]>;
+  editedArticles$: Observable<ArticlePreviewI[]>;
 
   private minDisplayNum = 6;
   private unsubscribe$: Subject<void> = new Subject();
@@ -69,12 +69,12 @@ export class ProfileContributionsComponent
         map(articles =>
           this.isAuthoredExpanded
             ? articles
-            : this.limitDisplayedResults(articles)
+            : this.limitDisplayedResults(articles),
         ),
         map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
         ),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
       );
   };
 
@@ -86,12 +86,12 @@ export class ProfileContributionsComponent
         map(articles =>
           this.isEditedExpanded
             ? articles
-            : this.limitDisplayedResults(articles)
+            : this.limitDisplayedResults(articles),
         ),
         map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
         ),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
       );
   };
 

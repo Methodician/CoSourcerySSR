@@ -40,7 +40,7 @@ export class AuthService {
   // }
 
   login(email: string, password: string) {
-    return this.afAuth.auth.signInWithEmailAndPassword(email, password);
+    return this.afAuth.signInWithEmailAndPassword(email, password);
   }
 
   // async cleanupEditorTrackingInfo() {
@@ -61,11 +61,11 @@ export class AuthService {
 
   async logout() {
     // await this.cleanupEditorTrackingInfo();
-    return this.afAuth.auth.signOut();
+    return this.afAuth.signOut();
   }
 
   register(email: string, password: string) {
-    return this.afAuth.auth.createUserWithEmailAndPassword(email, password);
+    return this.afAuth.createUserWithEmailAndPassword(email, password);
   }
 
   /**
@@ -81,7 +81,7 @@ export class AuthService {
   };
 
   /**
-   * Checks authstate once, returns isSignedIn,
+   * Checks auth state once, returns isSignedIn,
    * and prompts user to sign in if they haven't
    */
   isSignedInOrPrompt = () => {
@@ -98,7 +98,7 @@ export class AuthService {
   };
 
   async sendVerificationEmail() {
-    const user = this.afAuth.auth.currentUser;
+    const user = await this.afAuth.currentUser;
     try {
       return await user.sendEmailVerification();
     } catch (err) {

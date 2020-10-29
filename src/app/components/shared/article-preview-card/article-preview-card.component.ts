@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { IArticlePreview } from '@models/article-info';
+import { ArticlePreviewI } from '@shared_models/article.models';
 import { Subject, Observable } from 'rxjs';
 import { StorageService } from '@services/storage.service';
 
@@ -10,7 +10,7 @@ import { StorageService } from '@services/storage.service';
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() linkTo: string;
-  @Input() articleData: IArticlePreview;
+  @Input() articleData: ArticlePreviewI;
   coverImageUrl = '';
   isArticleBookmarked$: Observable<boolean>;
   private unsubscribe: Subject<void> = new Subject();

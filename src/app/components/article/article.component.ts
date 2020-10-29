@@ -10,6 +10,7 @@ import {
   Subject,
   timer,
   of,
+  Observer,
 } from 'rxjs';
 import {
   tap,
@@ -19,8 +20,6 @@ import {
   takeUntil,
   take,
 } from 'rxjs/operators';
-import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -28,14 +27,13 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
-import { fsTimestampNow } from '@helpers/firebase';
-
 // MODELS
-import { IArticleDetail } from '@models/article-info';
+import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
+import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleState',
 );
 
@@ -45,21 +43,18 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
-  @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
-
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
-  //  // Cover Image State
+  // Cover Image State
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
+  articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
-  articleSubscription: Subscription;
   currentArticleEditors = {};
 
   // Article Form State
@@ -86,8 +81,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     editors: {},
   });
 
-  articleState: IArticleDetail;
-
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
 
@@ -101,30 +94,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private authSvc: AuthService,
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
+    private fbSvc: FirebaseService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(user => {
         this.loggedInUser = user;
       });
-    iconRegistry.addSvgIcon(
-      'comment',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/comment.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'edit',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'loyalty',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/loyalty.svg'),
-    );
-    iconRegistry.addSvgIcon(
-      'bookmark',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/bookmark.svg'),
-    );
   }
 
   ngOnInit() {
@@ -148,15 +124,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
+        if (!!id) {
+          this.watchArticleEditors(id);
+        }
         if (id) this.articleId = id;
         if (isNew) {
           this.isArticleNew = true;
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, isNew }): Observable<ArticleDetailI> => {
           if (isNew) {
-            return Observable.create(observer => {
+            return new Observable((observer: Observer<ArticleDetailI>) => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
@@ -164,6 +143,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         },
       ),
     );
+
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleState = article;
       if (article) {
@@ -176,28 +156,23 @@ export class ArticleComponent implements OnInit, OnDestroy {
   watchArticleIdAndStatus$: () => Observable<{
     id: any;
     isNew: boolean;
-  }> = () => {
-    return this.route.params.pipe(
+  }> = () =>
+    this.route.params.pipe(
       switchMap(params => {
         let status$ = of({ id: null, isNew: false });
-        if (params['id'])
+        if (params['id']) {
           status$ = this.articleSvc
             .getIdFromSlugOrId(params['id'])
             .pipe(map(id => ({ id, isNew: false })));
-        else
-          status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
-        status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
-          if (!!status.id) {
-            this.watchArticleEditors(status.id);
-          }
-        });
+        } else {
+          status$ = of({ id: this.articleSvc.createId(), isNew: true });
+        }
         return status$;
       }),
     );
-  };
 
   watchArticle$ = id => {
-    const preExisting: IArticleDetail = this.state.get(
+    const preExisting: ArticleDetailI = this.state.get(
       ARTICLE_STATE_KEY,
       null as any,
     );
@@ -209,7 +184,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           article
             ? (this.articleSvc.processArticleTimestamps(
                 article,
-              ) as IArticleDetail)
+              ) as ArticleDetailI)
             : null,
         ),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
@@ -218,9 +193,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return article$;
   };
 
-  watchArticleEditors = id => {
+  watchArticleEditors = articleId =>
     this.articleSvc
-      .currentEditorsRef(id)
+      .currentEditorsRef(articleId)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
@@ -233,7 +208,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
         this.currentArticleEditors = currentEditors;
       });
-  };
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
@@ -267,7 +241,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   resetEditStates = () => {
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;
+    this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
   };
@@ -524,9 +498,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     Object.keys(this.currentArticleEditors).length > 0;
 
   // ===OTHER
-  tempTimestamp = () => fsTimestampNow();
+  tempTimestamp = () => this.fbSvc.fsTimestampNow();
 
-  updateMetaTags = (article: IArticleDetail) => {
+  updateMetaTags = (article: ArticleDetailI) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();

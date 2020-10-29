@@ -1,21 +1,19 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+const shouldUseEmulator = false;
 
 export const environment = {
   production: false,
   // shouldUseEmulator: location.hostname === 'localhost',
   // shouldUseEmulator: false,
-  shouldUseEmulator: true,
+  shouldUseEmulator: shouldUseEmulator,
   firebase: {
     apiKey: 'AIzaSyAb3L-t-WB0rf6A9j8gVSRB9STJJvLUEfw',
     authDomain: 'cosourcerytest.firebaseapp.com',
-    // databaseURL: 'https://cosourcerytest.firebaseio.com',
-    databaseURL: 'http://localhost:9000/?ns=cosourcerytest',
-    // databaseURL:
-    //   location.hostname === 'localhost'
-    //     ? 'http://localhost:9000/?ns=cosourcerytest'
-    //     : 'https://cosourcerytest.firebaseio.com',
+    databaseURL: shouldUseEmulator
+      ? 'http://localhost:9000/?ns=cosourcerytest'
+      : 'https://cosourcerytest.firebaseio.com',
     projectId: 'cosourcerytest',
     storageBucket: 'cosourcerytest.appspot.com',
     messagingSenderId: '146479623747',

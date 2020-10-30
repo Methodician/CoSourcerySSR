@@ -66,6 +66,6 @@ export class ArticleHistoryComponent implements OnInit {
 
   // HELPERS
   createPreviewLink = (article: ArticleDetailI) =>
-    `/article/${article.slug}/history/${article.version}`;
+    `/article/${article.articleId}/history/${article.version}`;
   // end helpers
 }

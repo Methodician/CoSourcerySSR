@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ArticlePreviewI } from '@shared_models/article.models';
 import { Subject, Observable } from 'rxjs';
 import { StorageService } from '@services/storage.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-article-preview-card',
@@ -27,10 +28,14 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   }
 
   watchCoverImageUrl = () => {
-    this.storageSvc
-      .getImageUrl(`articleCoverThumbnails/${this.articleData.articleId}`)
-      .subscribe(url => {
-        this.coverImageUrl = url;
-      });
+    const { articleId, coverImageId } = this.articleData;
+    if (coverImageId) {
+      this.storageSvc
+        .getImageUrl(`articleCoverThumbnails/${articleId}/${coverImageId}`)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => {
+          this.coverImageUrl = url;
+        });
+    }
   };
 }

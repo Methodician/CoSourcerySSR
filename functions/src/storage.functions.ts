@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -35,74 +34,51 @@ export const onFileUpload = functions
 const handleCoverImageUpload = async (
   object: functions.storage.ObjectMetadata,
 ) => {
-  const {
-    bucket: fileBucket,
-    name: filePath,
-    contentType,
-    metadata: objectMeta,
-  } = object;
+  const { bucket, name, contentType, metadata } = object;
 
-  if (!filePath) {
-    console.error('no file path');
+  if (!name) {
+    console.error('no file path (aka name)');
     return;
   }
-  if (!objectMeta) {
+  if (!metadata) {
     console.error('no object metadata');
     return;
   }
 
   // fileName should be an articleId...
-  const articleId = path.basename(filePath);
-  const bucket = gcs.bucket(fileBucket);
-  const tempFilePath = path.join(os.tmpdir(), `coverImage_${articleId}`);
+  const parsedName = path.parse(name);
+  const splitDir = parsedName.dir.split('/');
+  const imageId = parsedName.base;
+  const articleId = splitDir[splitDir.length - 1];
+
+  const gcsBucket = gcs.bucket(bucket);
+  const tempFilePath = path.join(
+    os.tmpdir(),
+    `coverImage_${articleId}_${imageId}`,
+  );
 
   // Downloading once for all operations. Avoid doing this more times than necessary
-  await bucket.file(filePath).download({ destination: tempFilePath });
+  await gcsBucket.file(name).download({ destination: tempFilePath });
 
   await rotateUploadedImage(
-    objectMeta,
+    metadata,
     tempFilePath,
-    filePath,
-    fileBucket,
+    name,
+    bucket,
     contentType || 'none',
   );
 
-  const coverImageThumbnailPromise = createCoverImageThumbnail(
+  await createCoverImageThumbnail(
     tempFilePath,
     articleId,
+    imageId,
     contentType || 'none',
-    fileBucket,
+    bucket,
   );
-
-  const hackyArticleUpdatePromise = addQueryParamToUpdateImage(articleId);
-
-  await Promise.all([hackyArticleUpdatePromise, coverImageThumbnailPromise]);
 
   // Delete local file to free up space
   fs.unlinkSync(tempFilePath);
   return null;
-};
-
-const addQueryParamToUpdateImage = async (articleId: string) => {
-  // HACKY: Force update to articleData so the article refreshes with new image... Still leaves limbo moment for EXIF images. Gotta be a better way...
-  const articleRef = admin
-    .firestore()
-    .collection('articleData')
-    .doc('articles')
-    .collection('articles')
-    .doc(articleId);
-
-  const imageRotationMarker = Math.random().toString(36).substr(2, 5);
-
-  const snap = await articleRef.get();
-  const article = snap.data();
-
-  if (!article) return;
-
-  const coverImageUrl = article.imageUrl;
-  return articleRef.update({
-    imageUrl: `${coverImageUrl}&m=${imageRotationMarker}`,
-  });
 };
 
 const rotateUploadedImage = async (
@@ -141,6 +117,7 @@ const rotateUploadedImage = async (
 const createCoverImageThumbnail = async (
   localFilePath: string,
   articleId: string,
+  imageId: string,
   contentType: string,
   fileBucket: string,
 ) => {
@@ -154,7 +131,7 @@ const createCoverImageThumbnail = async (
   ]);
 
   const metadata = { contentType: contentType };
-  const thumbFilePath = path.join('articleCoverThumbnails', articleId);
+  const thumbFilePath = path.join('articleCoverThumbnails', articleId, imageId);
   const bucket = gcs.bucket(fileBucket);
 
   // Upload the thumbnail

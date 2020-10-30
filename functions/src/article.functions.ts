@@ -66,6 +66,7 @@ export const onWriteArticleDetail = functions.firestore
       ): ArticlePreviewI => {
         const {
           authorId,
+          coverImageId,
           title,
           introduction,
           lastUpdated,
@@ -84,6 +85,7 @@ export const onWriteArticleDetail = functions.firestore
         const preview: ArticlePreviewI = {
           articleId,
           authorId,
+          coverImageId,
           title,
           introduction,
           imageAlt,

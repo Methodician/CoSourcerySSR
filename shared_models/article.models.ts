@@ -3,6 +3,7 @@ import { KeyMapI } from './index';
 export interface ArticlePreviewI {
   articleId: string;
   authorId: string;
+  coverImageId: string;
   title: string;
   introduction: string;
   imageUrl: string;
@@ -21,6 +22,7 @@ export interface ArticlePreviewI {
 export interface ArticleDetailI {
   articleId: string;
   authorId: string;
+  coverImageId: string;
   title: string;
   introduction: string;
   body: string;

@@ -7,11 +7,10 @@ const adminDB = admin.database();
 export const onCreateArticleDetail = functions.firestore
   .document('articleData/articles/articles/{articleId}')
   .onCreate(async (snap, _) => {
-    const createdArticle = snap.data();
+    const article = snap.data();
 
-    const trackArticleAuthorship = (article: any) => {
-      const authorId = article.authorId;
-      const articleId = article.articleId;
+    const trackArticleAuthorship = () => {
+      const { authorId, articleId } = article;
       const createdAt = new Date(article.timestamp.toDate()).getTime();
       const ref = adminDB.ref(
         `userInfo/articlesAuthoredPerUser/${authorId}/${articleId}`,
@@ -20,7 +19,7 @@ export const onCreateArticleDetail = functions.firestore
     };
 
     try {
-      await trackArticleAuthorship(createdArticle);
+      await trackArticleAuthorship();
     } catch (error) {
       console.error('There was an issue handling article creation', error);
     }
@@ -57,10 +56,22 @@ export const onCreateArticleDetail = functions.firestore
 export const onWriteArticleDetail = functions.firestore
   .document('articleData/articles/articles/{articleId}')
   .onWrite(async (change, context) => {
-    const writtenArticle = change.after.data();
+    const article = change.after.data() as ArticleDetailI;
     const { articleId } = context.params;
 
-    const createArticlePreview = (article: any) => {
+    const trackArticleHistory = () => {
+      const { version } = article;
+      const historyRef = adminFS
+        .collection('articleData')
+        .doc('articles')
+        .collection('articles')
+        .doc(articleId)
+        .collection('history')
+        .doc(version.toString());
+      return historyRef.set(article).catch(console.error);
+    };
+
+    const createArticlePreview = () => {
       const previewFromArticle = (
         articleObject: ArticleDetailI,
       ): ArticlePreviewI => {
@@ -109,33 +120,34 @@ export const onWriteArticleDetail = functions.firestore
       );
       const articlePreview = previewFromArticle(article);
 
-      return previewRef
-        .set(articlePreview)
-        .catch(error => console.error(error));
+      return previewRef.set(articlePreview).catch(console.error);
     };
 
     if (context.eventType !== 'google.firestore.document.delete') {
-      return createArticlePreview(writtenArticle);
+      const setHistory = trackArticleHistory();
+      const setPreview = createArticlePreview();
+      return Promise.all([setHistory, setPreview]);
     }
+    return null;
   });
 
 export const onUpdateArticleDetail = functions.firestore
   .document('articleData/articles/articles/{articleId}')
   .onUpdate(async (change, _) => {
-    const updatedArticle = change.after.data() as ArticleDetailI;
+    const article = change.after.data() as ArticleDetailI;
 
-    const trackArticleEditors = (article: ArticleDetailI) => {
-      const editorId = article.lastEditorId;
-      const articleId = article.articleId;
+    const trackArticleEditors = () => {
+      const { lastEditorId, articleId } = article;
+
       const updatedAt = new Date(article.lastUpdated.toDate()).getTime();
       const ref = adminDB.ref(
-        `userInfo/articlesEditedPerUser/${editorId}/${articleId}/${updatedAt}`,
+        `userInfo/articlesEditedPerUser/${lastEditorId}/${articleId}/${updatedAt}`,
       );
       return ref.set(true);
     };
 
     try {
-      await trackArticleEditors(updatedArticle);
+      await trackArticleEditors();
     } catch (error) {
       console.error("can't track editing", error);
     }

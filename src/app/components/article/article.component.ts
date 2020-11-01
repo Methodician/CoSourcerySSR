@@ -113,6 +113,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     //   .then(promiseResults =>
     //     console.log('Relocated all the images!', promiseResults),
     //   );
+    // this.articleSvc.addPointlessDocuments().then(console.log);
   }
 
   ngOnDestroy() {

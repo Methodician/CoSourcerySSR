@@ -1,8 +1,6 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../sass/vars.scss';
 
-$card-gap: 32px;
-
 main {
   .banner {
     display: none;
@@ -25,7 +23,7 @@ main {
   .article-collections {
     background-color: #fdfdfd;
     .collection-text {
-      margin: $card-gap 0 0;
+      margin: $preview_card_gap 0 0;
       text-align: center;
 
       &_accent {
@@ -35,30 +33,6 @@ main {
       &_underline {
         color: $accent-color-1;
         text-decoration: underline;
-      }
-    }
-
-    .article-grid {
-      display: grid;
-      grid-template-rows: auto;
-      grid-gap: $card-gap;
-      justify-content: center;
-      padding: $card-gap 0;
-
-      @media screen and (min-width: calc(#{$preview-card-height * 2} + #{$card-gap * 3} + 2px)) {
-        grid-template-areas: 'a a';
-      }
-
-      @media screen and (min-width: calc(#{$preview-card-height * 3} + #{$card-gap * 4} + 2px)) {
-        grid-template-areas: 'a a a';
-      }
-
-      @media screen and (min-width: calc(#{$preview-card-height * 4} + #{$card-gap * 5} + 2px)) {
-        grid-template-areas: 'a a a a';
-      }
-
-      @media screen and (min-width: calc(#{$preview-card-height * 5} + #{$card-gap * 6} + 2px)) {
-        grid-template-areas: 'a a a a a';
       }
     }
   }

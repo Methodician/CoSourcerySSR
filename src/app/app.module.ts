@@ -78,6 +78,7 @@ import { VersionDetailComponent } from './components/article-history/version-det
 import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
+import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
 // end components
 
 @NgModule({
@@ -124,6 +125,7 @@ import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
     VersionNavigationComponent,
     PreviewCardStatsComponent,
     TimeElapsedPipe,
+    PreviewGridComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

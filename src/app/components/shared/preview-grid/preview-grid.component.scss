@@ -1,0 +1,25 @@
+@import '../../../sass/vars.scss';
+
+main {
+  display: grid;
+  grid-template-rows: auto;
+  grid-gap: $preview_card_gap;
+  justify-content: center;
+  padding: $preview_card_gap 0;
+
+  @media screen and (min-width: calc(#{$preview-card-height * 2} + #{$preview_card_gap * 3} + 2px)) {
+    grid-template-areas: 'a a';
+  }
+
+  @media screen and (min-width: calc(#{$preview-card-height * 3} + #{$preview_card_gap * 4} + 2px)) {
+    grid-template-areas: 'a a a';
+  }
+
+  @media screen and (min-width: calc(#{$preview-card-height * 4} + #{$preview_card_gap * 5} + 2px)) {
+    grid-template-areas: 'a a a a';
+  }
+
+  @media screen and (min-width: calc(#{$preview-card-height * 5} + #{$preview_card_gap * 6} + 2px)) {
+    grid-template-areas: 'a a a a a';
+  }
+}

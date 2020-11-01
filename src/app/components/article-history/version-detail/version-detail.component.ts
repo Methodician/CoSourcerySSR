@@ -14,6 +14,7 @@ import { UserService } from '@services/user.service';
 import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
+import { StorageService } from '@services/storage.service';
 
 const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleVersionState',
@@ -45,6 +46,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private seoSvc: SeoService,
+    private storageSvc: StorageService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -80,6 +82,7 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleVersionState = article;
       if (article) {
+        this.watchCoverImageUrl(article);
         this.updateMetaTags(article);
       }
     });
@@ -119,6 +122,16 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
       );
     return version$;
   };
+
+  watchCoverImageUrl = (article: ArticleDetailI) => {
+    const { articleId, coverImageId } = article;
+    if (coverImageId) {
+      this.storageSvc
+        .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
+        .subscribe(url => (article.imageUrl = url));
+    }
+  };
+
   // ===end form setup & breakdown
 
   // ===OTHER

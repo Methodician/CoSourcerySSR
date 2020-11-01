@@ -81,4 +81,6 @@ export class StatsComponent implements OnInit {
         else this.articleSvc.bookmarkArticle(uid, articleId);
       });
   };
+
+  slugOrId = () => this.slug || this.articleId;
 }

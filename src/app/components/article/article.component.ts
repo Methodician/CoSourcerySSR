@@ -32,6 +32,7 @@ import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
 import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
+import { StorageService } from '@services/storage.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleState',
@@ -95,6 +96,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
     private fbSvc: FirebaseService,
+    private storageSvc: StorageService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -106,6 +108,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeArticleIdAndState();
     this.watchFormChanges();
+    // this.articleSvc
+    //   .scanAllArticlesAndRelocateImages()
+    //   .then(promiseResults =>
+    //     console.log('Relocated all the images!', promiseResults),
+    //   );
   }
 
   ngOnDestroy() {
@@ -148,6 +155,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.articleState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
+        this.watchCoverImageUrl(article);
         this.updateMetaTags(article);
       }
     });
@@ -191,6 +199,17 @@ export class ArticleComponent implements OnInit, OnDestroy {
         startWith(preExisting),
       );
     return article$;
+  };
+
+  watchCoverImageUrl = (article: ArticleDetailI) => {
+    const { coverImageId, articleId } = article;
+    if (coverImageId && coverImageId !== '') {
+      this.storageSvc
+        .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
+        .subscribe(url => {
+          this.articleState.imageUrl = url;
+        });
+    }
   };
 
   watchArticleEditors = articleId =>
@@ -288,55 +307,60 @@ export class ArticleComponent implements OnInit, OnDestroy {
         );
         return;
       }
-      const coverImageSub = this.saveCoverImage().subscribe(async isReady => {
-        if (!isReady) return;
+      const coverImageSub = this.saveCoverImage().subscribe(
+        async ({ isReady, imageId }) => {
+          if (!isReady) return;
 
-        if (this.articleState.articleId) {
-          // It's not new so just update existing and return
-          try {
-            const updateResult = await this.articleSvc.updateArticle(
-              this.articleState,
-            );
-            this.resetEditSessionTimeout();
-            await this.resetEditStates();
-            // HACKY: see associated note in UpdateArticle inside ArticleService
-            if (updateResult && updateResult[2]) {
-              this.router.navigate([`article/${updateResult[2]}`]);
+          // update the id if cover image was changed
+          if (!!imageId) this.articleState.coverImageId = imageId;
+
+          if (this.articleState.articleId) {
+            // It's not new so just update existing and return
+            try {
+              const updateResult = await this.articleSvc.updateArticle(
+                this.articleState,
+              );
+              this.resetEditSessionTimeout();
+              await this.resetEditStates();
+              // HACKY: see associated note in UpdateArticle inside ArticleService
+              if (updateResult && updateResult[2]) {
+                this.router.navigate([`article/${updateResult[2]}`]);
+              }
+            } catch (error) {
+              this.dialogSvc.openMessageDialog(
+                'Error saving article',
+                'Attempting to save your changes returned the following error',
+                error.message || error,
+              );
+            } finally {
+              if (coverImageSub) coverImageSub.unsubscribe();
+              return;
             }
-          } catch (error) {
-            this.dialogSvc.openMessageDialog(
-              'Error saving article',
-              'Attempting to save your changes returned the following error',
-              error.message || error,
-            );
-          } finally {
-            coverImageSub.unsubscribe();
-            return;
+          } else {
+            // It's a new article!
+            try {
+              await this.articleSvc.createArticle(
+                this.loggedInUser,
+                this.articleState,
+                this.articleId,
+              );
+              this.resetEditSessionTimeout();
+              // TODO: Ensure unsaved changes are actually being checked upon route change
+              await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
+              this.router.navigate([`article/${this.articleId}`]);
+            } catch (error) {
+              this.dialogSvc.openMessageDialog(
+                'Error creating article',
+                'Attempting to create the article returned the following error. If this persists, please let us know...',
+                `Error: ${error.message || error}`,
+              );
+            } finally {
+              if (coverImageSub) coverImageSub.unsubscribe();
+              return;
+            }
           }
-        } else {
-          // It's a new article!
-          try {
-            await this.articleSvc.createArticle(
-              this.loggedInUser,
-              this.articleState,
-              this.articleId,
-            );
-            this.resetEditSessionTimeout();
-            // TODO: Ensure unsaved changes are actually being checked upon route change
-            await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
-            this.router.navigate([`article/${this.articleId}`]);
-          } catch (error) {
-            this.dialogSvc.openMessageDialog(
-              'Error creating article',
-              'Attempting to create the article returned the following error. If this persists, please let us know...',
-              `Error: ${error.message || error}`,
-            );
-          } finally {
-            if (coverImageSub) coverImageSub.unsubscribe();
-            return;
-          }
-        }
-      });
+        },
+      );
     });
   };
 
@@ -345,22 +369,26 @@ export class ArticleComponent implements OnInit, OnDestroy {
    * Emits false if it's incomplete or cancelled or errors out
    */
   saveCoverImage = () => {
-    const isComplete$ = new BehaviorSubject(false);
+    const isComplete$ = new BehaviorSubject({ isReady: false, imageId: null });
     if (!this.coverImageFile) {
-      isComplete$.next(true);
+      isComplete$.next({ isReady: true, imageId: null });
     } else {
       try {
-        const { task, ref } = this.articleSvc.uploadCoverImage(
+        const {
+          task,
+          storageRef,
+          newImageId,
+        } = this.articleSvc.uploadCoverImage(
           this.articleId,
           this.coverImageFile,
         );
 
         this.coverImageUploadTask = task;
         task.then(() => {
-          ref.getDownloadURL().subscribe(imageUrl => {
+          storageRef.getDownloadURL().subscribe(imageUrl => {
             this.articleEditForm.patchValue({ imageUrl });
             this.coverImageFile = null;
-            isComplete$.next(true);
+            isComplete$.next({ isReady: true, imageId: newImageId });
           });
         });
 
@@ -375,12 +403,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
             if (shouldCancel) {
               this.cancelUpload(this.coverImageUploadTask);
               this.articleEditForm.markAsDirty();
-              isComplete$.next(false);
+              isComplete$.next({ isReady: false, imageId: null });
             }
           });
       } catch (error) {
         console.error(error);
-        isComplete$.next(false);
+        isComplete$.next({ isReady: false, imageId: null });
       }
     }
 

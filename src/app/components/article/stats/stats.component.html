@@ -4,7 +4,7 @@
       <mat-icon svgIcon="comment"></mat-icon>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        style="left: 0;"
+        style="left: 0"
       >
         {{ commentCount }} Comment(s)
       </span>
@@ -13,51 +13,49 @@
 
     <div class="stats__item">
       <mat-icon svgIcon="edit"></mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ editCount }} Edit(s)</span>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ editCount }} Edit(s)</span
+      >
       <span class="stats__item-counter">{{ editCount }}</span>
     </div>
 
     <div class="stats__item">
       <mat-icon svgIcon="loyalty"></mat-icon>
-      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above">{{ tagsCount }} Tag(s)</span>
+      <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
+        >{{ tagsCount }} Tag(s)</span
+      >
       <span class="stats__item-counter">{{ tagsCount }}</span>
     </div>
-
   </div>
 
   <div class="stats"></div>
 
   <div class="stats stats__right">
-    <div
-      *ngIf="!isArticleNew"
-      class="stats__item stats__item_clickable"
-    >
-      <a [routerLink]="['/article', slug, 'history']">
+    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
+      <a [routerLink]="['/article', slugOrId(), 'history']">
         <mat-icon class="stats__icon">history</mat-icon>
       </a>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        style="right: 0;"
+        style="right: 0"
       >
         History
       </span>
     </div>
 
-    <div
-      *ngIf="!isArticleNew"
-      class="stats__item stats__item_clickable"
-    >
+    <div *ngIf="!isArticleNew" class="stats__item stats__item_clickable">
       <div>
         <mat-icon
-          [ngClass]="{ 'highlighted' : (isBookmarked$ | async) }"
+          [ngClass]="{ highlighted: (isBookmarked$ | async) }"
           svgIcon="bookmark"
           (click)="onBookmarkClicked()"
-        >{{
+          >{{
             (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
-          }}</mat-icon>
+          }}</mat-icon
+        >
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-          style="right: 0;"
+          style="right: 0"
         >
           {{ (isBookmarked$ | async) ? 'Remove Bookmark' : 'Bookmark' }}
         </span>

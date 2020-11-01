@@ -32,6 +32,83 @@ export class ArticleService {
 
   // TEMP SEEDING CODE
   // (simply call this in constructor or elsewhere)
+
+  scanAllArticlesAndRelocateImages = async () => {
+    const relocateArticleImages = async (articleId: string) => {
+      const uploadImage = (path: string, file: Blob) => {
+        try {
+          const storageRef = this.storage.ref(path);
+          const task = storageRef.put(file);
+
+          return { task, storageRef };
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      const relocateImage = async (oldPath: string, newPath: string) => {
+        const oldRef = this.storage.ref(oldPath);
+        const url = await oldRef.getDownloadURL().toPromise();
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+
+        xhr.onload = async _ => {
+          const blob = xhr.response;
+          const { task } = uploadImage(newPath, blob);
+          task.then(taskSnap => {
+            if (taskSnap.state === 'success') {
+              console.log(`the image upload succeeded for ${articleId}`);
+            } else {
+              console.warn(
+                `the image upload failed for ${articleId} - here's the snapshot:`,
+                taskSnap,
+              );
+            }
+          });
+        };
+
+        xhr.open('GET', url);
+        return xhr.send();
+      };
+
+      const relocateCoverImage = (articleId: string, imageId: string) => {
+        const oldPath = `articleCoverImages/${articleId}`;
+        const newPath = `articleCoverThumbnails/${articleId}/${imageId}`;
+        return relocateImage(oldPath, newPath);
+      };
+
+      const relocateCoverThumbnail = async (
+        articleId: string,
+        imageId: string,
+      ) => {
+        const oldPath = `articleCoverThumbnails/${articleId}`;
+        const newPath = `articleCoverThumbnails/${articleId}/${imageId}`;
+        return relocateImage(oldPath, newPath);
+      };
+
+      const newImageId = this.createId();
+      const coverImagePromise = relocateCoverImage(articleId, newImageId);
+      const thumbnailPromise = relocateCoverThumbnail(articleId, newImageId);
+      await Promise.all([coverImagePromise, thumbnailPromise]);
+
+      const articleRef = this.articleDetailRef(articleId);
+      await articleRef.update({ coverImageId: newImageId });
+      return { articleId, newImageId };
+    };
+
+    const querySnap = await this.allArticlesRef().get().toPromise();
+    const relocationPromises = [];
+
+    for (let docSnap of querySnap.docs) {
+      const { articleId, coverImageId } = docSnap.data();
+      if (!coverImageId) {
+        relocationPromises.push(relocateArticleImages(articleId));
+      }
+    }
+
+    return Promise.all(relocationPromises);
+  };
+
   trackAllSlugs = () => {
     this.afs
       .collection<ArticlePreviewI>('articleData/articles/previews')
@@ -323,31 +400,15 @@ export class ArticleService {
 
   uploadCoverImage = (articleId: string, file: File) => {
     try {
-      const storageRef = this.storage.ref(`articleCoverImages/${articleId}`);
+      const newImageId = this.createId();
+      const storageRef = this.storage.ref(
+        `articleCoverImages/${articleId}/${newImageId}`,
+      );
       const task = storageRef.put(file);
-      return { task, ref: storageRef };
+      return { task, storageRef, newImageId };
     } catch (error) {
       console.error(error);
     }
-  };
-
-  setThumbnailImageUrl = async (articleId: string) => {
-    const storagePath = `articleCoverThumbnails/${articleId}`;
-    const storageRef = this.storage.ref(storagePath);
-    const url = await storageRef.getDownloadURL().toPromise();
-    const trackerDocRef = this.afs.doc(
-      `fileUploads/articleUploads/coverThumbnails/${articleId}`,
-    );
-    const articleDocRef = this.afs.doc<ArticlePreviewI>(
-      `articleData/articles/previews/${articleId}`,
-    );
-
-    const trackerSet = trackerDocRef.set({
-      downloadUrl: url,
-      path: storagePath,
-    });
-    const articleUpdate = articleDocRef.update({ imageUrl: url });
-    return await Promise.all([trackerSet, articleUpdate]);
   };
 
   // Checks RTDB for a slug => id reference

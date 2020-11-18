@@ -29,7 +29,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
 
   watchCoverImageUrl = () => {
     const { articleId, coverImageId } = this.articleData;
-    if (coverImageId) {
+    if (!!coverImageId) {
       this.storageSvc
         .getImageUrl(`articleCoverThumbnails/${articleId}/${coverImageId}`)
         .pipe(takeUntil(this.unsubscribe))

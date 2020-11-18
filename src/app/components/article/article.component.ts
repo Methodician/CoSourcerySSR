@@ -56,6 +56,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
+  doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
   // Article Form State
@@ -185,17 +186,40 @@ export class ArticleComponent implements OnInit, OnDestroy {
       ARTICLE_STATE_KEY,
       null as any,
     );
+
+    const notFoundArticle: ArticleDetailI = {
+      articleId: 'fake-news',
+      authorId: '',
+      authorImageUrl: '../../assets/images/feeling-lost.jpg',
+      body:
+        'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
+      coverImageId: '',
+      editors: null,
+      imageAlt: '',
+      imageUrl: '../../assets/images/feeling-lost.jpg',
+      introduction: 'The article you seek is a mirage.',
+      lastEditorId: '',
+      lastUpdated: new Date(),
+      slug: 'no-existing-article',
+      timestamp: new Date(),
+      title: 'Fake News',
+      version: 0,
+      commentCount: 0,
+      tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
+    };
     const article$ = this.articleSvc
       .articleDetailRef(id)
       .valueChanges()
       .pipe(
-        map(article =>
-          article
-            ? (this.articleSvc.processArticleTimestamps(
-                article,
-              ) as ArticleDetailI)
-            : null,
-        ),
+        map(article => {
+          if (article) {
+            return this.articleSvc.processArticleTimestamps(
+              article,
+            ) as ArticleDetailI;
+          }
+          this.doesArticleExist = false;
+          return notFoundArticle;
+        }),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
         startWith(preExisting),
       );
@@ -470,6 +494,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ===UI DISPLAY
   activateCtrl = async (ctrl: ECtrlNames) => {
+    if (!this.doesArticleExist) {
+      this.dialogSvc.openMessageDialog(
+        `You can't do that`,
+        `Since this article doesn't exist you can not edit it.`,
+      );
+      return;
+    }
     if (ctrl === ECtrlNames.none) {
       this.ctrlBeingEdited = ctrl;
       return;

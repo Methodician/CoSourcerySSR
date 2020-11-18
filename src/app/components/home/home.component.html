@@ -21,25 +21,25 @@
   <!-- ARTICLE COLLECTIONS -->
   <div class="article-collections">
     <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
-      <div class="article-grid">
+      <cos-preview-grid>
         <cos-article-preview-card
           *ngFor="let article of latestArticles$ | async"
           [articleData]="article"
           [linkTo]="createPreviewLink(article)"
         >
         </cos-article-preview-card>
-      </div>
+      </cos-preview-grid>
     </section>
 
     <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
-      <div class="article-grid">
+      <cos-preview-grid>
         <cos-article-preview-card
           *ngFor="let article of allArticles$ | async"
           [articleData]="article"
           [linkTo]="createPreviewLink(article)"
         >
         </cos-article-preview-card>
-      </div>
+      </cos-preview-grid>
     </section>
 
     <section
@@ -57,7 +57,7 @@
             : 'bookmarks'
         }}.
       </h3>
-      <div class="article-grid">
+      <cos-preview-grid>
         <!-- *ngFor="let article of bookmarkedArticles$ | async | reverseArray" -->
         <cos-article-preview-card
           *ngFor="let article of bookmarkedArticles$ | async"
@@ -65,7 +65,7 @@
           [linkTo]="createPreviewLink(article)"
         >
         </cos-article-preview-card>
-      </div>
+      </cos-preview-grid>
     </section>
   </div>
 </main>

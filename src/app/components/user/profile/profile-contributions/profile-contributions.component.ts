@@ -9,7 +9,7 @@ import {
 import { ArticleService } from '@services/article.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { ArticlePreviewI } from '@shared_models/article.models';
+import { ArticleDetailI, ArticlePreviewI } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-profile-contributions',
@@ -25,7 +25,7 @@ export class ProfileContributionsComponent
   authoredArticles$: Observable<ArticlePreviewI[]>;
   editedArticles$: Observable<ArticlePreviewI[]>;
 
-  private minDisplayNum = 6;
+  private minDisplayNum = 3;
   private unsubscribe$: Subject<void> = new Subject();
   constructor(private articleSvc: ArticleService) {}
 
@@ -39,7 +39,6 @@ export class ProfileContributionsComponent
   }
 
   ngOnDestroy() {
-    // TODO: Remove this unsubscriber if the component does not use it.
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -97,4 +96,6 @@ export class ProfileContributionsComponent
 
   limitDisplayedResults = (results: any[]) =>
     results.slice(0, this.minDisplayNum);
+
+  createPreviewLink = (article: ArticleDetailI) => `/article/${article.slug}`;
 }

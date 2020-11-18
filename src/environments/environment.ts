@@ -1,12 +1,11 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-const shouldUseEmulator = false;
+const shouldUseEmulator = true;
 
 export const environment = {
   production: false,
-  // shouldUseEmulator: location.hostname === 'localhost',
-  // shouldUseEmulator: false,
+
   shouldUseEmulator: shouldUseEmulator,
   firebase: {
     apiKey: 'AIzaSyAb3L-t-WB0rf6A9j8gVSRB9STJJvLUEfw',

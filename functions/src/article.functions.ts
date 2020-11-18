@@ -92,11 +92,12 @@ export const onWriteArticleDetail = functions.firestore
           slug,
         } = articleObject;
         const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
+        const maybeCoverImageId = coverImageId || false;
 
         const preview: ArticlePreviewI = {
           articleId,
           authorId,
-          coverImageId,
+          coverImageId: maybeCoverImageId,
           title,
           introduction,
           imageAlt,

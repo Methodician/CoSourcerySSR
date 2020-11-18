@@ -5,13 +5,14 @@
       >({{ isAuthoredExpanded ? 'collapse' : 'show all' }})</a
     >
   </h3>
-  <div class="article-grid">
+  <cos-preview-grid>
     <cos-article-preview-card
       *ngFor="let article of authoredArticles$ | async"
       [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
     >
     </cos-article-preview-card>
-  </div>
+  </cos-preview-grid>
 </div>
 
 <div>
@@ -21,11 +22,12 @@
       >({{ isEditedExpanded ? 'collapse' : 'show all' }})</a
     >
   </h3>
-  <div class="article-grid">
+  <cos-preview-grid>
     <cos-article-preview-card
       *ngFor="let article of editedArticles$ | async"
       [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
     >
     </cos-article-preview-card>
-  </div>
+  </cos-preview-grid>
 </div>

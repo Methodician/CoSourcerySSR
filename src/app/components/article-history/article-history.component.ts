@@ -25,7 +25,7 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<ArticleDetailI[]>>(
 })
 export class ArticleHistoryComponent implements OnInit {
   allArticleVersions$: Observable<ArticleDetailI[]>;
-
+  articleId: string;
   constructor(
     private articleSvc: ArticleService,
     private state: TransferState,
@@ -35,9 +35,12 @@ export class ArticleHistoryComponent implements OnInit {
   ngOnInit() {
     this.route.params
       .pipe(
+        tap(params => (this.articleId = params['id'])),
         switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id'])),
       )
-      .subscribe(id => this.initializeArticles(id));
+      .subscribe(id => {
+        this.initializeArticles(id);
+      });
   }
 
   initializeArticles = (articleId: string) =>

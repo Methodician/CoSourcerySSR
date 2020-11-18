@@ -3,35 +3,13 @@ import { KeyMapI } from './index';
 export interface ArticlePreviewI {
   articleId: string;
   authorId: string;
-  coverImageId: string;
+  coverImageId: string | boolean; // this feels hacky and smelly. Maybe should enable "ignoreUndefinedProperties" and leave it as optional
   title: string;
   introduction: string;
   imageUrl: string;
   imageAlt: string;
   lastUpdated: any;
   timestamp: any;
-  version: number;
-  editors: KeyMapI<number>;
-  slug: string;
-  commentCount?: number;
-  viewCount?: number;
-  tags?: string[];
-  isFlagged?: boolean;
-}
-
-export interface ArticleDetailI {
-  articleId: string;
-  authorId: string;
-  coverImageId: string;
-  title: string;
-  introduction: string;
-  body: string;
-  imageUrl: string;
-  imageAlt: string;
-  authorImageUrl: string;
-  lastUpdated: any;
-  timestamp: any;
-  lastEditorId: string;
   version: number;
   editors: KeyMapI<number>;
   slug: string;
@@ -40,4 +18,11 @@ export interface ArticleDetailI {
   tags?: string[];
   isFeatured?: boolean;
   isFlagged?: boolean;
+}
+
+export interface ArticleDetailI extends ArticlePreviewI {
+  body: string;
+  authorImageUrl: string;
+  lastEditorId: string;
+  tags?: string[];
 }

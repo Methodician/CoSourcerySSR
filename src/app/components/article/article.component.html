@@ -74,14 +74,15 @@
       'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
     }"
   >
-    <cos-body
+    <cos-custom-editor-test></cos-custom-editor-test>
+    <!-- <cos-body
       [isActive]="isCtrlActive(ECtrlNames.body)"
       [body]="articleState.body"
       [articleId]="articleId"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
       (onClickOut)="clickoutCtrl(ECtrlNames.body)"
       (onBodyChange)="changeBody($event)"
-    ></cos-body>
+    ></cos-body> -->
   </section>
 
   <!-- TAGS UI -->

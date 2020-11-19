@@ -130,3 +130,10 @@
     }
   }
 }
+
+::ng-deep .article-body {
+  img {
+    max-width: 100%;
+    image-orientation: from-image;
+  }
+}

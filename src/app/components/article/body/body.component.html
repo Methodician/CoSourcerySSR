@@ -20,6 +20,7 @@
   <quill-editor
     *ngIf="isBrowser && articleId && isActive"
     [(ngModel)]="body"
+    [modules]="modules"
     (onContentChanged)="changeBody($event)"
     (onSelectionChanged)="testEvent($event)"
   ></quill-editor>

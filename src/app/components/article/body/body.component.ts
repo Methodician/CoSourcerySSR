@@ -7,6 +7,12 @@ import {
   Inject,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+
+import Quill, { Delta } from 'quill';
+// import ImageResize from 'quill-image-resize-module';
+
+// Quill.register('modules/imageResize', ImageResize);
+
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
 // Shared cursor display: https://github.com/reedsy/quill-cursors
@@ -39,8 +45,13 @@ export class BodyComponent {
 
   isBrowser: boolean;
 
+  modules = {};
+
   constructor(@Inject(PLATFORM_ID) platformId: string) {
     this.isBrowser = isPlatformBrowser(platformId);
+    this.modules = {
+      imageResize: {},
+    };
   }
 
   toggleCtrl = () => this.onCtrlToggle.emit();

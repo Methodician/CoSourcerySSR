@@ -318,9 +318,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = file;
   };
 
-  changeBody = body => {
+  changeBody = $e => {
+    console.log($e);
     this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ body });
+    this.articleEditForm.patchValue({ body: $e.html });
   };
 
   saveChanges = async () => {

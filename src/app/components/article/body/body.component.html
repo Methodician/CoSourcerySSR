@@ -20,9 +20,14 @@
     *ngIf="!isBrowser"
     [innerHTML]="body"
   ></article>
-  <textarea onchange="changeBody($event)" cols="30" rows="30">{{
+  <!-- <textarea onchange="changeBody($event)" cols="30" rows="30">{{
     body
-  }}</textarea>
+  }}</textarea> -->
+  <quill-editor
+    [(ngModel)]="body"
+    (onContentChanged)="changeBody($event)"
+    (onSelectionChanged)="testEvent($event)"
+  ></quill-editor>
   <!-- <cos-body-edit
     *ngIf="isBrowser && articleId"
     (onBodyChange)="changeBody($event)"

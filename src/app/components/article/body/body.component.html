@@ -15,11 +15,14 @@
     }}</span>
   </button>
   <!-- Hacky: applying ckEditor classes to get styles -->
-  <article *ngIf="!isBrowser || !isActive" [innerHTML]="body"></article>
+  <!-- <article *ngIf="!isBrowser || !isActive" [innerHTML]="body"></article> -->
 
+  <!-- <quill-editor
+    *ngIf="isBrowser && articleId && isActive" -->
   <quill-editor
-    *ngIf="isBrowser && articleId && isActive"
     [(ngModel)]="body"
+    [modules]="quillModules"
+    (onEditorCreated)="onEditorCreated($event)"
     (onContentChanged)="changeBody($event)"
     (onSelectionChanged)="testEvent($event)"
   ></quill-editor>

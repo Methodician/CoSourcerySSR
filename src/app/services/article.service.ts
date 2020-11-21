@@ -411,6 +411,35 @@ export class ArticleService {
     }
   };
 
+  uploadBodyImage = (articleId: string, image: File) => {
+    try {
+      if (!articleId) {
+        throw new Error(
+          'Body images must be associated with an article id but none was passed in',
+        );
+      }
+
+      const { name, type } = image;
+      const isImage = type.startsWith('image/');
+
+      if (!isImage) {
+        throw new Error(
+          'Only images can be uploaded for body images. This seems to be another file type.',
+        );
+      }
+
+      const fileExtension = name.slice(((name.lastIndexOf('.') - 1) >>> 0) + 2);
+      const newImageId = this.createId();
+      const storageRef = this.storage.ref(
+        `articleBodyImages/${articleId}/${newImageId}.${fileExtension}`,
+      );
+      const task = storageRef.put(image);
+      return { task, storageRef };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Checks RTDB for a slug => id reference
   // if it finds it we assume we got a slug and return the result
   // otherwise we assume we got an id and return what was passed in

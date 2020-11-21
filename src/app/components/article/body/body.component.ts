@@ -14,6 +14,10 @@ import Quill from 'quill';
 import ImageResize from 'quill-image-resize';
 Quill.register('modules/imageResize', ImageResize);
 
+import { ArticleService } from '@services/article.service';
+import { DialogService } from '@services/dialog.service';
+import { AngularFireUploadTask } from '@angular/fire/storage';
+
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
 // Shared cursor display: https://github.com/reedsy/quill-cursors
@@ -49,11 +53,20 @@ export class BodyComponent {
 
   quillModules = {};
   quillEditor = null;
+  imageUploadTask: AngularFireUploadTask;
 
-  constructor(@Inject(PLATFORM_ID) platformId: string) {
+  constructor(
+    @Inject(PLATFORM_ID) platformId: string,
+    private articleSvc: ArticleService,
+    private dialogSvc: DialogService,
+  ) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     this.quillModules = { imageResize: {} };
+  }
+
+  ngOnDestroy() {
+    if (this.imageUploadTask) this.imageUploadTask.cancel();
   }
 
   onEditorCreated = editor => {
@@ -64,45 +77,68 @@ export class BodyComponent {
   };
 
   onImageButtonClicked = () => {
-    console.log('IMAGE BTN CLICKED');
-    // this.insertBodyImage();
-    this.promptImageSelection().subscribe(file => console.log('FILE', file));
-  };
+    const promptImageSelection = () => {
+      const subject$ = new Subject<File>();
 
-  promptImageSelection = () => {
-    const subject$ = new Subject<File>();
+      try {
+        const imgInput = document.createElement('input');
+        imgInput.setAttribute('type', 'file');
+        imgInput.setAttribute(
+          'accept',
+          'image/png, image/gif, image/jpeg, image/bmp, image/x-icon',
+        );
+        imgInput.click();
 
-    try {
-      const imgInput = document.createElement('input');
-      imgInput.setAttribute('type', 'file');
-      imgInput.setAttribute(
-        'accept',
-        'image/png, image/gif, image/jpeg, image/bmp, image/x-icon',
-      );
-      imgInput.click();
+        imgInput.onchange = () => {
+          const file = imgInput.files[0];
+          subject$.next(file);
 
-      imgInput.onchange = () => {
-        const file = imgInput.files[0];
-        subject$.next(file);
-
+          subject$.complete();
+        };
+      } catch (error) {
+        console.error(error);
         subject$.complete();
-      };
-    } catch (error) {
-      console.error(error);
-      subject$.complete();
-    }
+      }
 
-    return subject$;
-  };
+      return subject$;
+    };
 
-  insertBodyImage = () => {
-    const range = this.quillEditor.getSelection();
-    console.log('RANGE', range);
-    this.quillEditor.insertEmbed(
-      range.index,
-      'image',
-      'http://localhost:4200/assets/images/logo.svg',
-    );
+    const insertBodyImage = (url: string) => {
+      const range = this.quillEditor.getSelection();
+      console.log('RANGE', range);
+      this.quillEditor.insertEmbed(range.index, 'image', url);
+    };
+
+    promptImageSelection().subscribe(file => {
+      const { task, storageRef } = this.articleSvc.uploadBodyImage(
+        this.articleId,
+        file,
+      );
+
+      this.imageUploadTask = task;
+
+      task.then(() => {
+        storageRef
+          .getDownloadURL()
+          .subscribe(imageUrl => insertBodyImage(imageUrl));
+        this.imageUploadTask = null;
+      });
+
+      this.dialogSvc
+        .openProgressDialog(
+          'Uploading body image',
+          `If you exit or attempt to save while this is happening there may be errors. 
+          We'll work to improve this experience with time. You may cancel the process 
+          or hide this dialog and continue to work.`,
+          task.percentageChanges(),
+        )
+        .afterClosed()
+        .subscribe(shouldCancel => {
+          if (shouldCancel && task) {
+            task.cancel();
+          }
+        });
+    });
   };
 
   toggleCtrl = () => this.onCtrlToggle.emit();

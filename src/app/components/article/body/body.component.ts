@@ -11,8 +11,39 @@ import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
 
 import Quill from 'quill';
+import Emitter from 'quill/core/emitter';
+import Delta from 'quill-delta';
 import ImageResize from 'quill-image-resize';
 Quill.register('modules/imageResize', ImageResize);
+
+// class ImageBlot extends Image {
+
+//   static get ATTRIBUTES() {
+//     return [ 'alt', 'height', 'width', 'class', 'data-original', 'data-width', 'data-height', 'style-data' ]
+//   }
+
+//   static formats(domNode) {
+//     return this.ATTRIBUTES.reduce(function(formats, attribute) {
+//       if (domNode.hasAttribute(attribute)) {
+//         formats[attribute] = domNode.getAttribute(attribute);
+//       }
+//       return formats;
+//     }, {});
+//   }
+
+//   format(name, value) {
+//     if ((this.constructor as any).ATTRIBUTES.indexOf(name) > -1) {
+//       if (value) {
+//         this.domNode.setAttribute(name, value);
+//       } else {
+//         this.domNode.removeAttribute(name);
+//       }
+//     } else {
+//       super.format(name, value);
+//     }
+//   }
+// }
+// Quill.register(ImageBlot);
 
 import { ArticleService } from '@services/article.service';
 import { DialogService } from '@services/dialog.service';
@@ -53,7 +84,8 @@ export class BodyComponent {
 
   quillModules = {};
   quillEditor = null;
-  imageUploadTask: AngularFireUploadTask;
+  quillToolbar = null;
+  bodyImages: File[] = [];
 
   constructor(
     @Inject(PLATFORM_ID) platformId: string,
@@ -65,80 +97,85 @@ export class BodyComponent {
     this.quillModules = { imageResize: {} };
   }
 
-  ngOnDestroy() {
-    if (this.imageUploadTask) this.imageUploadTask.cancel();
-  }
-
   onEditorCreated = editor => {
     console.log('EDITOR CREATED', editor);
     this.quillEditor = editor;
-    const toolbar = editor.getModule('toolbar');
-    toolbar.addHandler('image', this.onImageButtonClicked);
+    this.quillToolbar = editor.getModule('toolbar');
+    this.quillToolbar.addHandler('image', this.onImageButtonClicked);
   };
 
-  onImageButtonClicked = () => {
-    const promptImageSelection = () => {
-      const subject$ = new Subject<File>();
-
-      try {
-        const imgInput = document.createElement('input');
-        imgInput.setAttribute('type', 'file');
-        imgInput.setAttribute(
-          'accept',
-          'image/png, image/gif, image/jpeg, image/bmp, image/x-icon',
-        );
-        imgInput.click();
-
-        imgInput.onchange = () => {
-          const file = imgInput.files[0];
-          subject$.next(file);
-
-          subject$.complete();
-        };
-      } catch (error) {
-        console.error(error);
-        subject$.complete();
-      }
-
-      return subject$;
-    };
-
-    const insertBodyImage = (url: string) => {
-      const range = this.quillEditor.getSelection();
-      console.log('RANGE', range);
-      this.quillEditor.insertEmbed(range.index, 'image', url);
-    };
-
-    promptImageSelection().subscribe(file => {
-      const { task, storageRef } = this.articleSvc.uploadBodyImage(
-        this.articleId,
-        file,
-      );
-
-      this.imageUploadTask = task;
-
-      task.then(() => {
-        storageRef
-          .getDownloadURL()
-          .subscribe(imageUrl => insertBodyImage(imageUrl));
-        this.imageUploadTask = null;
-      });
-
-      this.dialogSvc
-        .openProgressDialog(
-          'Uploading body image',
-          `If you exit or attempt to save while this is happening there may be errors. 
-          We'll work to improve this experience with time. You may cancel the process 
-          or hide this dialog and continue to work.`,
-          task.percentageChanges(),
-        )
-        .afterClosed()
-        .subscribe(shouldCancel => {
-          if (shouldCancel && task) {
-            task.cancel();
+  onImageButtonClicked = async () => {
+    // NOTE: much of the below comes paraphrased from Quill internals and uses
+    // other Quill internals and frankly goes a bit over my head.
+    // For further reference look into Quill repo base.js => search "image" and uploader.js
+    console.log('IMAGE CLICKED');
+    let fileInput: HTMLInputElement = this.quillToolbar.container.querySelector(
+      'input.ql-image[type=file]',
+    );
+    if (fileInput == null) {
+      fileInput = document.createElement('input');
+      fileInput.setAttribute('type', 'file');
+      // This is way more than what Quill accepts by default.
+      // There may be a reason for the default limitations?
+      const acceptedFileTypes = [
+        'image/png',
+        'image/gif',
+        'image/jpeg',
+        'image/bmp',
+        'image/x-icon',
+      ];
+      fileInput.setAttribute('accept', acceptedFileTypes.join(', '));
+      fileInput.classList.add('ql-image');
+      fileInput.onchange = () => {
+        const range = this.quillEditor.getSelection(true);
+        // paraphrased from Quill => uploader.js
+        const upload = () => {
+          const uploads = Array.from(fileInput.files).map(file => {
+            if (file && acceptedFileTypes.includes(file.type)) {
+              return file;
+            }
+          });
+          // paraphrased from Quill => uploader.js => DEFAULTS.handler
+          const processImages = () => {
+            const promises: Promise<string | ArrayBuffer>[] = uploads.map(
+              file =>
+                new Promise(resolve => {
+                  const reader = new FileReader();
+                  reader.onload = e => resolve(e.target.result);
+                  reader.readAsDataURL(file);
+                }),
+            );
+            Promise.all(promises).then(images => {
+              const update = images.reduce(
+                (delta, image) =>
+                  delta.insert(
+                    {
+                      image: 'https://i.imgur.com/o04KozN.png',
+                    },
+                    { alt: 'TtStingsdDSD' },
+                  ),
+                // delta.insert({ image }, { imageId: 'TtStingsdDSD' }),
+                new Delta().retain(range.index).delete(range.length),
+              );
+              console.log('update', update);
+              this.quillEditor.updateContents(update, Emitter.sources.USER);
+              this.quillEditor.setSelection(
+                range.index + range.length,
+                Emitter.sources.SILENT,
+              );
+            });
+          };
+          if (uploads.length > 0) {
+            processImages();
           }
-        });
-    });
+        };
+
+        upload();
+        fileInput.value = '';
+      };
+      this.quillToolbar.container.appendChild(fileInput);
+    }
+    fileInput.click();
   };
 
   toggleCtrl = () => this.onCtrlToggle.emit();

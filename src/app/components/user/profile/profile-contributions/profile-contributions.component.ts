@@ -31,7 +31,7 @@ export class ProfileContributionsComponent
 
   ngOnInit() {
     if (!this.profileId) {
-      console.log('no profileId in contributors component');
+      console.warn('no profileId in contributors component');
       return;
     }
     this.watchAuthoredArticles();

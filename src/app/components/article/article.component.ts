@@ -318,9 +318,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = file;
   };
 
-  changeBody = body => {
+  changeBody = $e => {
     this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ body });
+    this.articleEditForm.patchValue({ body: $e.html });
   };
 
   saveChanges = async () => {
@@ -556,6 +556,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
+
+  isBodyImageUploadPending = () => this.articleSvc.pendingImageUploadCount > 0;
+
+  saveTooltipText = () => {
+    if (!this.isUserEditingArticle())
+      return 'No editors. This should not display. Let us know if it continues.';
+    if (!this.articleEditForm.valid) return 'Fix errors to save';
+    if (this.isBodyImageUploadPending()) return 'Images uploading, please wait';
+    return 'Save Article';
+  };
 
   // ===OTHER
   tempTimestamp = () => this.fbSvc.fsTimestampNow();

@@ -15,14 +15,17 @@
     }}</span>
   </button>
   <!-- Hacky: applying ckEditor classes to get styles -->
-  <article
-    class="ck ck-editor__editable_inline"
-    *ngIf="!isBrowser"
-    [innerHTML]="body"
-  ></article>
-  <textarea onchange="changeBody($event)" cols="30" rows="30">{{
-    body
-  }}</textarea>
+  <!-- <article *ngIf="!isBrowser || !isActive" [innerHTML]="body"></article> -->
+
+  <!-- <quill-editor
+    *ngIf="isBrowser && articleId && isActive" -->
+  <quill-editor
+    [(ngModel)]="body"
+    [modules]="quillModules"
+    (onEditorCreated)="onEditorCreated($event)"
+    (onContentChanged)="changeBody($event)"
+    (onSelectionChanged)="testEvent($event)"
+  ></quill-editor>
   <!-- <cos-body-edit
     *ngIf="isBrowser && articleId"
     (onBodyChange)="changeBody($event)"

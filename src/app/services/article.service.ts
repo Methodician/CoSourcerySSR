@@ -21,6 +21,8 @@ import { isPlatformServer } from '@angular/common';
   providedIn: 'root',
 })
 export class ArticleService {
+  pendingImageUploadCount = 0;
+
   constructor(
     private afs: AngularFirestore,
     private afd: AngularFireDatabase,
@@ -406,6 +408,34 @@ export class ArticleService {
       );
       const task = storageRef.put(file);
       return { task, storageRef, newImageId };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  uploadBodyImage = (articleId: string, imageId: string, image: File) => {
+    try {
+      if (!articleId || !imageId) {
+        throw new Error(
+          'Body images must be associated with an article id and an imageId one or more were not provided.',
+        );
+      }
+
+      const { name, type } = image;
+      const isImage = type.startsWith('image/');
+
+      if (!isImage) {
+        throw new Error(
+          'Only images can be uploaded for body images. This seems to be another file type.',
+        );
+      }
+
+      const fileExtension = name.slice(((name.lastIndexOf('.') - 1) >>> 0) + 2);
+      const storageRef = this.storage.ref(
+        `articleBodyImages/${articleId}/${imageId}.${fileExtension}`,
+      );
+      const task = storageRef.put(image);
+      return { task, storageRef };
     } catch (error) {
       console.error(error);
     }

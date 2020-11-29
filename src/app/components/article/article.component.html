@@ -74,15 +74,14 @@
       'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
     }"
   >
-    <cos-custom-editor-test></cos-custom-editor-test>
-    <!-- <cos-body
+    <cos-body
       [isActive]="isCtrlActive(ECtrlNames.body)"
       [body]="articleState.body"
       [articleId]="articleId"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
       (onClickOut)="clickoutCtrl(ECtrlNames.body)"
       (onBodyChange)="changeBody($event)"
-    ></cos-body> -->
+    ></cos-body>
   </section>
 
   <!-- TAGS UI -->
@@ -107,7 +106,11 @@
       <button
         class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
         type="button"
-        [disabled]="!articleEditForm.valid || !isUserEditingArticle()"
+        [disabled]="
+          !articleEditForm.valid ||
+          !isUserEditingArticle() ||
+          isBodyImageUploadPending()
+        "
         (click)="saveChanges()"
       >
         <mat-icon>done</mat-icon>
@@ -137,7 +140,7 @@
         <div class="flag flag-pole flag-pole_left">
           <div class="flag flag-tooltip">
             <span class="flag-tooltip_changes">Unsaved</span>
-            <span class="flag-tooltip_save">Save Article</span>
+            <span class="flag-tooltip_save">{{ saveTooltipText() }}</span>
             <span class="flag-tooltip_restore">Undo Changes</span>
           </div>
         </div>

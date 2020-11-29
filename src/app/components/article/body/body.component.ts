@@ -8,58 +8,21 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
+import { AngularFireUploadTask } from '@angular/fire/storage';
 
+// INTERNAL IMPORTS
+import { ArticleService } from '@services/article.service';
+
+// QUILL LIBS
 import Quill from 'quill';
 import Emitter from 'quill/core/emitter';
 import Delta from 'quill-delta';
 import ImageResize from 'quill-image-resize';
 
-import { ArticleService } from '@services/article.service';
-import { AngularFireUploadTask } from '@angular/fire/storage';
-
 Quill.register('modules/imageResize', ImageResize);
 
-// ToDo: This stuff goes in another file!
-const BaseImage = Quill.import('formats/image');
-const ATTRIBUTES = ['alt', 'height', 'width', 'style', 'id'];
-const WHITE_STYLE = ['margin', 'display', 'float'];
-class Image extends BaseImage {
-  static formats(domNode) {
-    return ATTRIBUTES.reduce(function (formats, attribute) {
-      if (domNode.hasAttribute(attribute)) {
-        formats[attribute] = domNode.getAttribute(attribute);
-      }
-      return formats;
-    }, {});
-  }
-
-  format(name, value) {
-    if (ATTRIBUTES.indexOf(name) > -1) {
-      if (value) {
-        if (name === 'style') {
-          value = this.sanitize_style(value);
-        }
-        (this as any).domNode.setAttribute(name, value);
-      } else {
-        (this as any).domNode.removeAttribute(name);
-      }
-    } else {
-      super.format(name, value);
-    }
-  }
-
-  sanitize_style(style) {
-    let style_arr = style.split(';');
-    let allow_style = '';
-    style_arr.forEach((v, i) => {
-      if (WHITE_STYLE.indexOf(v.trim().split(':')[0]) !== -1) {
-        allow_style += v + ';';
-      }
-    });
-    return allow_style;
-  }
-}
-
+// QUILL INTERNALS
+import Image from './quill-image';
 Quill.register(Image);
 
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
@@ -161,6 +124,7 @@ export class BodyComponent {
   };
 
   onImageButtonClicked = async () => {
+    // ToDo: may migrate this to another file
     // NOTE: much of the below comes paraphrased from Quill internals and uses
     // other Quill internals and frankly goes a bit over my head.
     // For further reference look into Quill repo base.js => search "image" and uploader.js

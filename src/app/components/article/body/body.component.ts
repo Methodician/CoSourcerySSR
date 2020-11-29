@@ -8,46 +8,57 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-import { Subject } from 'rxjs';
-
 import Quill from 'quill';
 import Emitter from 'quill/core/emitter';
 import Delta from 'quill-delta';
 import ImageResize from 'quill-image-resize';
+import { ArticleService } from '@services/article.service';
+import { BehaviorSubject } from 'rxjs';
+import { KeyMapI } from '@shared_models/index';
 Quill.register('modules/imageResize', ImageResize);
 
-// class ImageBlot extends Image {
+// ToDo: This stuff goes in another file!
+const BaseImage = Quill.import('formats/image');
+const ATTRIBUTES = ['alt', 'height', 'width', 'style', 'id'];
+const WHITE_STYLE = ['margin', 'display', 'float'];
+class Image extends BaseImage {
+  static formats(domNode) {
+    return ATTRIBUTES.reduce(function (formats, attribute) {
+      if (domNode.hasAttribute(attribute)) {
+        formats[attribute] = domNode.getAttribute(attribute);
+      }
+      return formats;
+    }, {});
+  }
 
-//   static get ATTRIBUTES() {
-//     return [ 'alt', 'height', 'width', 'class', 'data-original', 'data-width', 'data-height', 'style-data' ]
-//   }
+  format(name, value) {
+    if (ATTRIBUTES.indexOf(name) > -1) {
+      if (value) {
+        if (name === 'style') {
+          value = this.sanitize_style(value);
+        }
+        (this as any).domNode.setAttribute(name, value);
+      } else {
+        (this as any).domNode.removeAttribute(name);
+      }
+    } else {
+      super.format(name, value);
+    }
+  }
 
-//   static formats(domNode) {
-//     return this.ATTRIBUTES.reduce(function(formats, attribute) {
-//       if (domNode.hasAttribute(attribute)) {
-//         formats[attribute] = domNode.getAttribute(attribute);
-//       }
-//       return formats;
-//     }, {});
-//   }
+  sanitize_style(style) {
+    let style_arr = style.split(';');
+    let allow_style = '';
+    style_arr.forEach((v, i) => {
+      if (WHITE_STYLE.indexOf(v.trim().split(':')[0]) !== -1) {
+        allow_style += v + ';';
+      }
+    });
+    return allow_style;
+  }
+}
 
-//   format(name, value) {
-//     if ((this.constructor as any).ATTRIBUTES.indexOf(name) > -1) {
-//       if (value) {
-//         this.domNode.setAttribute(name, value);
-//       } else {
-//         this.domNode.removeAttribute(name);
-//       }
-//     } else {
-//       super.format(name, value);
-//     }
-//   }
-// }
-// Quill.register(ImageBlot);
-
-import { ArticleService } from '@services/article.service';
-import { DialogService } from '@services/dialog.service';
-import { AngularFireUploadTask } from '@angular/fire/storage';
+Quill.register(Image);
 
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
@@ -85,16 +96,17 @@ export class BodyComponent {
   quillModules = {};
   quillEditor = null;
   quillToolbar = null;
-  bodyImages: File[] = [];
+  bodyImageFiles: BehaviorSubject<KeyMapI<File>> = new BehaviorSubject({});
 
   constructor(
-    @Inject(PLATFORM_ID) platformId: string,
     private articleSvc: ArticleService,
-    private dialogSvc: DialogService,
+    @Inject(PLATFORM_ID) platformId: string,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     this.quillModules = { imageResize: {} };
+
+    this.bodyImageFiles.subscribe(files => console.log(files));
   }
 
   onEditorCreated = editor => {
@@ -137,9 +149,15 @@ export class BodyComponent {
           });
           // paraphrased from Quill => uploader.js => DEFAULTS.handler
           const processImages = () => {
+            const id = this.articleSvc.createId();
+
             const promises: Promise<string | ArrayBuffer>[] = uploads.map(
               file =>
                 new Promise(resolve => {
+                  this.bodyImageFiles.next({
+                    ...this.bodyImageFiles.value,
+                    [id]: file,
+                  });
                   const reader = new FileReader();
                   reader.onload = e => resolve(e.target.result);
                   reader.readAsDataURL(file);
@@ -148,13 +166,13 @@ export class BodyComponent {
             Promise.all(promises).then(images => {
               const update = images.reduce(
                 (delta, image) =>
-                  delta.insert(
-                    {
-                      image: 'https://i.imgur.com/o04KozN.png',
-                    },
-                    { alt: 'TtStingsdDSD' },
-                  ),
-                // delta.insert({ image }, { imageId: 'TtStingsdDSD' }),
+                  // delta.insert(
+                  //   {
+                  //     image: 'https://i.imgur.com/o04KozN.png',
+                  //   },
+                  //   { id: this.articleSvc.createId() },
+                  // ),
+                  delta.insert({ image }, { id }),
                 new Delta().retain(range.index).delete(range.length),
               );
               console.log('update', update);

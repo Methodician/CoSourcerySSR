@@ -7,14 +7,15 @@ import {
   Inject,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Subject } from 'rxjs';
 
 import Quill from 'quill';
 import Emitter from 'quill/core/emitter';
 import Delta from 'quill-delta';
 import ImageResize from 'quill-image-resize';
+
 import { ArticleService } from '@services/article.service';
-import { BehaviorSubject } from 'rxjs';
-import { KeyMapI } from '@shared_models/index';
+
 Quill.register('modules/imageResize', ImageResize);
 
 // ToDo: This stuff goes in another file!
@@ -96,7 +97,7 @@ export class BodyComponent {
   quillModules = {};
   quillEditor = null;
   quillToolbar = null;
-  bodyImageFiles: BehaviorSubject<KeyMapI<File>> = new BehaviorSubject({});
+  pendingBodyImagUploads$: Subject<{ id: string; file: File }> = new Subject();
 
   constructor(
     private articleSvc: ArticleService,
@@ -106,7 +107,7 @@ export class BodyComponent {
 
     this.quillModules = { imageResize: {} };
 
-    this.bodyImageFiles.subscribe(files => console.log(files));
+    this.watchBodyImageFiles();
   }
 
   onEditorCreated = editor => {
@@ -114,6 +115,21 @@ export class BodyComponent {
     this.quillEditor = editor;
     this.quillToolbar = editor.getModule('toolbar');
     this.quillToolbar.addHandler('image', this.onImageButtonClicked);
+  };
+
+  watchBodyImageFiles = () => {
+    this.pendingBodyImagUploads$.subscribe(pendingUpload => {
+      setTimeout(() => {
+        console.log('UPLOAD PENDING');
+        const { id, file } = pendingUpload;
+        const relevantElement = document.getElementById(id);
+        const newElement = document.createElement('img');
+        newElement.setAttribute('src', 'https://i.imgur.com/o04KozN.png');
+        newElement.setAttribute('id', id);
+        relevantElement.replaceWith(newElement);
+        console.log({ relevantElement, file });
+      }, 4000);
+    });
   };
 
   onImageButtonClicked = async () => {
@@ -154,9 +170,9 @@ export class BodyComponent {
             const promises: Promise<string | ArrayBuffer>[] = uploads.map(
               file =>
                 new Promise(resolve => {
-                  this.bodyImageFiles.next({
-                    ...this.bodyImageFiles.value,
-                    [id]: file,
+                  this.pendingBodyImagUploads$.next({
+                    id,
+                    file,
                   });
                   const reader = new FileReader();
                   reader.onload = e => resolve(e.target.result);
@@ -165,14 +181,7 @@ export class BodyComponent {
             );
             Promise.all(promises).then(images => {
               const update = images.reduce(
-                (delta, image) =>
-                  // delta.insert(
-                  //   {
-                  //     image: 'https://i.imgur.com/o04KozN.png',
-                  //   },
-                  //   { id: this.articleSvc.createId() },
-                  // ),
-                  delta.insert({ image }, { id }),
+                (delta, image) => delta.insert({ image }, { id }),
                 new Delta().retain(range.index).delete(range.length),
               );
               console.log('update', update);

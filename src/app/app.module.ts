@@ -23,7 +23,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 // Other
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
@@ -155,6 +155,7 @@ import { CustomEditorTestComponent } from './components/article/custom-editor-te
     MatInputModule,
     MatChipsModule,
     MatProgressBarModule,
+    MatTooltipModule,
     CKEditorModule,
     QuillModule.forRoot(),
   ],

@@ -114,13 +114,11 @@ export class BodyComponent {
 
   ngOnDestroy() {
     for (let task of this.bodyImageUploadTasks) {
-      console.log(task);
       task.cancel();
     }
   }
 
   onEditorCreated = editor => {
-    // console.log('EDITOR CREATED', editor);
     this.quillEditor = editor;
     this.quillToolbar = editor.getModule('toolbar');
     this.quillToolbar.addHandler('image', this.onImageButtonClicked);
@@ -166,7 +164,6 @@ export class BodyComponent {
     // NOTE: much of the below comes paraphrased from Quill internals and uses
     // other Quill internals and frankly goes a bit over my head.
     // For further reference look into Quill repo base.js => search "image" and uploader.js
-    console.log('IMAGE CLICKED');
     let fileInput: HTMLInputElement = this.quillToolbar.container.querySelector(
       'input.ql-image[type=file]',
     );
@@ -214,7 +211,6 @@ export class BodyComponent {
                 (delta, image) => delta.insert({ image }, { id }),
                 new Delta().retain(range.index).delete(range.length),
               );
-              console.log('update', update);
               this.quillEditor.updateContents(update, Emitter.sources.USER);
               this.quillEditor.setSelection(
                 range.index + range.length,

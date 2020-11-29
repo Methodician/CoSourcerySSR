@@ -319,7 +319,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   changeBody = $e => {
-    console.log($e);
     this.articleEditForm.markAsDirty();
     this.articleEditForm.patchValue({ body: $e.html });
   };

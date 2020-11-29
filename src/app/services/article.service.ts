@@ -21,6 +21,8 @@ import { isPlatformServer } from '@angular/common';
   providedIn: 'root',
 })
 export class ArticleService {
+  pendingImageUploadCount = 0;
+
   constructor(
     private afs: AngularFirestore,
     private afd: AngularFireDatabase,

@@ -15,6 +15,7 @@ import Delta from 'quill-delta';
 import ImageResize from 'quill-image-resize';
 
 import { ArticleService } from '@services/article.service';
+import { AngularFireUploadTask } from '@angular/fire/storage';
 
 Quill.register('modules/imageResize', ImageResize);
 
@@ -97,8 +98,8 @@ export class BodyComponent {
   quillModules = {};
   quillEditor = null;
   quillToolbar = null;
-  pendingBodyImagUploads$: Subject<{ id: string; file: File }> = new Subject();
-  isUploadPending = false;
+  uploadBodyImage$: Subject<{ id: string; file: File }> = new Subject();
+  bodyImageUploadTasks: AngularFireUploadTask[] = [];
 
   constructor(
     private articleSvc: ArticleService,
@@ -111,34 +112,52 @@ export class BodyComponent {
     this.watchBodyImageFiles();
   }
 
+  ngOnDestroy() {
+    for (let task of this.bodyImageUploadTasks) {
+      console.log(task);
+      task.cancel();
+    }
+  }
+
   onEditorCreated = editor => {
-    console.log('EDITOR CREATED', editor);
+    // console.log('EDITOR CREATED', editor);
     this.quillEditor = editor;
     this.quillToolbar = editor.getModule('toolbar');
     this.quillToolbar.addHandler('image', this.onImageButtonClicked);
   };
 
   watchBodyImageFiles = () => {
-    this.pendingBodyImagUploads$.subscribe(pendingUpload => {
-      console.log('UPLOAD PENDING');
-      // Need to ensure articles can't be saved with pending task in a UX friendly way.
-      this.isUploadPending = true;
+    this.uploadBodyImage$.subscribe(pendingUpload => {
+      this.articleSvc.pendingImageUploadCount++;
       const { id, file } = pendingUpload;
       const { task, storageRef } = this.articleSvc.uploadBodyImage(
         this.articleId,
         id,
         file,
       );
+      this.bodyImageUploadTasks.push(task);
       task.then(() => {
-        storageRef.getDownloadURL().subscribe(imageUrl => {
-          const relevantElement = document.getElementById(id);
-          const newElement = document.createElement('img');
-          newElement.setAttribute('src', imageUrl);
-          newElement.setAttribute('id', id);
-          relevantElement.replaceWith(newElement);
-          // This will not work if multiple uploads are pending.
-          this.isUploadPending = false;
-        });
+        const relevantElement = document.getElementById(id);
+        const newElement = document.createElement('img');
+        storageRef.getDownloadURL().subscribe(
+          imageUrl => {
+            newElement.setAttribute('src', imageUrl);
+            newElement.setAttribute('id', id);
+            relevantElement.replaceWith(newElement);
+            this.articleSvc.pendingImageUploadCount--;
+          },
+          err => {
+            newElement.setAttribute(
+              'src',
+              'assets/images/noun_upload_error.svg',
+            );
+            newElement.setAttribute('id', id);
+            relevantElement.replaceWith(newElement);
+            this.articleSvc.pendingImageUploadCount--;
+            // ToDo log some of this stuff using an error logger or Firebase...
+            console.error(err);
+          },
+        );
       });
     });
   };
@@ -181,7 +200,7 @@ export class BodyComponent {
             const promises: Promise<string | ArrayBuffer>[] = uploads.map(
               file =>
                 new Promise(resolve => {
-                  this.pendingBodyImagUploads$.next({
+                  this.uploadBodyImage$.next({
                     id,
                     file,
                   });

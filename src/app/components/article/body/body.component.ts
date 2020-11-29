@@ -98,6 +98,7 @@ export class BodyComponent {
   quillEditor = null;
   quillToolbar = null;
   pendingBodyImagUploads$: Subject<{ id: string; file: File }> = new Subject();
+  isUploadPending = false;
 
   constructor(
     private articleSvc: ArticleService,
@@ -119,16 +120,26 @@ export class BodyComponent {
 
   watchBodyImageFiles = () => {
     this.pendingBodyImagUploads$.subscribe(pendingUpload => {
-      setTimeout(() => {
-        console.log('UPLOAD PENDING');
-        const { id, file } = pendingUpload;
-        const relevantElement = document.getElementById(id);
-        const newElement = document.createElement('img');
-        newElement.setAttribute('src', 'https://i.imgur.com/o04KozN.png');
-        newElement.setAttribute('id', id);
-        relevantElement.replaceWith(newElement);
-        console.log({ relevantElement, file });
-      }, 4000);
+      console.log('UPLOAD PENDING');
+      // Need to ensure articles can't be saved with pending task in a UX friendly way.
+      this.isUploadPending = true;
+      const { id, file } = pendingUpload;
+      const { task, storageRef } = this.articleSvc.uploadBodyImage(
+        this.articleId,
+        id,
+        file,
+      );
+      task.then(() => {
+        storageRef.getDownloadURL().subscribe(imageUrl => {
+          const relevantElement = document.getElementById(id);
+          const newElement = document.createElement('img');
+          newElement.setAttribute('src', imageUrl);
+          newElement.setAttribute('id', id);
+          relevantElement.replaceWith(newElement);
+          // This will not work if multiple uploads are pending.
+          this.isUploadPending = false;
+        });
+      });
     });
   };
 

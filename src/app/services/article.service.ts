@@ -411,11 +411,11 @@ export class ArticleService {
     }
   };
 
-  uploadBodyImage = (articleId: string, image: File) => {
+  uploadBodyImage = (articleId: string, imageId: string, image: File) => {
     try {
-      if (!articleId) {
+      if (!articleId || !imageId) {
         throw new Error(
-          'Body images must be associated with an article id but none was passed in',
+          'Body images must be associated with an article id and an imageId one or more were not provided.',
         );
       }
 
@@ -429,9 +429,8 @@ export class ArticleService {
       }
 
       const fileExtension = name.slice(((name.lastIndexOf('.') - 1) >>> 0) + 2);
-      const newImageId = this.createId();
       const storageRef = this.storage.ref(
-        `articleBodyImages/${articleId}/${newImageId}.${fileExtension}`,
+        `articleBodyImages/${articleId}/${imageId}.${fileExtension}`,
       );
       const task = storageRef.put(image);
       return { task, storageRef };

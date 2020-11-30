@@ -27,3 +27,8 @@ section {
     visibility: visible;
   }
 }
+
+// may cause issues - needed so edit button doesn't push editor over
+::ng-deep .ql-editor {
+  overflow-y: visible;
+}

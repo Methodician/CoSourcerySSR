@@ -80,7 +80,6 @@ import { VersionNavigationComponent } from './components/article-history/version
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
-import { CustomEditorTestComponent } from './components/article/custom-editor-test/custom-editor-test.component';
 // end components
 
 @NgModule({
@@ -128,7 +127,6 @@ import { CustomEditorTestComponent } from './components/article/custom-editor-te
     PreviewCardStatsComponent,
     TimeElapsedPipe,
     PreviewGridComponent,
-    CustomEditorTestComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

@@ -25,7 +25,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 // Other
-import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { QuillModule } from 'ngx-quill';
 // end modules
@@ -52,8 +51,6 @@ import { StatsComponent } from '@components/article/stats/stats.component';
 import { ContributorsComponent } from '@components/article/contributors/contributors.component';
 import { ProfileCardComponent } from '@components/shared/profile-card/profile-card.component';
 import { BodyComponent } from '@components/article/body/body.component';
-import { BodyDisplayComponent } from '@components/article/body/body-display/body-display.component';
-import { BodyEditComponent } from '@components/article/body/body-edit/body-edit.component';
 import { CommentsComponent } from '@components/article/comments/comments.component';
 import { CommentComponent } from '@components/article/comments/comment/comment.component';
 import { CommentListComponent } from '@components/article/comments/comment-list/comment-list.component';
@@ -102,8 +99,6 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     ContributorsComponent,
     ProfileCardComponent,
     BodyComponent,
-    BodyDisplayComponent,
-    BodyEditComponent,
     CommentsComponent,
     CommentComponent,
     CommentListComponent,
@@ -154,7 +149,6 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     MatChipsModule,
     MatProgressBarModule,
     MatTooltipModule,
-    CKEditorModule,
     QuillModule.forRoot(),
   ],
   // providers: [],

@@ -17,7 +17,8 @@
     "lastmod",
     "rtdb",
     "slugify",
-    "upvote"
+    "upvote",
+    "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż"
   ],
   "html.format.wrapAttributes": "force-expand-multiline",
   "editor.defaultFormatter": "esbenp.prettier-vscode",

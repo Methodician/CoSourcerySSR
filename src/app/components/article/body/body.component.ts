@@ -44,6 +44,7 @@ export class BodyComponent {
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
   @Output() onBodyChange = new EventEmitter<string>();
+  @Output() onBodyImageAdded = new EventEmitter<string>();
 
   isBrowser: boolean;
 
@@ -104,6 +105,7 @@ export class BodyComponent {
             newElement.setAttribute('id', id);
             relevantElement.replaceWith(newElement);
             this.articleSvc.pendingImageUploadCount--;
+            this.onBodyImageAdded.emit(id);
           },
           err => {
             newElement.setAttribute(

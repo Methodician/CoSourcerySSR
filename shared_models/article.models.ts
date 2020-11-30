@@ -25,4 +25,5 @@ export interface ArticleDetailI extends ArticlePreviewI {
   authorImageUrl: string;
   lastEditorId: string;
   tags?: string[];
+  bodyImageIds: string[];
 }

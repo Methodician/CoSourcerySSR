@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 
-// AnguilarFire Stuff
+// AngularFire Stuff
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -34,6 +34,38 @@ export class ArticleService {
 
   // TEMP SEEDING CODE
   // (simply call this in constructor or elsewhere)
+
+  scanAllArticlesAndAddBodyImageIds = async () => {
+    const querySnap = await this.afs
+      .collection('articleData/articles/articles')
+      .get()
+      .toPromise();
+    querySnap.docs.forEach(async doc => {
+      const article = doc.data() as ArticleDetailI;
+      const articleId = doc.id;
+      const { bodyImageIds, title } = article;
+      console.log({ bodyImageIds, title, articleId });
+      if (!article.bodyImageIds) {
+        try {
+          console.log('adding empty array');
+          const ref = this.articleDetailRef(articleId);
+          console.log(ref);
+          await ref.update({ bodyImageIds: [] });
+          console.log('added it');
+
+          ref
+            .get()
+            .toPromise()
+            .then(snap => {
+              const data = snap.data();
+              console.log(data);
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
 
   scanAllArticlesAndRelocateImages = async () => {
     const relocateArticleImages = async (articleId: string) => {

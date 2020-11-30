@@ -81,6 +81,7 @@
       (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
       (onClickOut)="clickoutCtrl(ECtrlNames.body)"
       (onBodyChange)="changeBody($event)"
+      (onBodyImageAdded)="addBodyImage($event)"
     ></cos-body>
   </section>
 
@@ -106,7 +107,11 @@
       <button
         class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
         type="button"
-        [disabled]="!articleEditForm.valid || !isUserEditingArticle()"
+        [disabled]="
+          !articleEditForm.valid ||
+          !isUserEditingArticle() ||
+          isBodyImageUploadPending()
+        "
         (click)="saveChanges()"
       >
         <mat-icon>done</mat-icon>
@@ -136,7 +141,7 @@
         <div class="flag flag-pole flag-pole_left">
           <div class="flag flag-tooltip">
             <span class="flag-tooltip_changes">Unsaved</span>
-            <span class="flag-tooltip_save">Save Article</span>
+            <span class="flag-tooltip_save">{{ saveTooltipText() }}</span>
             <span class="flag-tooltip_restore">Undo Changes</span>
           </div>
         </div>

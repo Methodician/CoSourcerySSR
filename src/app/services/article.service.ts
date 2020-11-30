@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 
-// AnguilarFire Stuff
+// AngularFire Stuff
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
@@ -21,6 +21,8 @@ import { isPlatformServer } from '@angular/common';
   providedIn: 'root',
 })
 export class ArticleService {
+  pendingImageUploadCount = 0;
+
   constructor(
     private afs: AngularFirestore,
     private afd: AngularFireDatabase,
@@ -32,6 +34,38 @@ export class ArticleService {
 
   // TEMP SEEDING CODE
   // (simply call this in constructor or elsewhere)
+
+  scanAllArticlesAndAddBodyImageIds = async () => {
+    const querySnap = await this.afs
+      .collection('articleData/articles/articles')
+      .get()
+      .toPromise();
+    querySnap.docs.forEach(async doc => {
+      const article = doc.data() as ArticleDetailI;
+      const articleId = doc.id;
+      const { bodyImageIds, title } = article;
+      console.log({ bodyImageIds, title, articleId });
+      if (!article.bodyImageIds) {
+        try {
+          console.log('adding empty array');
+          const ref = this.articleDetailRef(articleId);
+          console.log(ref);
+          await ref.update({ bodyImageIds: [] });
+          console.log('added it');
+
+          ref
+            .get()
+            .toPromise()
+            .then(snap => {
+              const data = snap.data();
+              console.log(data);
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
 
   scanAllArticlesAndRelocateImages = async () => {
     const relocateArticleImages = async (articleId: string) => {
@@ -406,6 +440,34 @@ export class ArticleService {
       );
       const task = storageRef.put(file);
       return { task, storageRef, newImageId };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  uploadBodyImage = (articleId: string, imageId: string, image: File) => {
+    try {
+      if (!articleId || !imageId) {
+        throw new Error(
+          'Body images must be associated with an article id and an imageId one or more were not provided.',
+        );
+      }
+
+      const { name, type } = image;
+      const isImage = type.startsWith('image/');
+
+      if (!isImage) {
+        throw new Error(
+          'Only images can be uploaded for body images. This seems to be another file type.',
+        );
+      }
+
+      const fileExtension = name.slice(((name.lastIndexOf('.') - 1) >>> 0) + 2);
+      const storageRef = this.storage.ref(
+        `articleBodyImages/${articleId}/${imageId}.${fileExtension}`,
+      );
+      const task = storageRef.put(image);
+      return { task, storageRef };
     } catch (error) {
       console.error(error);
     }

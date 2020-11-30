@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
@@ -38,6 +38,28 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleState',
 );
 
+const BASE_ARTICLE = {
+  articleId: '',
+  authorId: '',
+  title: ['', [Validators.required, Validators.maxLength(100)]],
+  introduction: ['', [Validators.required, Validators.maxLength(300)]],
+  body: 'This article is empty.',
+  imageUrl: '',
+  imageAlt: ['', Validators.maxLength(100)],
+  authorImageUrl: '',
+  lastUpdated: null,
+  timestamp: 0,
+  lastEditorId: '',
+  version: 1,
+  commentCount: 0,
+  viewCount: 0,
+  slug: '',
+  tags: [[], Validators.maxLength(25)],
+  isFeatured: false,
+  editors: {},
+  bodyImageIds: [],
+};
+
 @Component({
   selector: 'cos-article',
   templateUrl: './article.component.html',
@@ -62,26 +84,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
 
-  articleEditForm: FormGroup = this.fb.group({
-    articleId: '',
-    authorId: '',
-    title: ['', [Validators.required, Validators.maxLength(100)]],
-    introduction: ['', [Validators.required, Validators.maxLength(300)]],
-    body: 'This article is empty.',
-    imageUrl: '',
-    imageAlt: ['', Validators.maxLength(100)],
-    authorImageUrl: '',
-    lastUpdated: null,
-    timestamp: 0,
-    lastEditorId: '',
-    version: 1,
-    commentCount: 0,
-    viewCount: 0,
-    slug: '',
-    tags: [[], Validators.maxLength(25)],
-    isFeatured: false,
-    editors: {},
-  });
+  articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE);
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -109,12 +112,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeArticleIdAndState();
     this.watchFormChanges();
-    // this.articleSvc
-    //   .scanAllArticlesAndRelocateImages()
-    //   .then(promiseResults =>
-    //     console.log('Relocated all the images!', promiseResults),
-    //   );
-    // this.articleSvc.addPointlessDocuments().then(console.log);
   }
 
   ngOnDestroy() {
@@ -206,6 +203,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       version: 0,
       commentCount: 0,
       tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
+      bodyImageIds: [],
     };
     const article$ = this.articleSvc
       .articleDetailRef(id)
@@ -318,9 +316,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = file;
   };
 
-  changeBody = body => {
+  changeBody = $e => {
     this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ body });
+    this.articleEditForm.patchValue({ body: $e.html });
+  };
+
+  addBodyImage = (imageId: string) => {
+    // Track images that were ever successfully uploaded on most recent
+    // version in case we want to do some analytics to remove images
+    // that were never added to any versions
+    const bodyImageIds = [...this.articleState.bodyImageIds];
+    bodyImageIds.push(imageId);
+    this.articleEditForm.patchValue({ bodyImageIds });
   };
 
   saveChanges = async () => {
@@ -507,7 +514,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     }
     // For now doesn't allow multiple editors. Will change later...
     if (!this.isUserEditingArticle() && this.isArticleBeingEdited()) {
-      // Editors is an array so that we can later allow multilple collaborative editors.
+      // Editors is an array so that we can later allow multiple collaborative editors.
       // For now we'll just check the first (only) element in the array
       const uid = Object.keys(this.currentArticleEditors)[0];
       this.userSvc
@@ -556,6 +563,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
+
+  isBodyImageUploadPending = () => this.articleSvc.pendingImageUploadCount > 0;
+
+  saveTooltipText = () => {
+    if (!this.isUserEditingArticle())
+      return 'No editors. This should not display. Let us know if it continues.';
+    if (!this.articleEditForm.valid) return 'Fix errors to save';
+    if (this.isBodyImageUploadPending()) return 'Images uploading, please wait';
+    return 'Save Article';
+  };
 
   // ===OTHER
   tempTimestamp = () => this.fbSvc.fsTimestampNow();

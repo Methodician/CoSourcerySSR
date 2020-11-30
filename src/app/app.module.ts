@@ -23,10 +23,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 // Other
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
+import { QuillModule } from 'ngx-quill';
 // end modules
 
 // Pipes
@@ -152,7 +153,9 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     MatInputModule,
     MatChipsModule,
     MatProgressBarModule,
+    MatTooltipModule,
     CKEditorModule,
+    QuillModule.forRoot(),
   ],
   // providers: [],
   providers: [

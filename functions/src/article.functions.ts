@@ -89,6 +89,8 @@ export const onWriteArticleDetail = functions.firestore
           tags,
           imageUrl,
           imageAlt,
+          isFeatured,
+          isFlagged,
           slug,
         } = articleObject;
         const previewImageUrl = imageUrl && imageUrl.length > 0 ? 'unset' : '';
@@ -108,7 +110,8 @@ export const onWriteArticleDetail = functions.firestore
           commentCount,
           viewCount,
           tags,
-          isFlagged: false,
+          isFlagged: !!isFlagged,
+          isFeatured: !!isFeatured,
           imageUrl: previewImageUrl,
           slug,
         };

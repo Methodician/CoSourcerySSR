@@ -32,6 +32,12 @@ export function app() {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
+  server.get('/sitemap.xml', async (req, res) => {
+    const sitemap = await generateSiteMap();
+    res.header('Content-Type', 'text/xml');
+    res.send(sitemap);
+  });
+
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser

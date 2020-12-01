@@ -27,3 +27,10 @@ export interface ArticleDetailI extends ArticlePreviewI {
   tags?: string[];
   bodyImageIds: string[];
 }
+
+export const statsIconMap = {
+  comment: 'assets/icons/comment.svg',
+  edit: 'assets/icons/cycle.svg',
+  tags: 'assets/icons/tag.svg',
+  bookmark: 'assets/icons/bookmark.svg',
+};

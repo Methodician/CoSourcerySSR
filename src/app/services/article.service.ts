@@ -48,18 +48,15 @@ export class ArticleService {
       if (!article.bodyImageIds) {
         try {
           console.log('adding empty array');
-          const ref = this.articleDetailRef(articleId);
+          const ref = doc.ref;
           console.log(ref);
           await ref.update({ bodyImageIds: [] });
           console.log('added it');
 
-          ref
-            .get()
-            .toPromise()
-            .then(snap => {
-              const data = snap.data();
-              console.log(data);
-            });
+          ref.get().then(snap => {
+            const data = snap.data();
+            console.log(data);
+          });
         } catch (error) {
           console.error(error);
         }
@@ -107,7 +104,7 @@ export class ArticleService {
 
       const relocateCoverImage = (articleId: string, imageId: string) => {
         const oldPath = `articleCoverImages/${articleId}`;
-        const newPath = `articleCoverThumbnails/${articleId}/${imageId}`;
+        const newPath = `articleCoverImages/${articleId}/${imageId}`;
         return relocateImage(oldPath, newPath);
       };
 

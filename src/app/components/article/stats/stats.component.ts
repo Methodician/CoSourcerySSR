@@ -8,6 +8,7 @@ import { switchMap, map, take } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
 import { AuthService } from '@services/auth.service';
+import { statsIconMap } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-stats',
@@ -34,14 +35,8 @@ export class StatsComponent implements OnInit {
     const urlBase = isPlatformServer(platformId)
       ? `http://localhost:4200/`
       : '';
-    const iconMap = {
-      comment: 'assets/icons/comment.svg',
-      edit: 'assets/icons/edit.svg',
-      loyalty: 'assets/icons/loyalty.svg',
-      bookmark: 'assets/icons/bookmark.svg',
-    };
 
-    Object.entries(iconMap).map(([name, path]) => {
+    Object.entries(statsIconMap).map(([name, path]) => {
       iconRegistry.addSvgIcon(
         name,
         sanitizer.bypassSecurityTrustResourceUrl(`${urlBase}${path}`),

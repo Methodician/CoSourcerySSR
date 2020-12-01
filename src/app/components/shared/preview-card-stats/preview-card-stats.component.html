@@ -4,7 +4,7 @@
       <mat-icon svgIcon="comment"></mat-icon>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        style="left: 0;"
+        style="left: 0"
       >
         {{ articleData.commentCount }} Comment(s)
       </span>
@@ -21,7 +21,7 @@
   <div class="set-wrapper"></div>
   <div class="set-wrapper">
     <div class="stat-item">
-      <mat-icon svgIcon="loyalty"></mat-icon>
+      <mat-icon svgIcon="tags"></mat-icon>
       <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
         >{{ articleData.tags.length }} Tag(s)</span
       >
@@ -34,7 +34,7 @@
       ></mat-icon>
       <span
         class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
-        style="right: 0;"
+        style="right: 0"
       >
         {{ (isArticleBookmarked$ | async) ? 'Remove Bookmark' : 'Bookmark' }}
       </span>

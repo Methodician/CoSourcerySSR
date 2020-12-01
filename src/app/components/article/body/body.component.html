@@ -20,9 +20,14 @@
   <!-- <article *ngIf="!isBrowser" [innerHTML]="body"></article> -->
   <!-- <quill-editor
   *ngIf="isBrowser && articleId" -->
+  <quill-view-html
+    *ngIf="!isBrowser"
+    [content]="body"
+    theme="bubble"
+  ></quill-view-html>
 
   <quill-editor
-    *ngIf="!!quillModules"
+    *ngIf="!!quillModules && isBrowser"
     theme="bubble"
     [(ngModel)]="body"
     [modules]="quillModules"

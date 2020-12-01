@@ -29,7 +29,7 @@
       "@pipes/*": ["src/app/shared/pipes/*", "app/shared/pipes/*"],
       "@helpers/*": ["src/app/shared/helpers/*", "app/shared/helpers/*"],
       "@env/*": ["src/environments/*", "../environments/*"],
-      "@shared_models/*": ["shared_models/*"]
+      "@shared_models/*": ["shared_models/*", "../shared_models/*"]
     }
   }
 }

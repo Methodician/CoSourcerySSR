@@ -14,18 +14,6 @@ import { AngularFireUploadTask } from '@angular/fire/storage';
 // INTERNAL IMPORTS
 import { ArticleService } from '@services/article.service';
 
-// QUILL LIBS
-import Quill from 'quill';
-import Emitter from 'quill/core/emitter';
-import Delta from 'quill-delta';
-import ImageResize from 'quill-image-resize';
-
-Quill.register('modules/imageResize', ImageResize);
-
-// QUILL INTERNALS
-import Image from './quill-image';
-Quill.register(Image);
-
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
 // Shared cursor display: https://github.com/reedsy/quill-cursors
@@ -47,8 +35,11 @@ export class BodyComponent {
   @Output() onBodyImageAdded = new EventEmitter<string>();
 
   isBrowser: boolean;
+  // Quill browser-only stuff
+  quillDelta: any;
+  quillEmitter: any;
 
-  quillModules = {};
+  quillModules = null;
   quillEditor = null;
   quillToolbar = null;
   uploadBodyImage$: Subject<{ id: string; file: File }> = new Subject();
@@ -59,8 +50,24 @@ export class BodyComponent {
     @Inject(PLATFORM_ID) platformId: string,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-
-    this.quillModules = { imageResize: {} };
+    if (this.isBrowser) {
+      import('quill/core/emitter').then(Emitter => {
+        this.quillEmitter = Emitter.default;
+      });
+      import('quill-delta').then(Delta => {
+        this.quillDelta = Delta.default;
+      });
+      Promise.all([
+        import('quill-image-resize'),
+        import('quill'),
+        import('./quill-image'),
+      ]).then(([ImageResize, Quill, Image]) => {
+        console.log({ Quill, ImageResize, Image });
+        Quill.default.register(Image.default);
+        Quill.default.register('modules/imageResize', ImageResize.default);
+        this.quillModules = { imageResize: {} };
+      });
+    }
 
     this.watchBodyImageFiles();
   }
@@ -128,6 +135,10 @@ export class BodyComponent {
     // NOTE: much of the below comes paraphrased from Quill internals and uses
     // other Quill internals and frankly goes a bit over my head.
     // For further reference look into Quill repo base.js => search "image" and uploader.js
+    if (!this.isBrowser) {
+      alert('Please wait for the application to load first');
+      return;
+    }
     let fileInput: HTMLInputElement = this.quillToolbar.container.querySelector(
       'input.ql-image[type=file]',
     );
@@ -157,7 +168,6 @@ export class BodyComponent {
           // paraphrased from Quill => uploader.js => DEFAULTS.handler
           const processImages = () => {
             const id = this.articleSvc.createId();
-
             const promises: Promise<string | ArrayBuffer>[] = uploads.map(
               file =>
                 new Promise(resolve => {
@@ -173,12 +183,15 @@ export class BodyComponent {
             Promise.all(promises).then(images => {
               const update = images.reduce(
                 (delta, image) => delta.insert({ image }, { id }),
-                new Delta().retain(range.index).delete(range.length),
+                new this.quillDelta().retain(range.index).delete(range.length),
               );
-              this.quillEditor.updateContents(update, Emitter.sources.USER);
+              this.quillEditor.updateContents(
+                update,
+                this.quillEmitter.sources.USER,
+              );
               this.quillEditor.setSelection(
                 range.index + range.length,
-                Emitter.sources.SILENT,
+                this.quillEmitter.sources.SILENT,
               );
             });
           };

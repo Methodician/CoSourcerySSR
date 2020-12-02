@@ -318,8 +318,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   changeBody = $e => {
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ body: $e.html });
+    if ($e.source === 'user') {
+      this.articleEditForm.markAsDirty();
+      this.articleEditForm.patchValue({ body: $e.html });
+    }
   };
 
   addBodyImage = (imageId: string) => {

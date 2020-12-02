@@ -1,6 +1,22 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../sass/vars.scss';
 
+main {
+  .article-form {
+    width: 100%;
+    max-width: 768px;
+    position: relative;
+    margin: 24px auto;
+    padding: 20px 20px 40px;
+    box-shadow: 0 2px 5px $light-gray-50;
+
+    // ::ng-deep .mat-form-field-infix {
+    //   padding: 0 0 2px;
+    //   border: none;
+    // }
+  }
+}
+
 label,
 input,
 textarea,
@@ -25,19 +41,19 @@ label {
   color: $accent-color-1-dark;
 }
 
-.article-form {
-  width: 100%;
-  max-width: 768px;
-  position: relative;
-  margin: 24px auto;
-  padding: 20px 20px 40px;
-  box-shadow: 0 2px 5px $light-gray-50;
+// .article-form {
+//   width: 100%;
+//   max-width: 768px;
+//   position: relative;
+//   margin: 24px auto;
+//   padding: 20px 20px 40px;
+//   box-shadow: 0 2px 5px $light-gray-50;
 
-  ::ng-deep .mat-form-field-infix {
-    padding: 0 0 2px;
-    border: none;
-  }
-}
+//   ::ng-deep .mat-form-field-infix {
+//     padding: 0 0 2px;
+//     border: none;
+//   }
+// }
 
 .article-cover-image {
   &__display {

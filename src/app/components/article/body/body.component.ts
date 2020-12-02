@@ -65,7 +65,10 @@ export class BodyComponent {
         console.log({ Quill, ImageResize, Image });
         Quill.default.register(Image.default);
         Quill.default.register('modules/imageResize', ImageResize.default);
-        this.quillModules = { imageResize: {} };
+        this.quillModules = {
+          imageResize: {},
+          clipboard: { matchVisual: false },
+        };
       });
     }
 

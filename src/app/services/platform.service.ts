@@ -6,13 +6,12 @@ import { REQUEST } from '@nguniversal/express-engine/tokens';
   providedIn: 'root',
 })
 export class PlatformService {
-  // TODO: use this service instead of implementing platform checks everywhere
-  isServer;
-  isBrowser;
+  isServer: boolean;
+  isBrowser: boolean;
 
-  host;
-  protocol;
-  baseUrl;
+  host: string;
+  protocol: string;
+  baseUrl: string;
 
   constructor(
     @Optional() @Inject(REQUEST) request: any,

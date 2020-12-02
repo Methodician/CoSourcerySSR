@@ -1,4 +1,4 @@
-<section
+<main
   class="article-body__interior"
   [ngClass]="{ border: isActive, 'is-editable': isEditable }"
   matTooltip="Pro tip: click the pencil-icon button to the right then double-click or select something for options."
@@ -32,7 +32,6 @@
     [(ngModel)]="body"
     [modules]="quillModules"
     (onEditorCreated)="onEditorCreated($event)"
-    (onContentChanged)="changeBody($event)"
-    (onSelectionChanged)="testEvent($event)"
+    (onContentChanged)="changeBody($event); testEvent($event)"
   ></quill-editor>
-</section>
+</main>

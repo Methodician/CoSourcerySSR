@@ -44,18 +44,18 @@ export class ArticleService {
       const article = doc.data() as ArticleDetailI;
       const articleId = doc.id;
       const { bodyImageIds, title } = article;
-      console.log({ bodyImageIds, title, articleId });
+      console.info({ bodyImageIds, title, articleId });
       if (!article.bodyImageIds) {
         try {
-          console.log('adding empty array');
+          console.info('adding empty array');
           const ref = doc.ref;
-          console.log(ref);
+          console.info(ref);
           await ref.update({ bodyImageIds: [] });
-          console.log('added it');
+          console.info('added it');
 
           ref.get().then(snap => {
             const data = snap.data();
-            console.log(data);
+            console.info(data);
           });
         } catch (error) {
           console.error(error);
@@ -88,7 +88,7 @@ export class ArticleService {
           const { task } = uploadImage(newPath, blob);
           task.then(taskSnap => {
             if (taskSnap.state === 'success') {
-              console.log(`the image upload succeeded for ${articleId}`);
+              console.info(`the image upload succeeded for ${articleId}`);
             } else {
               console.warn(
                 `the image upload failed for ${articleId} - here's the snapshot:`,
@@ -155,7 +155,7 @@ export class ArticleService {
       )
       .subscribe(all => {
         for (let item of all) {
-          console.log(item.id, item.slug);
+          console.info(item.id, item.slug);
           const slugRef = this.afd.object(`articleData/slugs/${item.slug}`);
           slugRef.set(item.id);
         }
@@ -164,25 +164,25 @@ export class ArticleService {
 
   // Work-around for Firestore emulator suite bug:
   addPointlessDocuments = async () => {
-    console.log('adding pointless stuff');
+    console.info('adding pointless stuff');
     const firstPoint = await this.afs
       .collection('articleData')
       .doc('articles')
       .set({ pointless: 'thing' }, { merge: true });
-    console.log('should have set articles', firstPoint);
+    console.info('should have set articles', firstPoint);
 
     const secondPoint = await this.afs
       .collection('fileUploads')
       .doc('articleUploads')
       .set({ pointless: 'thing' });
 
-    console.log('should have set articleUploads', secondPoint);
+    console.info('should have set articleUploads', secondPoint);
 
     const lastPoint = await this.afs
       .collection('fileUploads')
       .doc('profileUploads')
       .set({ pointless: 'thing' });
-    console.log('should have set profileUploads', lastPoint);
+    console.info('should have set profileUploads', lastPoint);
     return { firstPoint, secondPoint, lastPoint };
   };
   // end temp seeding code

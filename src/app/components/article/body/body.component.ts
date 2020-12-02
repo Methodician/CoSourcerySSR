@@ -62,7 +62,6 @@ export class BodyComponent {
         import('quill'),
         import('./quill-image'),
       ]).then(([ImageResize, Quill, Image]) => {
-        console.log({ Quill, ImageResize, Image });
         Quill.default.register(Image.default);
         Quill.default.register('modules/imageResize', ImageResize.default);
         this.quillModules = {

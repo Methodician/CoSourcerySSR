@@ -32,6 +32,6 @@
     [(ngModel)]="body"
     [modules]="quillModules"
     (onEditorCreated)="onEditorCreated($event)"
-    (onContentChanged)="changeBody($event); testEvent($event)"
+    (onContentChanged)="changeBody($event)"
   ></quill-editor>
 </main>

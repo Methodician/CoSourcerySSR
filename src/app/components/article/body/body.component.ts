@@ -215,6 +215,4 @@ export class BodyComponent {
   clickOut = () => this.onClickOut.emit();
 
   changeBody = $e => this.onBodyChange.emit($e);
-
-  testEvent = $e => console.log($e);
 }

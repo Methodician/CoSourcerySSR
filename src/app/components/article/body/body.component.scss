@@ -1,10 +1,37 @@
 @import '../../../sass/vars.scss';
 
-section {
+main {
   position: relative;
   border-radius: 4px;
   border: 1px solid #fff;
   transition: border 0.5s;
+
+  ::ng-deep .ql-editor {
+    // may cause issues - needed so edit button doesn't push editor over
+    overflow-y: visible;
+
+    h2 {
+      margin-top: 1.2em;
+      margin-bottom: 0.4em;
+    }
+    h3 {
+      margin-top: 0.85em;
+      margin-bottom: 0.3em;
+    }
+    h4 {
+      margin-top: 0.6em;
+      margin-bottom: 0.25em;
+    }
+    h5 {
+      margin-top: 0.4em;
+      margin-bottom: 0.1em;
+    }
+
+    img {
+      margin-top: 1em !important;
+      margin-bottom: 1em;
+    }
+  }
 }
 
 .is-editable {
@@ -25,9 +52,4 @@ section {
   button.active {
     visibility: visible;
   }
-}
-
-// may cause issues - needed so edit button doesn't push editor over
-::ng-deep .ql-editor {
-  overflow-y: visible;
 }

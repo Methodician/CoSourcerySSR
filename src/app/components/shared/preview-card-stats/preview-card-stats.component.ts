@@ -1,14 +1,11 @@
-import { Component, OnInit, Input, Inject, PLATFORM_ID } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { isPlatformServer } from '@angular/common';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { Observable, combineLatest } from 'rxjs';
 import { switchMap, map, take } from 'rxjs/operators';
 
 import { AuthService } from '@services/auth.service';
 import { ArticleService } from '@services/article.service';
-import { ArticlePreviewI, statsIconMap } from '@shared_models/article.models';
+import { ArticlePreviewI } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-preview-card-stats',
@@ -22,21 +19,7 @@ export class PreviewCardStatsComponent implements OnInit {
   constructor(
     private authSvc: AuthService,
     private articleSvc: ArticleService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
-    @Inject(PLATFORM_ID) platformId: string,
-  ) {
-    const urlBase = isPlatformServer(platformId)
-      ? `http://localhost:4200/`
-      : '';
-
-    Object.entries(statsIconMap).map(([name, path]) => {
-      iconRegistry.addSvgIcon(
-        name,
-        sanitizer.bypassSecurityTrustResourceUrl(`${urlBase}${path}`),
-      );
-    });
-  }
+  ) {}
 
   ngOnInit() {
     this.watchArticleBookmark();

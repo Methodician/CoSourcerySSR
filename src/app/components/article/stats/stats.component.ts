@@ -1,14 +1,10 @@
-import { Component, Inject, Input, OnInit, PLATFORM_ID } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { isPlatformServer } from '@angular/common';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { Observable, combineLatest } from 'rxjs';
 import { switchMap, map, take } from 'rxjs/operators';
 
 import { ArticleService } from '@services/article.service';
 import { AuthService } from '@services/auth.service';
-import { statsIconMap } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-stats',
@@ -28,21 +24,7 @@ export class StatsComponent implements OnInit {
   constructor(
     private authSvc: AuthService,
     private articleSvc: ArticleService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
-    @Inject(PLATFORM_ID) platformId: string,
-  ) {
-    const urlBase = isPlatformServer(platformId)
-      ? `http://localhost:4200/`
-      : '';
-
-    Object.entries(statsIconMap).map(([name, path]) => {
-      iconRegistry.addSvgIcon(
-        name,
-        sanitizer.bypassSecurityTrustResourceUrl(`${urlBase}${path}`),
-      );
-    });
-  }
+  ) {}
 
   ngOnInit() {
     this.watchArticleBookmark();

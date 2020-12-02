@@ -3,16 +3,14 @@ import {
   Input,
   Output,
   EventEmitter,
-  PLATFORM_ID,
-  Inject,
   SimpleChanges,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 
 // INTERNAL IMPORTS
 import { ArticleService } from '@services/article.service';
+import { PlatformService } from '@services/platform.service';
 
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
@@ -47,9 +45,9 @@ export class BodyComponent {
 
   constructor(
     private articleSvc: ArticleService,
-    @Inject(PLATFORM_ID) platformId: string,
+    platformSvc: PlatformService,
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+    this.isBrowser = platformSvc.isBrowser;
     if (this.isBrowser) {
       import('quill/core/emitter').then(Emitter => {
         this.quillEmitter = Emitter.default;

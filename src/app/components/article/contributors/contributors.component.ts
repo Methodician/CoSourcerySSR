@@ -1,12 +1,5 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  HostListener,
-  Inject,
-  PLATFORM_ID,
-} from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { PlatformService } from '@services/platform.service';
 
 @Component({
   selector: 'cos-contributors',
@@ -26,11 +19,11 @@ export class ContributorsComponent implements OnInit {
       this._displayEditorsPrev = [];
       this._displayEditors = editorKeys.slice(
         this.displayEditorsPosition,
-        this.editorPanelCount
+        this.editorPanelCount,
       );
       this._displayEditorsNext = editorKeys.slice(
         this.displayEditorsPosition + this.editorPanelCount,
-        this.editorPanelCount * 2
+        this.editorPanelCount * 2,
       );
     }
   }
@@ -47,7 +40,7 @@ export class ContributorsComponent implements OnInit {
   hasTransitioned = false;
   windowMaxWidth = 780;
 
-  constructor(@Inject(PLATFORM_ID) private platform: Object) {
+  constructor(private platformSvc: PlatformService) {
     this.checkWindowSize();
   }
 
@@ -69,13 +62,13 @@ export class ContributorsComponent implements OnInit {
       this._displayEditors = this._displayEditorsNext;
       this._displayEditorsNext = this.editorKeys.slice(
         this.displayEditorsPosition + this.editorPanelCount,
-        this.displayEditorsPosition + this.editorPanelCount * 2
+        this.displayEditorsPosition + this.editorPanelCount * 2,
       );
       // if next is empty set it to the beginning of editorKeys
       if (this._displayEditorsNext.length <= 0) {
         this._displayEditorsNext = this.editorKeys.slice(
           0,
-          this.editorPanelCount
+          this.editorPanelCount,
         );
       }
     }, 2000);
@@ -114,19 +107,19 @@ export class ContributorsComponent implements OnInit {
         // i.e. if we have 10 editorKeys and are displaying 3 cards per panel. the last panel should only have 1 card be cause 3 + 3 + 3 + 1(our remainder) = 10
         this._displayEditorsPrev = this.editorKeys.slice(
           this.editorKeys.length - remainder,
-          this.editorKeys.length
+          this.editorKeys.length,
         );
       } else if (this.displayEditorsPosition < this.editorPanelCount) {
         // if the editorPanelCount does divide evenly then we want our last panel to have editorPanelCount amount of profile cards in it from the end of the editorKeys array
         this._displayEditorsPrev = this.editorKeys.slice(
           this.editorKeys.length - this.editorPanelCount,
-          this.editorKeys.length
+          this.editorKeys.length,
         );
       } else {
         // and if the displayEditorsPosition is greater than the editorPanelCount then you just take the next editorPanelCount amount of profile cards from infront of the displayEditorsPosition index in editorKeys
         this._displayEditorsPrev = this.editorKeys.slice(
           this.displayEditorsPosition - this.editorPanelCount,
-          this.displayEditorsPosition
+          this.displayEditorsPosition,
         );
       }
     }, 2000);
@@ -141,7 +134,7 @@ export class ContributorsComponent implements OnInit {
   }
 
   checkWindowSize() {
-    if (isPlatformBrowser(this.platform)) {
+    if (this.platformSvc.isBrowser) {
       window.innerWidth < this.windowMaxWidth
         ? (this.editorPanelCount = 2)
         : (this.editorPanelCount = 3);

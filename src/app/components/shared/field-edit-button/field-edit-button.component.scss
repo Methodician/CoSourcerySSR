@@ -1,0 +1,14 @@
+// :host-context(:hover) button {
+//   color: green;
+// }
+button {
+  visibility: hidden;
+
+  &.parent-hovered {
+    visibility: visible;
+  }
+
+  &.active {
+    visibility: visible;
+  }
+}

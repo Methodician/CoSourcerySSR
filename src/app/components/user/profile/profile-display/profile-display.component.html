@@ -22,16 +22,34 @@
           <div class="profile-card__input">
             <h5>First Name</h5>
             <p>{{ user.fName }}</p>
+            <cos-field-edit-button
+              class="edit-button"
+              [isActive]="isCtrlActive('fName')"
+              tooltipName="First Name"
+              (clicked)="toggleCtrl('fName')"
+            ></cos-field-edit-button>
           </div>
 
           <div class="profile-card__input">
             <h5>Last Name</h5>
             <p>{{ user.lName }}</p>
+            <cos-field-edit-button
+              class="edit-button"
+              [isActive]="isCtrlActive('fName')"
+              tooltipName="First Name"
+              (clicked)="toggleCtrl('fName')"
+            ></cos-field-edit-button>
           </div>
 
           <div class="profile-card__input">
             <h5>Alias</h5>
             <p>{{ user.alias }}</p>
+            <cos-field-edit-button
+              class="edit-button"
+              [isActive]="isCtrlActive('fName')"
+              tooltipName="First Name"
+              (clicked)="toggleCtrl('fName')"
+            ></cos-field-edit-button>
           </div>
         </div>
       </div>
@@ -39,22 +57,46 @@
       <div class="profile-card__input">
         <h5>Bio</h5>
         <p>{{ user.bio }}</p>
+        <cos-field-edit-button
+          class="edit-button"
+          [isActive]="isCtrlActive('fName')"
+          tooltipName="First Name"
+          (clicked)="toggleCtrl('fName')"
+        ></cos-field-edit-button>
       </div>
 
       <div class="profile-card__input-group">
         <div class="profile-card__input">
           <h5>City</h5>
           <p>{{ user.city }}</p>
+          <cos-field-edit-button
+            class="edit-button"
+            [isActive]="isCtrlActive('fName')"
+            tooltipName="First Name"
+            (clicked)="toggleCtrl('fName')"
+          ></cos-field-edit-button>
         </div>
 
         <div class="profile-card__input">
           <h5>State</h5>
           <p>{{ user.state }}</p>
+          <cos-field-edit-button
+            class="edit-button"
+            [isActive]="isCtrlActive('fName')"
+            tooltipName="First Name"
+            (clicked)="toggleCtrl('fName')"
+          ></cos-field-edit-button>
         </div>
 
         <div class="profile-card__input">
           <h5>Zip Code</h5>
           <p>{{ user.zipCode }}</p>
+          <cos-field-edit-button
+            class="edit-button"
+            [isActive]="isCtrlActive('fName')"
+            tooltipName="First Name"
+            (clicked)="toggleCtrl('fName')"
+          ></cos-field-edit-button>
         </div>
       </div>
     </form>

@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '@services/user.service';
 import { AuthService } from '@services/auth.service';
-import { takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SeoService, ISEOtags } from '@services/seo.service';
 
 @Component({
@@ -15,6 +15,7 @@ import { SeoService, ISEOtags } from '@services/seo.service';
 export class ProfileDisplayComponent implements OnInit {
   user: CUserInfo;
   canEdit = false;
+  activeCtrlName: CtrlNamesProfileT = 'none';
 
   private unsubscribe: Subject<void> = new Subject();
 
@@ -86,7 +87,35 @@ export class ProfileDisplayComponent implements OnInit {
     this.seoSvc.generateTags(tags);
   };
 
+  // EDITING
+  isCtrlActive = (ctrlName: CtrlNamesProfileT) =>
+    this.activeCtrlName === ctrlName;
+
+  toggleCtrl = (ctrlName: CtrlNamesProfileT) => {
+    if (this.isCtrlActive(ctrlName)) this.activeCtrlName = 'none';
+    else this.activateCtrl(ctrlName);
+  };
+
+  activateCtrl = (ctrlName: CtrlNamesProfileT) => {
+    if (this.authSvc.authInfo$.value.uid === this.user.uid)
+      this.activeCtrlName = ctrlName;
+    else
+      throw new Error(
+        `A user with uid ${this.authSvc.authInfo$.value.uid} is attempting to edit another user\'s profile (their uid is ${this.user.uid})`,
+      );
+  };
+
   edit = () => {
     this.router.navigate(['profile']);
   };
 }
+
+export type CtrlNamesProfileT =
+  | 'none'
+  | 'fName'
+  | 'lName'
+  | 'alias'
+  | 'bio'
+  | 'city'
+  | 'state'
+  | 'zipCode';

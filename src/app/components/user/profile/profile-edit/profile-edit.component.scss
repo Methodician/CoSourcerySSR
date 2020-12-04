@@ -1,12 +1,13 @@
 // Uses Global Default Styles in src/styles.scss
 @import '../../../../sass/vars.scss';
-@import '../../profile/profile.component.scss';
+@import '../../profile/profilee.component.scss';
 
 .profile-card {
   &__input {
     width: 100%;
     min-width: 0;
     margin-bottom: 20px;
+    position: relative;
 
     input:read-only {
       color: $medium-gray;

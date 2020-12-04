@@ -77,6 +77,8 @@ import { VersionNavigationComponent } from './components/article-history/version
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
+import { FieldEditButtonComponent } from './components/shared/field-edit-button/field-edit-button.component';
+import { ProfileComponent } from './components/user/profile/profile.component';
 // end components
 
 @NgModule({
@@ -122,6 +124,8 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     PreviewCardStatsComponent,
     TimeElapsedPipe,
     PreviewGridComponent,
+    FieldEditButtonComponent,
+    ProfileComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

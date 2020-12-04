@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import {
   Subscription,
   BehaviorSubject,
@@ -11,6 +10,7 @@ import {
   Subject,
   timer,
   of,
+  Observer,
 } from 'rxjs';
 import {
   tap,
@@ -27,16 +27,38 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { UserService } from '@services/user.service';
 
-import { fsTimestampNow } from '@helpers/firebase';
-
 // MODELS
-import { IArticleDetail } from '@models/article-info';
+import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
+import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
+import { StorageService } from '@services/storage.service';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
+const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
   'articleState',
 );
+
+const BASE_ARTICLE = {
+  articleId: '',
+  authorId: '',
+  title: ['', [Validators.required, Validators.maxLength(100)]],
+  introduction: ['', [Validators.required, Validators.maxLength(300)]],
+  body: 'This article is empty.',
+  imageUrl: '',
+  imageAlt: ['', Validators.maxLength(100)],
+  authorImageUrl: '',
+  lastUpdated: null,
+  timestamp: 0,
+  lastEditorId: '',
+  version: 1,
+  commentCount: 0,
+  viewCount: 0,
+  slug: '',
+  tags: [[], Validators.maxLength(25)],
+  isFeatured: false,
+  editors: {},
+  bodyImageIds: [],
+};
 
 @Component({
   selector: 'cos-article',
@@ -44,48 +66,25 @@ const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<IArticleDetail>>(
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
-  @ViewChild('formBoundingBox', { static: false }) formBoundingBox;
-
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
-  //  // Cover Image State
+  // Cover Image State
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
+  articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
-  articleSubscription: Subscription;
+  doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
 
-  articleEditForm: FormGroup = this.fb.group({
-    articleId: '',
-    authorId: '',
-    title: ['', [Validators.required, Validators.maxLength(100)]],
-    introduction: ['', [Validators.required, Validators.maxLength(300)]],
-    body: 'This article is empty.',
-    imageUrl: '',
-    imageAlt: ['', Validators.maxLength(100)],
-    authorImageUrl: '',
-    lastUpdated: null,
-    timestamp: 0,
-    lastEditorId: '',
-    version: 1,
-    commentCount: 0,
-    viewCount: 0,
-    slug: '',
-    tags: [[], Validators.maxLength(25)],
-    isFeatured: false,
-    editors: {},
-  });
-
-  articleState: IArticleDetail;
+  articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE);
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -100,6 +99,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private authSvc: AuthService,
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
+    private fbSvc: FirebaseService,
+    private storageSvc: StorageService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -129,15 +130,19 @@ export class ArticleComponent implements OnInit, OnDestroy {
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
+        console.info('articleId', id);
+        if (!!id) {
+          this.watchArticleEditors(id);
+        }
         if (id) this.articleId = id;
         if (isNew) {
           this.isArticleNew = true;
         } else this.isArticleNew = false;
       }),
       switchMap(
-        ({ id, isNew }): Observable<IArticleDetail> => {
+        ({ id, isNew }): Observable<ArticleDetailI> => {
           if (isNew) {
-            return Observable.create(observer => {
+            return new Observable((observer: Observer<ArticleDetailI>) => {
               observer.next(this.articleEditForm.value);
               observer.complete();
             });
@@ -145,10 +150,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
         },
       ),
     );
+
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
+        this.watchCoverImageUrl(article);
         this.updateMetaTags(article);
       }
     });
@@ -157,51 +164,81 @@ export class ArticleComponent implements OnInit, OnDestroy {
   watchArticleIdAndStatus$: () => Observable<{
     id: any;
     isNew: boolean;
-  }> = () => {
-    return this.route.params.pipe(
+  }> = () =>
+    this.route.params.pipe(
       switchMap(params => {
         let status$ = of({ id: null, isNew: false });
-        if (params['id'])
+        if (params['id']) {
           status$ = this.articleSvc
             .getIdFromSlugOrId(params['id'])
             .pipe(map(id => ({ id, isNew: false })));
-        else
-          status$ = of({ id: this.articleSvc.createArticleId(), isNew: true });
-        status$.pipe(takeUntil(this.unsubscribe)).subscribe(status => {
-          if (!!status.id) {
-            this.watchArticleEditors(status.id);
-          }
-        });
+        } else {
+          status$ = of({ id: this.articleSvc.createId(), isNew: true });
+        }
         return status$;
       }),
     );
-  };
 
   watchArticle$ = id => {
-    const preExisting: IArticleDetail = this.state.get(
+    const preExisting: ArticleDetailI = this.state.get(
       ARTICLE_STATE_KEY,
       null as any,
     );
+
+    const notFoundArticle: ArticleDetailI = {
+      articleId: 'fake-news',
+      authorId: '',
+      authorImageUrl: '../../assets/images/feeling-lost.jpg',
+      body:
+        'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
+      coverImageId: '',
+      editors: null,
+      imageAlt: '',
+      imageUrl: '../../assets/images/feeling-lost.jpg',
+      introduction: 'The article you seek is a mirage.',
+      lastEditorId: '',
+      lastUpdated: new Date(),
+      slug: 'no-existing-article',
+      timestamp: new Date(),
+      title: 'Fake News',
+      version: 0,
+      commentCount: 0,
+      tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
+      bodyImageIds: [],
+    };
     const article$ = this.articleSvc
       .articleDetailRef(id)
       .valueChanges()
       .pipe(
-        map(article =>
-          article
-            ? (this.articleSvc.processArticleTimestamps(
-                article,
-              ) as IArticleDetail)
-            : null,
-        ),
+        map(article => {
+          if (article) {
+            return this.articleSvc.processArticleTimestamps(
+              article,
+            ) as ArticleDetailI;
+          }
+          this.doesArticleExist = false;
+          return notFoundArticle;
+        }),
         tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
         startWith(preExisting),
       );
     return article$;
   };
 
-  watchArticleEditors = id => {
+  watchCoverImageUrl = (article: ArticleDetailI) => {
+    const { coverImageId, articleId } = article;
+    if (coverImageId && coverImageId !== '') {
+      this.storageSvc
+        .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
+        .subscribe(url => {
+          this.articleState.imageUrl = url;
+        });
+    }
+  };
+
+  watchArticleEditors = articleId =>
     this.articleSvc
-      .currentEditorsRef(id)
+      .currentEditorsRef(articleId)
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
@@ -214,7 +251,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
         this.currentArticleEditors = currentEditors;
       });
-  };
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
@@ -248,7 +284,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   resetEditStates = () => {
     this.articleEditForm.markAsPristine();
-    // this.coverImageFile = null;
+    this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
   };
@@ -281,9 +317,20 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = file;
   };
 
-  changeBody = body => {
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ body });
+  changeBody = $e => {
+    if ($e.source === 'user') {
+      this.articleEditForm.markAsDirty();
+      this.articleEditForm.patchValue({ body: $e.html });
+    }
+  };
+
+  addBodyImage = (imageId: string) => {
+    // Track images that were ever successfully uploaded on most recent
+    // version in case we want to do some analytics to remove images
+    // that were never added to any versions
+    const bodyImageIds = [...this.articleState.bodyImageIds];
+    bodyImageIds.push(imageId);
+    this.articleEditForm.patchValue({ bodyImageIds });
   };
 
   saveChanges = async () => {
@@ -295,55 +342,60 @@ export class ArticleComponent implements OnInit, OnDestroy {
         );
         return;
       }
-      const coverImageSub = this.saveCoverImage().subscribe(async isReady => {
-        if (!isReady) return;
+      const coverImageSub = this.saveCoverImage().subscribe(
+        async ({ isReady, imageId }) => {
+          if (!isReady) return;
 
-        if (this.articleState.articleId) {
-          // It's not new so just update existing and return
-          try {
-            const updateResult = await this.articleSvc.updateArticle(
-              this.articleState,
-            );
-            this.resetEditSessionTimeout();
-            await this.resetEditStates();
-            // HACKY: see associated note in UpdateArticle inside ArticleService
-            if (updateResult && updateResult[2]) {
-              this.router.navigate([`article/${updateResult[2]}`]);
+          // update the id if cover image was changed
+          if (!!imageId) this.articleState.coverImageId = imageId;
+
+          if (this.articleState.articleId) {
+            // It's not new so just update existing and return
+            try {
+              const updateResult = await this.articleSvc.updateArticle(
+                this.articleState,
+              );
+              this.resetEditSessionTimeout();
+              await this.resetEditStates();
+              // HACKY: see associated note in UpdateArticle inside ArticleService
+              if (updateResult && updateResult[2]) {
+                this.router.navigate([`article/${updateResult[2]}`]);
+              }
+            } catch (error) {
+              this.dialogSvc.openMessageDialog(
+                'Error saving article',
+                'Attempting to save your changes returned the following error',
+                error.message || error,
+              );
+            } finally {
+              if (coverImageSub) coverImageSub.unsubscribe();
+              return;
             }
-          } catch (error) {
-            this.dialogSvc.openMessageDialog(
-              'Error saving article',
-              'Attempting to save your changes returned the following error',
-              error.message || error,
-            );
-          } finally {
-            coverImageSub.unsubscribe();
-            return;
+          } else {
+            // It's a new article!
+            try {
+              await this.articleSvc.createArticle(
+                this.loggedInUser,
+                this.articleState,
+                this.articleId,
+              );
+              this.resetEditSessionTimeout();
+              // TODO: Ensure unsaved changes are actually being checked upon route change
+              await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
+              this.router.navigate([`article/${this.articleId}`]);
+            } catch (error) {
+              this.dialogSvc.openMessageDialog(
+                'Error creating article',
+                'Attempting to create the article returned the following error. If this persists, please let us know...',
+                `Error: ${error.message || error}`,
+              );
+            } finally {
+              if (coverImageSub) coverImageSub.unsubscribe();
+              return;
+            }
           }
-        } else {
-          // It's a new article!
-          try {
-            await this.articleSvc.createArticle(
-              this.loggedInUser,
-              this.articleState,
-              this.articleId,
-            );
-            this.resetEditSessionTimeout();
-            // TODO: Ensure unsaved changes are actually being checked upon route change
-            await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
-            this.router.navigate([`article/${this.articleId}`]);
-          } catch (error) {
-            this.dialogSvc.openMessageDialog(
-              'Error creating article',
-              'Attempting to create the article returned the following error. If this persists, please let us know...',
-              `Error: ${error.message || error}`,
-            );
-          } finally {
-            if (coverImageSub) coverImageSub.unsubscribe();
-            return;
-          }
-        }
-      });
+        },
+      );
     });
   };
 
@@ -352,22 +404,26 @@ export class ArticleComponent implements OnInit, OnDestroy {
    * Emits false if it's incomplete or cancelled or errors out
    */
   saveCoverImage = () => {
-    const isComplete$ = new BehaviorSubject(false);
+    const isComplete$ = new BehaviorSubject({ isReady: false, imageId: null });
     if (!this.coverImageFile) {
-      isComplete$.next(true);
+      isComplete$.next({ isReady: true, imageId: null });
     } else {
       try {
-        const { task, ref } = this.articleSvc.uploadCoverImage(
+        const {
+          task,
+          storageRef,
+          newImageId,
+        } = this.articleSvc.uploadCoverImage(
           this.articleId,
           this.coverImageFile,
         );
 
         this.coverImageUploadTask = task;
         task.then(() => {
-          ref.getDownloadURL().subscribe(imageUrl => {
+          storageRef.getDownloadURL().subscribe(imageUrl => {
             this.articleEditForm.patchValue({ imageUrl });
             this.coverImageFile = null;
-            isComplete$.next(true);
+            isComplete$.next({ isReady: true, imageId: newImageId });
           });
         });
 
@@ -382,12 +438,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
             if (shouldCancel) {
               this.cancelUpload(this.coverImageUploadTask);
               this.articleEditForm.markAsDirty();
-              isComplete$.next(false);
+              isComplete$.next({ isReady: false, imageId: null });
             }
           });
       } catch (error) {
         console.error(error);
-        isComplete$.next(false);
+        isComplete$.next({ isReady: false, imageId: null });
       }
     }
 
@@ -448,13 +504,20 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // ===UI DISPLAY
   activateCtrl = async (ctrl: ECtrlNames) => {
+    if (!this.doesArticleExist) {
+      this.dialogSvc.openMessageDialog(
+        `You can't do that`,
+        `Since this article doesn't exist you can not edit it.`,
+      );
+      return;
+    }
     if (ctrl === ECtrlNames.none) {
       this.ctrlBeingEdited = ctrl;
       return;
     }
     // For now doesn't allow multiple editors. Will change later...
     if (!this.isUserEditingArticle() && this.isArticleBeingEdited()) {
-      // Editors is an array so that we can later allow multilple collaborative editors.
+      // Editors is an array so that we can later allow multiple collaborative editors.
       // For now we'll just check the first (only) element in the array
       const uid = Object.keys(this.currentArticleEditors)[0];
       this.userSvc
@@ -504,10 +567,20 @@ export class ArticleComponent implements OnInit, OnDestroy {
   isArticleBeingEdited = () =>
     Object.keys(this.currentArticleEditors).length > 0;
 
-  // ===OTHER
-  tempTimestamp = () => fsTimestampNow();
+  isBodyImageUploadPending = () => this.articleSvc.pendingImageUploadCount > 0;
 
-  updateMetaTags = (article: IArticleDetail) => {
+  saveTooltipText = () => {
+    if (!this.isUserEditingArticle())
+      return 'No editors. This should not display. Let us know if it continues.';
+    if (!this.articleEditForm.valid) return 'Fix errors to save';
+    if (this.isBodyImageUploadPending()) return 'Images uploading, please wait';
+    return 'Save Article';
+  };
+
+  // ===OTHER
+  tempTimestamp = () => this.fbSvc.fsTimestampNow();
+
+  updateMetaTags = (article: ArticleDetailI) => {
     const { title, introduction, body, tags, imageUrl } = article;
     const description = this.createMetaDescription(introduction, body);
     const keywords = tags.join(', ').toLowerCase();

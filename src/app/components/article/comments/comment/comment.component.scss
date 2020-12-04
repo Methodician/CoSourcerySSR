@@ -48,6 +48,14 @@
   padding: 0;
 }
 
+.removed_comment {
+  font-style: italic;
+
+  .comment__text {
+    color: $medium-gray;
+  }
+}
+
 mat-form-field::ng-deep {
   display: block;
   margin-bottom: -14px;

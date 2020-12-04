@@ -16,7 +16,7 @@ export class AuthService {
 
   constructor(
     private dialogue: MatDialog,
-    private afAuth: AngularFireAuth // private rtdb: AngularFireDatabase,
+    private afAuth: AngularFireAuth, // private rtdb: AngularFireDatabase,
   ) {
     this.afAuth.user.subscribe(user => {
       if (user) {
@@ -25,8 +25,8 @@ export class AuthService {
             user.uid,
             user.emailVerified,
             user.displayName,
-            user.email
-          )
+            user.email,
+          ),
         );
       } else {
         this.authInfo$.next(this.NULL_USER);
@@ -40,7 +40,7 @@ export class AuthService {
   // }
 
   login(email: string, password: string) {
-    return this.afAuth.auth.signInWithEmailAndPassword(email, password);
+    return this.afAuth.signInWithEmailAndPassword(email, password);
   }
 
   // async cleanupEditorTrackingInfo() {
@@ -61,11 +61,11 @@ export class AuthService {
 
   async logout() {
     // await this.cleanupEditorTrackingInfo();
-    return this.afAuth.auth.signOut();
+    return this.afAuth.signOut();
   }
 
   register(email: string, password: string) {
-    return this.afAuth.auth.createUserWithEmailAndPassword(email, password);
+    return this.afAuth.createUserWithEmailAndPassword(email, password);
   }
 
   /**
@@ -76,12 +76,12 @@ export class AuthService {
       take(1),
       map(res => {
         return !!res;
-      })
+      }),
     );
   };
 
   /**
-   * Checks authstate once, returns isSignedIn,
+   * Checks auth state once, returns isSignedIn,
    * and prompts user to sign in if they haven't
    */
   isSignedInOrPrompt = () => {
@@ -93,18 +93,18 @@ export class AuthService {
           );
           this.dialogue.open(LoginDialogComponent);
         }
-      })
+      }),
     );
   };
 
   async sendVerificationEmail() {
-    const user = this.afAuth.auth.currentUser;
+    const user = await this.afAuth.currentUser;
     try {
       return await user.sendEmailVerification();
     } catch (err) {
       alert(
         'It looks like your verification email was not sent. Please try again or contact support.' +
-          err
+          err,
       );
     }
   }

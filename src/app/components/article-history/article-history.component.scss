@@ -1,1 +1,14 @@
+@import '../../sass/vars.scss';
 
+main {
+  a {
+    margin: $preview_card_gap 0 0;
+    text-align: center;
+    text-decoration: underline;
+    color: $accent-color-1;
+
+    span {
+      color: $accent-color-1;
+    }
+  }
+}

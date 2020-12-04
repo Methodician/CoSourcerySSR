@@ -1,6 +1,12 @@
-<section class="article-body__interior" [ngClass]="{ border: isActive }">
+<main
+  class="article-body__interior"
+  [ngClass]="{ border: isActive, 'is-editable': isEditable }"
+  matTooltip="Pro tip: click the pencil-icon button to the right then double-click or select something for options."
+  matTooltipPosition="above"
+>
   <button
     class="mat-icon-btn"
+    *ngIf="isEditable"
     [ngClass]="{ active: isActive }"
     type="button"
     (click)="toggleCtrl()"
@@ -10,17 +16,22 @@
       isActive ? 'Close Body' : 'Edit Body'
     }}</span>
   </button>
-  <!-- Hacky: applying ckEditor classes to get styles -->
-  <article
-    class="ck ck-editor__editable_inline"
+  <!-- Originally needed for SSR not sure about with quill -->
+  <!-- <article *ngIf="!isBrowser" [innerHTML]="body"></article> -->
+  <!-- <quill-editor
+  *ngIf="isBrowser && articleId" -->
+  <quill-view-html
     *ngIf="!isBrowser"
-    [innerHTML]="body"
-  ></article>
-  <cos-body-edit
-    *ngIf="isBrowser && articleId"
-    (onBodyChange)="changeBody($event)"
-    [body]="body"
-    [isActive]="isActive"
-    [articleId]="articleId"
-  ></cos-body-edit>
-</section>
+    [content]="body"
+    theme="bubble"
+  ></quill-view-html>
+
+  <quill-editor
+    *ngIf="!!quillModules && isBrowser"
+    theme="bubble"
+    [(ngModel)]="body"
+    [modules]="quillModules"
+    (onEditorCreated)="onEditorCreated($event)"
+    (onContentChanged)="changeBody($event)"
+  ></quill-editor>
+</main>

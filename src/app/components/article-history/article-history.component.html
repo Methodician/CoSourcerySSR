@@ -1,6 +1,13 @@
-<section id="all-versions">
-  <div class="article-grid">
-    <cos-version-preview-card *ngFor="let version of allArticleVersions$ | async" [articleVersionData]="version">
-    </cos-version-preview-card>
-  </div>
-</section>
+<main>
+  <a [routerLink]="['/article', articleId]">
+    <h3><span>Return to article detail</span></h3>
+  </a>
+  <cos-preview-grid>
+    <cos-article-preview-card
+      *ngFor="let article of allArticleVersions$ | async"
+      [articleData]="article"
+      [linkTo]="createPreviewLink(article)"
+    >
+    </cos-article-preview-card>
+  </cos-preview-grid>
+</main>

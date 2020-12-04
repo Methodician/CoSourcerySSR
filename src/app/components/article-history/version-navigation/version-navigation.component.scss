@@ -1,0 +1,43 @@
+$size: 45px;
+
+#container {
+  width: 100%;
+  background-color: transparent;
+  position: fixed;
+  top: 50vh;
+  z-index: 1;
+}
+
+.semi {
+  background: transparentize($color: #000000, $amount: 0.9);
+  display: inline-block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.right,
+.left {
+  height: $size * 2;
+  width: $size;
+}
+
+.left {
+  border-bottom-right-radius: $size * 2;
+  border-top-right-radius: $size * 2;
+  padding: 25px 5px;
+}
+
+.right {
+  border-bottom-left-radius: $size * 2;
+  border-top-left-radius: $size * 2;
+  float: right;
+  padding: 25px 10px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons {
+  margin: 0;
+}

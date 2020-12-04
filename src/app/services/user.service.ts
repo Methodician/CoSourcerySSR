@@ -11,13 +11,13 @@ import { AngularFireStorage } from '@angular/fire/storage';
 export class UserService {
   private NULL_USER = new CUserInfo({ fName: null, lName: null });
   loggedInUser$: BehaviorSubject<CUserInfo> = new BehaviorSubject(
-    this.NULL_USER
+    this.NULL_USER,
   );
 
   constructor(
     private afd: AngularFireDatabase,
     private authSvc: AuthService,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
   ) {
     this.authSvc.authInfo$.subscribe(authInfo => {
       if (!authInfo.isLoggedIn()) {
@@ -44,7 +44,7 @@ export class UserService {
   setUserAccess(accessLevel: number, uid: string) {
     //TODO: shouldn't this be a cloud function?
     // return this.afd.object(`userInfo/accessLevel/${uid}`).set(accessLevel);
-    console.log('Why would we do this here??? WHY???', { accessLevel, uid });
+    console.warn('Why would we do this here??? WHY???', { accessLevel, uid });
   }
 
   createUser(userInfo, uid) {

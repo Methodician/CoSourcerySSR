@@ -1,69 +1,74 @@
-<section class="banner">
-  <div class="text center">
-    <h2 class="banner__title">Empowering Makers &amp; Hackers of the World</h2>
-    <p class="text italic">
-      network, collaborate, and share knowledge with the community you love
-    </p>
-  </div>
-</section>
+<main>
+  <section class="banner">
+    <div class="text center">
+      <h2 class="banner__title">
+        Empowering Makers &amp; Hackers of the World
+      </h2>
+      <p class="text italic">
+        network, collaborate, and share knowledge with the community you love
+      </p>
+    </div>
+  </section>
 
-<!-- ARTICLE FILTERS -->
-<cos-filter-menu
-  #filterMenu
-  [tabList]="filterTabs"
-  (onTabAdded)="onFilterTabAdded($event)"
->
-</cos-filter-menu>
+  <!-- ARTICLE FILTERS -->
+  <cos-filter-menu
+    #filterMenu
+    [tabList]="filterTabs"
+    (onTabAdded)="onFilterTabAdded($event)"
+  >
+  </cos-filter-menu>
 
-<!-- ARTICLE COLLECTIONS -->
-<section
-  id="latest-articles"
-  *ngIf="filterMenu.isTabSelected('Latest')"
->
-  <div class="article-grid">
-    <cos-article-preview-card
-      *ngFor="let article of latestArticles$ | async"
-      [articleData]="article"
+  <!-- ARTICLE COLLECTIONS -->
+  <div class="article-collections">
+    <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
+      <cos-preview-grid>
+        <cos-article-preview-card
+          *ngFor="let article of latestArticles$ | async"
+          [articleData]="article"
+          [linkTo]="createPreviewLink(article)"
+        >
+        </cos-article-preview-card>
+      </cos-preview-grid>
+    </section>
+
+    <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
+      <cos-preview-grid>
+        <cos-article-preview-card
+          *ngFor="let article of allArticles$ | async"
+          [articleData]="article"
+          [linkTo]="createPreviewLink(article)"
+        >
+        </cos-article-preview-card>
+      </cos-preview-grid>
+    </section>
+
+    <section
+      id="bookmarked-articles"
+      *ngIf="filterMenu.isTabSelected('Bookmarked')"
     >
-    </cos-article-preview-card>
+      <h3 class="collection-text">
+        You have
+        <span class="collection-text_accent">{{
+          (bookmarkedArticles$ | async)?.length
+        }}</span>
+        {{
+          (bookmarkedArticles$ | async)?.length === 1
+            ? 'bookmark'
+            : 'bookmarks'
+        }}.
+      </h3>
+      <cos-preview-grid>
+        <!-- *ngFor="let article of bookmarkedArticles$ | async | reverseArray" -->
+        <cos-article-preview-card
+          *ngFor="let article of bookmarkedArticles$ | async"
+          [articleData]="article"
+          [linkTo]="createPreviewLink(article)"
+        >
+        </cos-article-preview-card>
+      </cos-preview-grid>
+    </section>
   </div>
-</section>
-
-<section
-  id="all-articles"
-  *ngIf="filterMenu.isTabSelected('All')"
->
-  <div class="article-grid">
-    <cos-article-preview-card
-      *ngFor="let article of allArticles$ | async"
-      [articleData]="article"
-    >
-    </cos-article-preview-card>
-  </div>
-</section>
-
-<section
-  id="bookmarked-articles"
-  *ngIf="filterMenu.isTabSelected('Bookmarked')"
->
-  <h3 class="collection-text">
-    You have
-    <span class="collection-text_accent">{{
-      (bookmarkedArticles$ | async)?.length
-    }}</span>
-    {{
-      (bookmarkedArticles$ | async)?.length === 1 ? 'bookmark' : 'bookmarks'
-    }}.
-  </h3>
-  <div class="article-grid">
-    <!-- *ngFor="let article of bookmarkedArticles$ | async | reverseArray" -->
-    <cos-article-preview-card
-      *ngFor="let article of bookmarkedArticles$ | async"
-      [articleData]="article"
-    >
-    </cos-article-preview-card>
-  </div>
-</section>
+</main>
 
 <!-- <section
   id="searched-articles"

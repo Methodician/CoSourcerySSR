@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IUserInfo, CUserInfo } from '@models/user-info';
+import { CUserInfo } from '@models/user-info';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '@services/user.service';
@@ -23,7 +23,7 @@ export class ProfileDisplayComponent implements OnInit {
     private router: Router,
     private userSvc: UserService,
     private authSvc: AuthService,
-    private seoSvc: SeoService
+    private seoSvc: SeoService,
   ) {}
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class ProfileDisplayComponent implements OnInit {
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(user => {
         if (!user) return;
-        const cUser = new CUserInfo(user);
+        const cUser = new CUserInfo({ ...user, uid });
         this.addUserTags(cUser);
         this.user = cUser;
       });
@@ -83,7 +83,6 @@ export class ProfileDisplayComponent implements OnInit {
     if (city) keywords += `, ${city}`;
     if (state) keywords += `, ${state}`;
     const tags: ISEOtags = { title, description, imageUrl, keywords };
-
     this.seoSvc.generateTags(tags);
   };
 

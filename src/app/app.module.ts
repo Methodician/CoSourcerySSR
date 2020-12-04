@@ -1,16 +1,19 @@
 import { environment } from '../environments/environment';
 
+// MODULES
+
+// Angular
 import {
   BrowserModule,
   BrowserTransferStateModule,
 } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
-// MODULES
 // AngularFire
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestoreModule, SETTINGS } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -20,10 +23,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 // Other
-import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppRoutingModule } from './app-routing.module';
+import { QuillModule } from 'ngx-quill';
 // end modules
 
 // Pipes
@@ -48,8 +51,6 @@ import { StatsComponent } from '@components/article/stats/stats.component';
 import { ContributorsComponent } from '@components/article/contributors/contributors.component';
 import { ProfileCardComponent } from '@components/shared/profile-card/profile-card.component';
 import { BodyComponent } from '@components/article/body/body.component';
-import { BodyDisplayComponent } from '@components/article/body/body-display/body-display.component';
-import { BodyEditComponent } from '@components/article/body/body-edit/body-edit.component';
 import { CommentsComponent } from '@components/article/comments/comments.component';
 import { CommentComponent } from '@components/article/comments/comment/comment.component';
 import { CommentListComponent } from '@components/article/comments/comment-list/comment-list.component';
@@ -72,8 +73,12 @@ import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialo
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { ArticleHistoryComponent } from './components/article-history/article-history.component';
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
-import { VersionPreviewCardComponent } from './components/article-history/version-preview-card/version-preview-card.component';
+import { VersionNavigationComponent } from './components/article-history/version-navigation/version-navigation.component';
+import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
+import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
+import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
 // end components
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -94,8 +99,6 @@ import { VersionPreviewCardComponent } from './components/article-history/versio
     ContributorsComponent,
     ProfileCardComponent,
     BodyComponent,
-    BodyDisplayComponent,
-    BodyEditComponent,
     CommentsComponent,
     CommentComponent,
     CommentListComponent,
@@ -115,7 +118,10 @@ import { VersionPreviewCardComponent } from './components/article-history/versio
     CountdownDialogComponent,
     ArticleHistoryComponent,
     VersionDetailComponent,
-    VersionPreviewCardComponent,
+    VersionNavigationComponent,
+    PreviewCardStatsComponent,
+    TimeElapsedPipe,
+    PreviewGridComponent,
   ],
   entryComponents: [
     LoginDialogComponent,
@@ -131,6 +137,7 @@ import { VersionPreviewCardComponent } from './components/article-history/versio
     AngularFireDatabaseModule,
     AngularFireStorageModule,
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    HttpClientModule,
     BrowserTransferStateModule,
     FormsModule,
     ReactiveFormsModule,
@@ -141,9 +148,21 @@ import { VersionPreviewCardComponent } from './components/article-history/versio
     MatInputModule,
     MatChipsModule,
     MatProgressBarModule,
-    CKEditorModule,
+    MatTooltipModule,
+    QuillModule.forRoot(),
   ],
-  providers: [],
+  // providers: [],
+  providers: [
+    {
+      provide: SETTINGS,
+      useValue: environment.shouldUseEmulator
+        ? {
+            host: 'localhost:8080',
+            ssl: false,
+          }
+        : undefined,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,41 @@
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  .set-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    .stat-item {
+      justify-self: center;
+      font-size: 0.75em;
+      display: inline-flex;
+      height: 30px;
+      align-items: center;
+      cursor: default;
+      // relative positioning allows tooltip to show up?
+      position: relative;
+
+      mat-icon {
+        color: rgb(150, 150, 150);
+        height: 15px;
+      }
+
+      .highlighted {
+        color: #ffd80e;
+      }
+
+      .stat-number {
+        color: gray;
+      }
+
+      &:hover .mat-icon-btn__tooltip {
+        visibility: visible;
+      }
+    }
+
+    .bookmark-icon {
+      cursor: pointer;
+    }
+  }
+}

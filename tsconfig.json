@@ -7,7 +7,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -28,7 +28,8 @@
       "@guards/*": ["src/app/shared/guards/*", "app/shared/guards/*"],
       "@pipes/*": ["src/app/shared/pipes/*", "app/shared/pipes/*"],
       "@helpers/*": ["src/app/shared/helpers/*", "app/shared/helpers/*"],
-      "@env/*": ["src/environments/*", "../environments/*"]
+      "@env/*": ["src/environments/*", "../environments/*"],
+      "@shared_models/*": ["shared_models/*", "../shared_models/*"]
     }
   }
 }

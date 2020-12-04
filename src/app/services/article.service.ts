@@ -1,43 +1,148 @@
 import { Injectable } from '@angular/core';
 
-// AnguilarFire Stuff
+// AngularFire Stuff
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
-import {
-  IArticlePreview,
-  IArticleDetail,
-  IVersionDetail,
-} from '@models/article-info';
+import { ArticlePreviewI, ArticleDetailI } from '@shared_models/article.models';
 
 // RXJS stuff
 import { switchMap, take, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 
 // Internal stuff
-import {
-  rtServerTimestamp,
-  fsServerTimestamp,
-} from '../shared/helpers/firebase';
+
+import { FirebaseService } from '@services/firebase.service';
 import { IUserInfo } from '@models/user-info';
 import { AuthService } from './auth.service';
+import { PlatformService } from './platform.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArticleService {
+  pendingImageUploadCount = 0;
+
   constructor(
     private afs: AngularFirestore,
     private afd: AngularFireDatabase,
     private storage: AngularFireStorage,
     private authSvc: AuthService,
+    private fbSvc: FirebaseService,
+    private platformSvc: PlatformService,
   ) {}
 
   // TEMP SEEDING CODE
-  // (simply call this in constructor)
+  // (simply call this in constructor or elsewhere)
+
+  scanAllArticlesAndAddBodyImageIds = async () => {
+    const querySnap = await this.afs
+      .collection('articleData/articles/articles')
+      .get()
+      .toPromise();
+    querySnap.docs.forEach(async doc => {
+      const article = doc.data() as ArticleDetailI;
+      const articleId = doc.id;
+      const { bodyImageIds, title } = article;
+      console.info({ bodyImageIds, title, articleId });
+      if (!article.bodyImageIds) {
+        try {
+          console.info('adding empty array');
+          const ref = doc.ref;
+          console.info(ref);
+          await ref.update({ bodyImageIds: [] });
+          console.info('added it');
+
+          ref.get().then(snap => {
+            const data = snap.data();
+            console.info(data);
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+
+  scanAllArticlesAndRelocateImages = async () => {
+    const relocateArticleImages = async (articleId: string) => {
+      const uploadImage = (path: string, file: Blob) => {
+        try {
+          const storageRef = this.storage.ref(path);
+          const task = storageRef.put(file);
+
+          return { task, storageRef };
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      const relocateImage = async (oldPath: string, newPath: string) => {
+        const oldRef = this.storage.ref(oldPath);
+        const url = await oldRef.getDownloadURL().toPromise();
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+
+        xhr.onload = async _ => {
+          const blob = xhr.response;
+          const { task } = uploadImage(newPath, blob);
+          task.then(taskSnap => {
+            if (taskSnap.state === 'success') {
+              console.info(`the image upload succeeded for ${articleId}`);
+            } else {
+              console.warn(
+                `the image upload failed for ${articleId} - here's the snapshot:`,
+                taskSnap,
+              );
+            }
+          });
+        };
+
+        xhr.open('GET', url);
+        return xhr.send();
+      };
+
+      const relocateCoverImage = (articleId: string, imageId: string) => {
+        const oldPath = `articleCoverImages/${articleId}`;
+        const newPath = `articleCoverImages/${articleId}/${imageId}`;
+        return relocateImage(oldPath, newPath);
+      };
+
+      const relocateCoverThumbnail = async (
+        articleId: string,
+        imageId: string,
+      ) => {
+        const oldPath = `articleCoverThumbnails/${articleId}`;
+        const newPath = `articleCoverThumbnails/${articleId}/${imageId}`;
+        return relocateImage(oldPath, newPath);
+      };
+
+      const newImageId = this.createId();
+      const coverImagePromise = relocateCoverImage(articleId, newImageId);
+      const thumbnailPromise = relocateCoverThumbnail(articleId, newImageId);
+      await Promise.all([coverImagePromise, thumbnailPromise]);
+
+      const articleRef = this.articleDetailRef(articleId);
+      await articleRef.update({ coverImageId: newImageId });
+      return { articleId, newImageId };
+    };
+
+    const querySnap = await this.allArticlesRef().get().toPromise();
+    const relocationPromises = [];
+
+    for (let docSnap of querySnap.docs) {
+      const { articleId, coverImageId } = docSnap.data();
+      if (!coverImageId) {
+        relocationPromises.push(relocateArticleImages(articleId));
+      }
+    }
+
+    return Promise.all(relocationPromises);
+  };
+
   trackAllSlugs = () => {
     this.afs
-      .collection<IArticlePreview>('articleData/articles/previews')
+      .collection<ArticlePreviewI>('articleData/articles/previews')
       .get()
       .pipe(
         map(querySnaps =>
@@ -50,11 +155,35 @@ export class ArticleService {
       )
       .subscribe(all => {
         for (let item of all) {
-          console.log(item.id, item.slug);
+          console.info(item.id, item.slug);
           const slugRef = this.afd.object(`articleData/slugs/${item.slug}`);
           slugRef.set(item.id);
         }
       });
+  };
+
+  // Work-around for Firestore emulator suite bug:
+  addPointlessDocuments = async () => {
+    console.info('adding pointless stuff');
+    const firstPoint = await this.afs
+      .collection('articleData')
+      .doc('articles')
+      .set({ pointless: 'thing' }, { merge: true });
+    console.info('should have set articles', firstPoint);
+
+    const secondPoint = await this.afs
+      .collection('fileUploads')
+      .doc('articleUploads')
+      .set({ pointless: 'thing' });
+
+    console.info('should have set articleUploads', secondPoint);
+
+    const lastPoint = await this.afs
+      .collection('fileUploads')
+      .doc('profileUploads')
+      .set({ pointless: 'thing' });
+    console.info('should have set profileUploads', lastPoint);
+    return { firstPoint, secondPoint, lastPoint };
   };
   // end temp seeding code
 
@@ -65,23 +194,23 @@ export class ArticleService {
   // FIRESTORE REF BUILDERS
 
   articleDetailRef = (articleId: string) =>
-    this.afs.doc<IArticleDetail>(`articleData/articles/articles/${articleId}`);
+    this.afs.doc<ArticleDetailI>(`articleData/articles/articles/${articleId}`);
 
   versionDetailRef = (articleId: string, versionId: string) =>
-    this.afs.doc<IArticleDetail>(
+    this.afs.doc<ArticleDetailI>(
       `articleData/articles/articles/${articleId}/history/${versionId}`,
     );
 
   articlePreviewRef = (articleId: string) =>
-    this.afs.doc<IArticlePreview>(`articleData/articles/previews/${articleId}`);
+    this.afs.doc<ArticlePreviewI>(`articleData/articles/previews/${articleId}`);
 
   allArticlesRef = () =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.orderBy('lastUpdated', 'desc').where('isFlagged', '==', false),
     );
 
   latestArticlesRef = () =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref
         .orderBy('timestamp', 'desc')
         .where('isFlagged', '==', false)
@@ -89,25 +218,25 @@ export class ArticleService {
     );
 
   allArticleVersionsRef = (articleId: string) =>
-    this.afs.collection<IVersionDetail>(
+    this.afs.collection<ArticleDetailI>(
       `/articleData/articles/articles/${articleId}/history`,
       ref => ref.orderBy('version', 'desc'),
     );
 
   articleVersionDetailRef = (articleId: string, version: string) =>
-    this.afs.doc<IVersionDetail>(
+    this.afs.doc<ArticleDetailI>(
       `articleData/articles/articles/${articleId}/history/${version}`,
     );
 
   // TODO: Either re-structure data to duplicate editors (array of IDs and map of edit counts) or store edit counts in RTDB or other doc?
   // Explanation: Compound queries still seem not to work. I can not do .where(`editors.${editorId}`) in addition to ordering by lastUpdated and filtering out flagged content...
   articlesByEditorRef = (editorId: string) =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.where(`editors.${editorId}`, '>', 0),
     );
 
   articlesByAuthorRef = (authorId: string) =>
-    this.afs.collection<IArticlePreview>('articleData/articles/previews', ref =>
+    this.afs.collection<ArticlePreviewI>('articleData/articles/previews', ref =>
       ref.where('authorId', '==', authorId).orderBy('timestamp', 'desc'),
     );
 
@@ -126,9 +255,7 @@ export class ArticleService {
         // switchMap is like map but removes observable nesting
         const keys = bookmarkSnaps.map(snap => snap.key);
         const articleSnapshots = keys.map(key =>
-          this.articlePreviewRef(key)
-            .valueChanges()
-            .pipe(take(1)),
+          this.articlePreviewRef(key).valueChanges().pipe(take(1)),
         );
         return combineLatest(articleSnapshots);
       }),
@@ -146,10 +273,10 @@ export class ArticleService {
     const updates = {};
     updates[
       `userInfo/articleBookmarksPerUser/${uid}/${articleId}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     updates[
       `articleData/userBookmarksPerArticle/${articleId}/${uid}`
-    ] = rtServerTimestamp;
+    ] = this.fbSvc.rtServerTimestamp;
     this.afd.database.ref().update(updates);
   };
   // end bookmark stuff
@@ -163,6 +290,10 @@ export class ArticleService {
     editorId: string,
     status: boolean,
   ) => {
+    // the onDisconnect stuff seems to rely on browser API, I thin setTimeout()
+    // and none of this needs to happen server-side anyway...
+    if (this.platformSvc.isServer) return;
+
     const editorsPath = `articleData/editStatus/editorsByArticle/${articleId}/${editorId}`;
     const articlesPath = `articleData/editStatus/articlesByEditor/${editorId}/${articleId}`;
 
@@ -204,7 +335,7 @@ export class ArticleService {
     return batch;
   };
 
-  updateArticle = async (article: IArticleDetail) => {
+  updateArticle = async (article: ArticleDetailI) => {
     const editorId = this.authSvc.authInfo$.value.uid;
     if (!editorId)
       throw new Error(
@@ -221,7 +352,7 @@ export class ArticleService {
     editors[editorId] = editsPerEditor + 1;
     articleToSave.editors = editors;
     articleToSave.lastEditorId = editorId;
-    articleToSave.lastUpdated = fsServerTimestamp;
+    articleToSave.lastUpdated = this.fbSvc.fsServerTimestamp();
     articleToSave.slug = newSlug;
     articleToSave.version++;
 
@@ -256,11 +387,11 @@ export class ArticleService {
 
   createArticle = async (
     author: IUserInfo,
-    article: IArticleDetail,
+    article: ArticleDetailI,
     articleId: string,
   ) => {
     if (article.articleId || !articleId)
-      throw "we can't create an article without an ID, and the IArticleDetail should lack an ID";
+      throw "we can't create an article without an ID, and the ArticleDetailI should lack an ID";
 
     const authorId = this.authSvc.authInfo$.value.uid;
     if (!author || !authorId)
@@ -282,8 +413,8 @@ export class ArticleService {
       editors: {},
       authorId,
       articleId,
-      lastUpdated: fsServerTimestamp,
-      timestamp: fsServerTimestamp,
+      lastUpdated: this.fbSvc.fsServerTimestamp(),
+      timestamp: this.fbSvc.fsServerTimestamp(),
       lastEditorId: authorId,
       slug: newSlug,
       authorImageUrl: author.imageUrl || '../../assets/images/logo.svg',
@@ -300,33 +431,49 @@ export class ArticleService {
 
   uploadCoverImage = (articleId: string, file: File) => {
     try {
-      const storageRef = this.storage.ref(`articleCoverImages/${articleId}`);
+      const newImageId = this.createId();
+      const storageRef = this.storage.ref(
+        `articleCoverImages/${articleId}/${newImageId}`,
+      );
       const task = storageRef.put(file);
-      return { task, ref: storageRef };
+      return { task, storageRef, newImageId };
     } catch (error) {
       console.error(error);
     }
   };
 
-  setThumbnailImageUrl = async (articleId: string) => {
-    const storagePath = `articleCoverThumbnails/${articleId}`;
-    const storageRef = this.storage.ref(storagePath);
-    const url = await storageRef.getDownloadURL().toPromise();
-    const trackerDocRef = this.afs.doc(
-      `fileUploads/articleUploads/coverThumbnails/${articleId}`,
-    );
-    const articleDocRef = this.afs.doc<IArticlePreview>(
-      `articleData/articles/previews/${articleId}`,
-    );
+  uploadBodyImage = (articleId: string, imageId: string, image: File) => {
+    try {
+      if (!articleId || !imageId) {
+        throw new Error(
+          'Body images must be associated with an article id and an imageId one or more were not provided.',
+        );
+      }
 
-    const trackerSet = trackerDocRef.set({
-      downloadUrl: url,
-      path: storagePath,
-    });
-    const articleUpdate = articleDocRef.update({ imageUrl: url });
-    return await Promise.all([trackerSet, articleUpdate]);
+      const { name, type } = image;
+      const isImage = type.startsWith('image/');
+
+      if (!isImage) {
+        throw new Error(
+          'Only images can be uploaded for body images. This seems to be another file type.',
+        );
+      }
+
+      const fileExtension = name.slice(((name.lastIndexOf('.') - 1) >>> 0) + 2);
+      const storageRef = this.storage.ref(
+        `articleBodyImages/${articleId}/${imageId}.${fileExtension}`,
+      );
+      const task = storageRef.put(image);
+      return { task, storageRef };
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  // Checks RTDB for a slug => id reference
+  // if it finds it we assume we got a slug and return the result
+  // otherwise we assume we got an id and return what was passed in
+  // no significant performance implications because RTDB is low latency
   getIdFromSlugOrId = (slugOrId: string) =>
     this.slugIdRef(slugOrId)
       .valueChanges()
@@ -356,9 +503,9 @@ export class ArticleService {
       .replace(/-+$/, ''); // Trim - from end of text
   };
 
-  createArticleId = () => this.afs.createId();
+  createId = () => this.afs.createId();
 
-  processArticleTimestamps = (article: IArticlePreview | IArticleDetail) => {
+  processArticleTimestamps = (article: ArticlePreviewI | ArticleDetailI) => {
     const { timestamp, lastUpdated } = article;
     if (timestamp) article.timestamp = timestamp.toDate();
     if (lastUpdated) article.lastUpdated = lastUpdated.toDate();

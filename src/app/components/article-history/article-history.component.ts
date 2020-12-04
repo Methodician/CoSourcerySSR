@@ -8,11 +8,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap, startWith, switchMap } from 'rxjs/operators';
 
-import { IVersionPreview, IVersionDetail } from '@models/article-info';
+import { ArticleDetailI } from '@shared_models/article.models';
 import { ArticleService } from '@services/article.service';
 
-const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
-  'allArticleVersions'
+const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<ArticleDetailI[]>>(
+  'allArticleVersions',
 );
 
 @Component({
@@ -21,48 +21,54 @@ const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<IVersionPreview[]>>(
   styleUrls: [
     './article-history.component.scss',
     '../home/home.component.scss',
-  ]
+  ],
 })
 export class ArticleHistoryComponent implements OnInit {
-
+  allArticleVersions$: Observable<ArticleDetailI[]>;
   articleId: string;
-  allArticleVersions$: Observable<IVersionPreview[]>;
-
   constructor(
     private articleSvc: ArticleService,
     private state: TransferState,
     private route: ActivatedRoute,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.route.params.pipe(switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id']))).subscribe(id => {
-      this.articleId = id;
-      this.initializeArticles();
-    });
+    this.route.params
+      .pipe(
+        tap(params => (this.articleId = params['id'])),
+        switchMap(params => this.articleSvc.getIdFromSlugOrId(params['id'])),
+      )
+      .subscribe(id => {
+        this.initializeArticles(id);
+      });
   }
 
-  initializeArticles = () => {
-    this.allArticleVersions$ = this.ssrArticleVersionCollection(
-      this.articleSvc.allArticleVersionsRef(this.articleId).valueChanges(),
-      ALL_ARTICLE_VERSIONS_KEY
-    );
-  };
+  initializeArticles = (articleId: string) =>
+    (this.allArticleVersions$ = this.ssrArticleVersionCollection(
+      this.articleSvc.allArticleVersionsRef(articleId).valueChanges(),
+      ALL_ARTICLE_VERSIONS_KEY,
+    ));
 
-  clearArticleKeys = () => {
-    this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
-  };
+  clearArticleKeys = () => this.state.set(ALL_ARTICLE_VERSIONS_KEY, null);
 
   ssrArticleVersionCollection = (
-    versions$: Observable<IVersionDetail[]>,
-    stateKey: StateKey<Observable<IVersionDetail[]>>
+    versions$: Observable<ArticleDetailI[]>,
+    stateKey: StateKey<Observable<ArticleDetailI[]>>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return versions$.pipe(
       map(versions =>
-        versions.map(version => this.articleSvc.processArticleTimestamps(version))
+        versions.map(version =>
+          this.articleSvc.processArticleTimestamps(version),
+        ),
       ),
       tap(versions => this.state.set(stateKey, versions)),
-      startWith(preExisting$)
+      startWith(preExisting$),
     );
   };
+
+  // HELPERS
+  createPreviewLink = (article: ArticleDetailI) =>
+    `/article/${article.articleId}/history/${article.version}`;
+  // end helpers
 }

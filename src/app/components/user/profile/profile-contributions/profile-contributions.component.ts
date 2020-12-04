@@ -9,7 +9,7 @@ import {
 import { ArticleService } from '@services/article.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { IArticlePreview } from '@models/article-info';
+import { ArticleDetailI, ArticlePreviewI } from '@shared_models/article.models';
 
 @Component({
   selector: 'cos-profile-contributions',
@@ -22,16 +22,16 @@ export class ProfileContributionsComponent
 
   isAuthoredExpanded = false;
   isEditedExpanded = false;
-  authoredArticles$: Observable<IArticlePreview[]>;
-  editedArticles$: Observable<IArticlePreview[]>;
+  authoredArticles$: Observable<ArticlePreviewI[]>;
+  editedArticles$: Observable<ArticlePreviewI[]>;
 
-  private minDisplayNum = 6;
+  private minDisplayNum = 3;
   private unsubscribe$: Subject<void> = new Subject();
   constructor(private articleSvc: ArticleService) {}
 
   ngOnInit() {
     if (!this.profileId) {
-      console.log('no profileId in contributors component');
+      console.warn('no profileId in contributors component');
       return;
     }
     this.watchAuthoredArticles();
@@ -39,7 +39,6 @@ export class ProfileContributionsComponent
   }
 
   ngOnDestroy() {
-    // TODO: Remove this unsubscriber if the component does not use it.
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -69,12 +68,12 @@ export class ProfileContributionsComponent
         map(articles =>
           this.isAuthoredExpanded
             ? articles
-            : this.limitDisplayedResults(articles)
+            : this.limitDisplayedResults(articles),
         ),
         map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
         ),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
       );
   };
 
@@ -86,15 +85,17 @@ export class ProfileContributionsComponent
         map(articles =>
           this.isEditedExpanded
             ? articles
-            : this.limitDisplayedResults(articles)
+            : this.limitDisplayedResults(articles),
         ),
         map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art))
+          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
         ),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
       );
   };
 
   limitDisplayedResults = (results: any[]) =>
     results.slice(0, this.minDisplayNum);
+
+  createPreviewLink = (article: ArticleDetailI) => `/article/${article.slug}`;
 }

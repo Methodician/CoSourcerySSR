@@ -1,13 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-
-import { map, switchMap } from 'rxjs/operators';
-
-import { ArticleService } from '@services/article.service';
-import { IArticlePreview } from '@models/article-info';
-import { AuthService } from '@services/auth.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { ArticlePreviewI } from '@shared_models/article.models';
+import { Subject, Observable } from 'rxjs';
 import { StorageService } from '@services/storage.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-article-preview-card',
@@ -15,24 +10,16 @@ import { StorageService } from '@services/storage.service';
   styleUrls: ['./article-preview-card.component.scss'],
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
-  @Input() articleData: IArticlePreview;
+  @Input() linkTo: string;
+  @Input() articleData: ArticlePreviewI;
   coverImageUrl = '';
-  isArticleBookmarked$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  isArticleBookmarked$: Observable<boolean>;
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(
-    private articleSvc: ArticleService,
-    private authSvc: AuthService,
-    private storageSvc: StorageService,
-  ) {}
+  constructor(private storageSvc: StorageService) {}
 
   ngOnInit() {
     this.watchCoverImageUrl();
-    this.isArticleBookmarked()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(val => {
-        this.isArticleBookmarked$.next(val);
-      });
   }
 
   ngOnDestroy() {
@@ -41,43 +28,14 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   }
 
   watchCoverImageUrl = () => {
-    this.storageSvc
-      .getImageUrl(`articleCoverThumbnails/${this.articleData.articleId}`)
-      .subscribe(url => {
-        this.coverImageUrl = url;
-      });
-  };
-
-  isValidUrl = (str: string) => {
-    try {
-      return Boolean(new URL(str));
-    } catch (_) {
-      return false;
+    const { articleId, coverImageId } = this.articleData;
+    if (!!coverImageId) {
+      this.storageSvc
+        .getImageUrl(`articleCoverThumbnails/${articleId}/${coverImageId}`)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => {
+          this.coverImageUrl = url;
+        });
     }
-  };
-
-  isArticleBookmarked = () =>
-    this.authSvc.authInfo$.pipe(
-      switchMap(info =>
-        this.articleSvc
-          .singleBookmarkRef(info.uid, this.articleData.articleId)
-          .valueChanges(),
-      ),
-      map(bookmark => !!bookmark),
-    );
-
-  onToggleBookmark = () => {
-    this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-      if (isSignedIn) {
-        const uid = this.authSvc.authInfo$.value.uid,
-          aid = this.articleData.articleId,
-          isbookmarked = this.isArticleBookmarked$.value;
-        if (isbookmarked) {
-          this.articleSvc.unBookmarkArticle(uid, aid);
-        } else {
-          this.articleSvc.bookmarkArticle(uid, aid);
-        }
-      }
-    });
   };
 }

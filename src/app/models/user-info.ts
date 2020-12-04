@@ -22,7 +22,7 @@ export class CUserInfo implements IUserInfo {
   public city?: string;
   public state?: string;
 
-  constructor(public user: IUserInfo) {
+  constructor(user: IUserInfo) {
     this.alias = user.alias;
     this.fName = user.fName;
     this.lName = user.lName;

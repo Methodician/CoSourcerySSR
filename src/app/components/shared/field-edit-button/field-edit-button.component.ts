@@ -28,4 +28,7 @@ export class FieldEditButtonComponent implements OnInit {
     parentEl.onmouseenter = () => (this.isParentHovered = true);
     parentEl.onmouseleave = () => (this.isParentHovered = false);
   }
+
+  tooltipDisplay = () =>
+    `${this.isActive ? 'Close' : 'Edit'} ${this.tooltipName}`;
 }

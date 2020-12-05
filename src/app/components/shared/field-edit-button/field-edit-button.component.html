@@ -1,11 +1,10 @@
 <button
   class="mat-icon-btn"
   [ngClass]="{ active: isActive, 'parent-hovered': isParentHovered }"
+  [disabled]="!isParentHovered"
   type="button"
   (click)="clicked.emit()"
+  [matTooltip]="tooltipDisplay()"
 >
   <mat-icon>{{ isActive ? 'clear' : 'edit' }}</mat-icon>
-  <span class="mat-icon-btn__tooltip mat-icon-btn__tooltip_left"
-    >{{ isActive ? 'Close' : 'Edit' }} {{ tooltipName }}</span
-  >
 </button>

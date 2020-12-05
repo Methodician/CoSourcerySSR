@@ -1,18 +1,51 @@
 <main>
   <h2 class="headline">Wise Ape's profile</h2>
-  <article class="main-card">
-    <section class="pic">
-      <!-- <img
+  <article class="profile-card">
+    <!-- <section class="pic"> -->
+    <!-- <img
           src="https://firebasestorage.googleapis.com/v0/b/cosourcery.appspot.com/o/profileImages%2FXb8LjcdbBhhzbsmb9TWarfYx6SK2?alt=media&token=05992704-2731-47a5-a338-c92a1fbe98f1"
           alt=""
         /> -->
-      <img
-        src="https://firebasestorage.googleapis.com/v0/b/cosourcery.appspot.com/o/profileImages%2FRGkcnuAnlGYsKuooNuNGELuJjSh2?alt=media&token=e38641c3-2acb-4e80-9490-e6f191210193"
-        alt=""
-      />
-    </section>
+    <img
+      src="https://firebasestorage.googleapis.com/v0/b/cosourcery.appspot.com/o/profileImages%2FRGkcnuAnlGYsKuooNuNGELuJjSh2?alt=media&token=e38641c3-2acb-4e80-9490-e6f191210193"
+      alt=""
+    />
+    <!-- </section> -->
     <section class="basics">
-      <section class="profile-basics first-name">
+      <div class="names">
+        <div class="full-name">
+          <h5 class="name first-name">
+            <cos-field-edit-button
+              class="edit-button"
+              [isActive]="isCtrlActive('fName')"
+              tooltipName="First Name"
+              (clicked)="toggleCtrl('fName')"
+            ></cos-field-edit-button>
+            Jacob
+          </h5>
+
+          <h5 class="name last-name">
+            <cos-field-edit-button
+              class="edit-button"
+              [isActive]="isCtrlActive('lName')"
+              tooltipName="Last Name"
+              (clicked)="toggleCtrl('lName')"
+            ></cos-field-edit-button
+            >Johnston
+          </h5>
+        </div>
+        <p class="aka">aka</p>
+        <h5 class="name alias">
+          <cos-field-edit-button
+            class="edit-button"
+            [isActive]="isCtrlActive('alias')"
+            tooltipName="Alias"
+            (clicked)="toggleCtrl('alias')"
+          ></cos-field-edit-button
+          >Wise Ape
+        </h5>
+      </div>
+      <!-- <section class="profile-basics first-name">
         <p>First Name:</p>
         <h5>Jacob</h5>
       </section>
@@ -23,7 +56,7 @@
       <section class="profile-basics alias">
         <p>Alias:</p>
         <h5>Wise Ape</h5>
-      </section>
+      </section> -->
     </section>
   </article>
   <section class="bio">

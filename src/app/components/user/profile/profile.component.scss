@@ -2,112 +2,155 @@
 @import '../../../sass/vars.scss';
 @import '../profile/profilee.component.scss';
 
+$tb-red: 2px solid red;
+$tb-blue: 2px solid blue;
+$tb-lime: 2px solid lime;
+$tb-orange: 2px solid orange;
+$tb-yellow: 2px solid yellow;
+$tb-black: 2px solid black;
+$tb-cyan: 2px solid cyan;
+
 main {
-  padding: 24px 24px 48px;
+  padding: 10px 12px 99px;
 
   .headline {
     color: $primary-color;
     text-align: center;
   }
 
-  .main-card {
-    padding: 30px;
+  .profile-card {
+    padding: 15px;
     box-shadow: 0 3px 7px $light-gray;
     margin: auto;
     // May make sense to switch to grid, but idunno it was hard when I tried
     display: flex;
     flex-direction: column;
-  }
 
-  &__info-wrapper,
-  &__form-wrapper,
-  &__contributions-wrapper {
-    align-items: center;
-    padding: 30px;
-    box-shadow: 0 2px 5px $light-gray-50;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-  }
+    // .pic {
+    img {
+      width: 100%;
+    }
+    // }
 
-  &__info-wrapper,
-  &__form-wrapper {
-    max-width: 768px;
-  }
+    .basics {
+      .names {
+        // border: $tb-red;
+        // display: flex;
+        // justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 3em 1fr;
 
-  &__contributions-wrapper {
-    max-width: 1008px;
-    margin-top: 20px;
-  }
-}
-
-.profile-card {
-  &__input {
-    width: 100%;
-    min-width: 0;
-    margin-bottom: 20px;
-    position: relative;
-
-    input:read-only {
-      color: $medium-gray;
+        .full-name {
+          display: inline-flex;
+          .last-name {
+            margin-left: 0.7em;
+          }
+        }
+        .aka {
+          text-align: center;
+        }
+        .alias {
+          text-align: right;
+        }
+      }
     }
   }
 
-  &__input-group {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
+  @media screen and (min-width: $phone-lg) {
+    padding: 24px 24px 48px;
 
-    @media screen and (min-width: 500px) {
-      grid-template-columns: 1fr 1fr;
-      grid-gap: 20px;
-    }
-
-    @media screen and (min-width: 700px) {
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-gap: 20px;
+    .main-card {
+      padding: 300px;
     }
   }
-}
 
-.profile-image {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  margin-bottom: 24px;
-
-  &__src {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-
-  &__input {
-    width: 100%;
-    min-width: 0;
-    max-width: 250px;
-    visibility: hidden;
+  cos-field-edit-button {
     position: absolute;
-    bottom: 20px;
-    padding: 6px;
-    border: 1px solid $light-gray-50;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    cursor: pointer;
+    margin-top: 1em;
   }
+  // &__info-wrapper,
+  // &__form-wrapper,
+  // &__contributions-wrapper {
+  //   align-items: center;
+  //   padding: 30px;
+  //   box-shadow: 0 2px 5px $light-gray-50;
+  //   margin: auto;
+  //   display: flex;
+  //   flex-direction: column;
+  // }
 
-  &:hover &__input {
-    visibility: visible;
-  }
+  // &__info-wrapper,
+  // &__form-wrapper {
+  //   max-width: 768px;
+  // }
+
+  // &__contributions-wrapper {
+  //   max-width: 1008px;
+  //   margin-top: 20px;
+  // }
 }
 
-cos-field-edit-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+// .profile-card {
+//   &__input {
+//     width: 100%;
+//     min-width: 0;
+//     margin-bottom: 20px;
+//     position: relative;
+
+//     input:read-only {
+//       color: $medium-gray;
+//     }
+//   }
+
+//   &__input-group {
+//     width: 100%;
+//     display: grid;
+//     grid-template-columns: 1fr;
+
+//     @media screen and (min-width: 500px) {
+//       grid-template-columns: 1fr 1fr;
+//       grid-gap: 20px;
+//     }
+
+//     @media screen and (min-width: 700px) {
+//       grid-template-columns: 1fr 1fr 1fr;
+//       grid-gap: 20px;
+//     }
+//   }
+// }
+
+// .profile-image {
+//   width: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   position: relative;
+//   margin-bottom: 24px;
+
+//   &__src {
+//     height: 100%;
+//     width: 100%;
+//     object-fit: cover;
+//   }
+
+//   &__input {
+//     width: 100%;
+//     min-width: 0;
+//     max-width: 250px;
+//     visibility: hidden;
+//     position: absolute;
+//     bottom: 20px;
+//     padding: 6px;
+//     border: 1px solid $light-gray-50;
+//     border-radius: 4px;
+//     background-color: #f8f8f8;
+//     cursor: pointer;
+//   }
+
+//   &:hover &__input {
+//     visibility: visible;
+//   }
+// }
 
 // main {
 //   display: grid;

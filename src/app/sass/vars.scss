@@ -69,30 +69,30 @@ $lg-width: 145px;
 $lg-font-size: 22px;
 
 // Variables for media query
-$tablet-portrait-up: 600;
-$tablet-landscape-up: 900;
-$desktop-up: 1200;
-$large-desktop-up: 1800;
+$tablet-portrait-up: 600px;
+$tablet-landscape-up: 900px;
+$desktop-up: 1200px;
+$large-desktop-up: 1800px;
 
 //Average screen widths
-$phone-lg: 414;
-$phone-md: 375;
-$phone-sm: 320;
+$phone-lg: 480px;
+$phone-md: 375px;
+$phone-sm: 320px;
 
 //iPhone
-$iphone-lg: 414;
-$iphone-md: 375;
-$iphone-sm: 320;
+$iphone-lg: 420px;
+$iphone-md: 375px;
+$iphone-sm: 320px;
 
 //Android
-$android-lg: 480;
-$android-md: 411;
-$android-sm: 360;
+$android-lg: 480px;
+$android-md: 411px;
+$android-sm: 360px;
 
 //General viewport widths
-$tablet-sm: 576;
-$tablet-md: 780;
-$tablet-lg: 992;
-$desktop-sm: 1200;
-$desktop-md: 1440;
-$desktop-lg: 1650;
+$tablet-sm: 576px;
+$tablet-md: 780px;
+$tablet-lg: 992px;
+$desktop-sm: 1200px;
+$desktop-md: 1440px;
+$desktop-lg: 1650px;

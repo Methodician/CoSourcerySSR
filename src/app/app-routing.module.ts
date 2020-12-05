@@ -11,6 +11,7 @@ import { AuthGuard } from '@guards/auth.guard';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
 import { UnsavedChangesGuard } from '@guards/unsaved-changes.guard';
 import { VersionDetailComponent } from './components/article-history/version-detail/version-detail.component';
+import { ProfileComponent } from '@components/user/profile/profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -36,12 +37,16 @@ const routes: Routes = [
   },
   { path: 'register', component: RegisterComponent },
   {
-    path: 'profile',
+    path: 'profilee',
     children: [
       { path: ':uid', component: ProfileDisplayComponent },
       // TODO: implement AuthGuard for this guy
       { path: '', component: ProfileEditComponent },
     ],
+  },
+  {
+    path: 'profile/:uid',
+    component: ProfileComponent,
   },
   {
     path: 'notloggedin',
@@ -54,9 +59,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled'
-})],
+  imports: [
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabled',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

@@ -79,6 +79,7 @@ import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
 import { FieldEditButtonComponent } from './components/shared/field-edit-button/field-edit-button.component';
 import { ProfileComponent } from './components/user/profile/profile.component';
+import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
 // end components
 
 @NgModule({
@@ -126,6 +127,7 @@ import { ProfileComponent } from './components/user/profile/profile.component';
     PreviewGridComponent,
     FieldEditButtonComponent,
     ProfileComponent,
+    InputDialogComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

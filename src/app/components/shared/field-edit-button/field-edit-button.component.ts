@@ -23,7 +23,6 @@ export class FieldEditButtonComponent implements OnInit {
   constructor(private elRef: ElementRef) {}
 
   ngOnInit(): void {
-    console.log(this.elRef.nativeElement.parentElement);
     const parentEl: HTMLElement = this.elRef.nativeElement.parentElement;
     parentEl.onmouseenter = () => (this.isParentHovered = true);
     parentEl.onmouseleave = () => (this.isParentHovered = false);

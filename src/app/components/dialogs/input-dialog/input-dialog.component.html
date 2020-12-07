@@ -1,0 +1,9 @@
+<form [formGroup]="inputForm">
+  <h1 class="dialog-title">{{ dialogTitle }}</h1>
+  <mat-form-field>
+    <mat-label *ngIf="inputLabel">{{ inputLabel }}</mat-label>
+    <input type="text" matInput formControlName="input" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+  <button class="cos-btn" (click)="onSubmit()">submit</button>
+</form>

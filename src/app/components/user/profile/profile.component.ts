@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CUserInfo, IUserInfo } from '@models/user-info';
 import { AuthService } from '@services/auth.service';
+import { DialogService } from '@services/dialog.service';
 import { ISEOtags, SeoService } from '@services/seo.service';
 import { UserService } from '@services/user.service';
 import { Subject } from 'rxjs';
@@ -25,10 +27,19 @@ export class ProfileComponent implements OnInit {
     private userSvc: UserService,
     private authSvc: AuthService,
     private seoSvc: SeoService,
+    private dialogSvc: DialogService,
   ) {}
 
   ngOnInit(): void {
     this.watchRouteAndUser();
+    this.dialogSvc
+      .openInputDialog('Enter first name', 'test', [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(7),
+      ])
+      .afterClosed()
+      .subscribe(console.log);
   }
 
   ngOnDestroy(): void {
@@ -55,7 +66,6 @@ export class ProfileComponent implements OnInit {
   };
 
   watchRouteAndUser = () => {
-    console.log('user');
     this.route.params
       .pipe(
         map(params => params['uid']),
@@ -81,7 +91,6 @@ export class ProfileComponent implements OnInit {
 
   addUserTags = (userObject: IUserInfo) => {
     const user = new CUserInfo(userObject);
-    console.log(user);
     const name = user.displayName();
     const imageUrl = user.displayImageUrl();
     const { bio, city, state, alias, fName, lName } = user;

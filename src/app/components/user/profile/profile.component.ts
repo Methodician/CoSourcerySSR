@@ -63,6 +63,15 @@ export class ProfileComponent implements OnInit {
       throw new Error(
         `A user with uid ${this.authSvc.authInfo$.value.uid} is attempting to edit another user\'s profile (their uid is ${this.user.uid})`,
       );
+    if (ctrlName === 'fName')
+      this.dialogSvc
+        .openInputDialog('Enter first name', 'Jacob', [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(7),
+        ])
+        .afterClosed()
+        .subscribe(console.log);
   };
 
   watchRouteAndUser = () => {

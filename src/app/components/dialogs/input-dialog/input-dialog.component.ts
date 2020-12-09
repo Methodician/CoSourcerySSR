@@ -8,10 +8,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./input-dialog.component.scss'],
 })
 export class InputDialogComponent implements OnInit {
-  dialogTitle: string;
-  inputPlaceholder: string;
   inputLabel: string;
   initialValue: string;
+  shouldUseTextArea: boolean;
+  dialogTitle: string;
+  inputPlaceholder: string;
 
   inputValidators: ValidatorFn | ValidatorFn[];
   inputForm: FormGroup;
@@ -23,9 +24,10 @@ export class InputDialogComponent implements OnInit {
     data: {
       inputLabel: string;
       initialValue: string;
+      shouldUseTextArea: boolean;
+      inputValidators: ValidatorFn | ValidatorFn[];
       dialogTitle: string;
       inputPlaceholder: string;
-      inputValidators: ValidatorFn | ValidatorFn[];
     },
   ) {
     if (!data.inputLabel || !data.initialValue) {
@@ -38,12 +40,14 @@ export class InputDialogComponent implements OnInit {
     const {
       inputLabel,
       initialValue,
+      shouldUseTextArea,
       inputValidators,
       dialogTitle,
       inputPlaceholder,
     } = data;
     this.inputLabel = inputLabel;
     this.initialValue = initialValue;
+    this.shouldUseTextArea = shouldUseTextArea;
     this.inputValidators = inputValidators;
     this.dialogTitle = dialogTitle;
     this.inputPlaceholder = inputPlaceholder;

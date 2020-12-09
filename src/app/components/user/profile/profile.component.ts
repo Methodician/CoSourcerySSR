@@ -118,11 +118,7 @@ export class ProfileComponent implements OnInit {
         break;
       case 'alias':
         this.dialogSvc
-          .openInputDialog(
-            'Enter last name',
-            this.user.alias,
-            this.aliasValidators,
-          )
+          .openInputDialog('Enter alias', this.user.alias, this.aliasValidators)
           .afterClosed()
           .subscribe(res => {
             if (res) {
@@ -135,7 +131,7 @@ export class ProfileComponent implements OnInit {
       case 'zipCode':
         this.dialogSvc
           .openInputDialog(
-            'Enter last name',
+            'Enter zip code',
             this.user.zipCode,
             this.zipCodeValidators,
           )
@@ -150,7 +146,12 @@ export class ProfileComponent implements OnInit {
         break;
       case 'bio':
         this.dialogSvc
-          .openInputDialog('Enter last name', this.user.bio, this.bioValidators)
+          .openInputDialog(
+            'Edit your bio',
+            this.user.bio,
+            this.bioValidators,
+            true,
+          )
           .afterClosed()
           .subscribe(res => {
             if (res) {
@@ -163,7 +164,7 @@ export class ProfileComponent implements OnInit {
       case 'city':
         this.dialogSvc
           .openInputDialog(
-            'Enter last name',
+            'Enter city name',
             this.user.city,
             this.cityValidators,
           )
@@ -179,7 +180,7 @@ export class ProfileComponent implements OnInit {
       case 'state':
         this.dialogSvc
           .openInputDialog(
-            'Enter last name',
+            'Enter two-character state code',
             this.user.state,
             this.stateValidators,
           )

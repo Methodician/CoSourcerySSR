@@ -16,10 +16,12 @@ import { ValidatorFn } from '@angular/forms';
 export class DialogService {
   constructor(private dialog: MatDialog) {}
 
+  // It may make sense to convert these args to object with named config params
   openInputDialog = (
     inputLabel: string,
     initialValue: string,
     inputValidators?: ValidatorFn | ValidatorFn[],
+    shouldUseTextArea: boolean = false,
     dialogTitle?: string,
     inputPlaceholder?: string,
   ) => {
@@ -27,10 +29,16 @@ export class DialogService {
     dialogConfig.data = {
       inputLabel,
       initialValue,
+      shouldUseTextArea,
       inputValidators,
       dialogTitle,
       inputPlaceholder,
     };
+
+    if (shouldUseTextArea) {
+      dialogConfig.height = '90vh';
+      dialogConfig.width = '90vw';
+    }
 
     const dialogRef = this.dialog.open(InputDialogComponent, dialogConfig);
     return dialogRef;

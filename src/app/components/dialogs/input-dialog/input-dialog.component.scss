@@ -1,0 +1,12 @@
+form {
+  max-height: 50%;
+  mat-form-field {
+    height: 90%;
+    width: 90%;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-evenly;
+  }
+}

@@ -69,9 +69,10 @@ export class InputDialogComponent implements OnInit {
     }
   };
 
+  onCancel = () => this.dialogRef.close(this.initialValue);
+
   errorText = () => {
     const { errors } = this.inputForm.get('input');
-    console.log({ errors });
     if (!errors) {
       return;
     }

@@ -33,25 +33,30 @@ main {
     // }
 
     .basics {
+      padding: 0 1em;
       .names {
+        display: flex;
+        justify-content: space-between;
         // border: $tb-red;
         // display: flex;
         // justify-content: space-between;
-        display: grid;
-        grid-template-columns: 1fr 3em 1fr;
+        // display: grid;
+        // grid-template-columns: 1fr 3em 1fr;
 
+        .name {
+          margin-top: 15px;
+        }
         .full-name {
-          display: inline-flex;
-          .last-name {
-            margin-left: 0.7em;
+          .first-name {
+            margin-right: 0.7em;
           }
         }
-        .aka {
-          text-align: center;
-        }
-        .alias {
-          text-align: right;
-        }
+        // .aka {
+        //   text-align: center;
+        // }
+        // .alias {
+        //   text-align: right;
+        // }
       }
     }
   }
@@ -66,8 +71,150 @@ main {
 
   cos-field-edit-button {
     position: absolute;
-    margin-top: 1em;
+    margin-top: -0.5em;
   }
+
+  .save-undo-flag {
+    height: 58px;
+    width: 58px;
+    position: sticky;
+    bottom: 0;
+    float: right;
+    margin-right: 90px;
+    z-index: 1000;
+
+    .save-undo-sticky-position {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-top-right-radius: 100%;
+      border-top-left-radius: 100%;
+      box-shadow: 0 1px 5px $light-gray-50;
+      background-color: lighten($accent-color-1-dark, 15%);
+      transform: translateY(100%);
+      transition: transform 0.3s;
+
+      &.disabled {
+        background-color: $medium-gray;
+
+        .flag-pole {
+          background-color: $medium-gray;
+        }
+      }
+
+      &.extended {
+        transform: translateY(0);
+
+        .save-button {
+          transform: scale(1);
+        }
+      }
+
+      &.sticky {
+        position: fixed;
+        bottom: 0;
+      }
+    }
+
+    .flag {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: lighten($accent-color-1-dark, 15%);
+
+      &-axle {
+        height: 0;
+        width: 0;
+
+        &-270 {
+          transform: rotate(-90deg);
+          transition: transform 0.4s;
+
+          &_active {
+            transform: rotate(-360deg);
+            transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+          }
+        }
+
+        &-90 {
+          transform: rotate(90deg);
+          transition: transform 0.8s;
+
+          &_active {
+            transform: rotate(0deg);
+            transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+          }
+        }
+      }
+
+      &-pole {
+        height: 2px;
+        width: 40px;
+
+        &_left {
+          right: 0;
+        }
+
+        &_right {
+          left: 0;
+        }
+      }
+
+      &-tooltip {
+        left: 0;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: $dark-gray;
+        color: #fff;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transform: translateX(-100%);
+
+        &_changes {
+          display: block;
+        }
+
+        &_save,
+        &_restore {
+          display: none;
+        }
+      }
+    }
+
+    .save-control:hover ~ .flag {
+      .flag-tooltip_changes {
+        display: none;
+      }
+
+      .flag-tooltip_save {
+        display: block;
+      }
+    }
+
+    .restore-control:hover ~ .flag {
+      .flag-tooltip_changes {
+        display: none;
+      }
+
+      .flag-tooltip_restore {
+        display: block;
+      }
+    }
+
+    .save-button {
+      transform: scale(0);
+      transition: transform cubic-bezier(0.5, -0.35, 0.5, 1.35) 0.5s;
+    }
+
+    .restore-button {
+      position: absolute;
+      right: -45px;
+    }
+  }
+
   // &__info-wrapper,
   // &__form-wrapper,
   // &__contributions-wrapper {

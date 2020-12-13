@@ -79,6 +79,10 @@ export class ProfileComponent implements OnInit {
     this.activeCtrlName === ctrlName;
 
   toggleCtrl = (ctrlName: CtrlNamesProfileT) => {
+    if (!this.canEdit$.value) {
+      return;
+    }
+
     if (this.isCtrlActive(ctrlName)) this.activeCtrlName = 'none';
     else this.activateCtrl(ctrlName);
   };
@@ -304,7 +308,6 @@ export class ProfileComponent implements OnInit {
     user$.subscribe(user => {
       this.addUserTags(user);
       this.user = new CUserInfo(user);
-      console.log(this.user.displayName());
     });
 
     combineLatest([user$, this.canEdit$]).subscribe(([user, canEdit]) => {
@@ -381,7 +384,7 @@ export class ProfileComponent implements OnInit {
   saveTooltipText = () => `save ${this.user.alias}`;
 
   doesUserHaveAttr = (attrName: string) =>
-    !this.user[attrName] && this.user[attrName] !== '';
+    !!this.user[attrName] && this.user[attrName] !== '';
 }
 
 export type CtrlNamesProfileT =

@@ -10,6 +10,7 @@
   >
     <section class="pic" #pic>
       <img
+        (click)="toggleCtrl('image')"
         [src]="profileImageUrl ? profileImageUrl : '../assets/images/logo.svg'"
         alt="Profile Image"
       />
@@ -29,7 +30,7 @@
     </section>
     <section class="basics">
       <p>
-        <b>
+        <b (click)="toggleCtrl('fName')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -39,7 +40,7 @@
           ></cos-field-edit-button>
           {{ user.fName }}
         </b>
-        <b>
+        <b (click)="toggleCtrl('lName')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -50,7 +51,7 @@
           {{ user.lName }}
         </b>
         <span class="aka">, also known as</span>
-        <b>
+        <b (click)="toggleCtrl('alias')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -58,10 +59,10 @@
             tooltipName="Alias"
             (clicked)="toggleCtrl('alias')"
           ></cos-field-edit-button>
-          {{ doesUserHaveAttr['alias'] ? user.alias : '*no alias*' }}
+          {{ doesUserHaveAttr('alias') ? user.alias : '*no alias*' }}
         </b>
         <span (click)="toggleCtrl('city')">lives in </span>
-        <b>
+        <b (click)="toggleCtrl('city')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -69,10 +70,10 @@
             tooltipName="City"
             (clicked)="toggleCtrl('city')"
           ></cos-field-edit-button
-          >{{ doesUserHaveAttr['city'] ? user.city : '*no city*' }}</b
+          >{{ doesUserHaveAttr('city') ? user.city : '*no city*' }}</b
         >
         <span>, </span>
-        <b>
+        <b (click)="toggleCtrl('state')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -80,10 +81,10 @@
             tooltipName="State"
             (clicked)="toggleCtrl('state')"
           ></cos-field-edit-button
-          >{{ doesUserHaveAttr['state'] ? user.state : '*no state*' }}</b
+          >{{ doesUserHaveAttr('state') ? user.state : '*no state*' }}</b
         >
         <span>, </span>
-        <b>
+        <b (click)="toggleCtrl('zipCode')">
           <cos-field-edit-button
             *ngIf="canEdit$ | async"
             class="edit-button"
@@ -91,7 +92,7 @@
             tooltipName="Zip Code"
             (clicked)="toggleCtrl('zipCode')"
           ></cos-field-edit-button
-          >{{ doesUserHaveAttr['zipCode'] ? user.zipCode : '*no zip*' }}</b
+          >{{ doesUserHaveAttr('zipCode') ? user.zipCode : '*no zip*' }}</b
         >
       </p>
     </section>
@@ -104,8 +105,8 @@
       tooltipName="bio"
       (clicked)="toggleCtrl('bio')"
     ></cos-field-edit-button>
-    <p>
-      {{ doesUserHaveAttr['bio'] ? user.bio : '*no bio*' }}
+    <p (click)="toggleCtrl('bio')">
+      {{ doesUserHaveAttr('bio') ? user.bio : '*no bio*' }}
     </p>
   </section>
 

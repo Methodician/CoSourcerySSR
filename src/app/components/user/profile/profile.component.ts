@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
 
   private unsubscribe$: Subject<void> = new Subject();
 
-  user: IUserInfo;
+  user: CUserInfo;
   dbUser: IUserInfo;
   canEdit$ = new BehaviorSubject(false);
   activeCtrlName: CtrlNamesProfileT = 'none';
@@ -283,7 +283,7 @@ export class ProfileComponent implements OnInit {
 
   cancelChanges = () => {
     const { dbUser, form } = this;
-    this.user = dbUser;
+    this.user = new CUserInfo(dbUser);
     this.profileImageFile = null;
     this.watchImageUrl(this.user.uid);
     form.patchValue({ ...dbUser });
@@ -303,7 +303,8 @@ export class ProfileComponent implements OnInit {
 
     user$.subscribe(user => {
       this.addUserTags(user);
-      this.user = user;
+      this.user = new CUserInfo(user);
+      console.log(this.user.displayName());
     });
 
     combineLatest([user$, this.canEdit$]).subscribe(([user, canEdit]) => {
@@ -378,6 +379,9 @@ export class ProfileComponent implements OnInit {
   // wasUserEdited = () => false;
 
   saveTooltipText = () => `save ${this.user.alias}`;
+
+  doesUserHaveAttr = (attrName: string) =>
+    !this.user[attrName] && this.user[attrName] !== '';
 }
 
 export type CtrlNamesProfileT =

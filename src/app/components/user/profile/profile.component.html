@@ -1,5 +1,5 @@
 <main *ngIf="!!user">
-  <h2 class="headline">{{ user.alias }}'s profile</h2>
+  <h2 class="headline">{{ user.displayName() }}'s profile</h2>
   <article
     class="profile-card"
     matTooltip="Pro tip: tap or hover sections for editing options."
@@ -40,8 +40,9 @@
             tooltipName="Last Name"
             (clicked)="toggleCtrl('lName')"
           ></cos-field-edit-button>
-          {{ user.lName }} </b
-        >, also known as
+          {{ user.lName }}
+        </b>
+        <span class="aka">, also known as</span>
         <b>
           <cos-field-edit-button
             class="edit-button"
@@ -49,9 +50,9 @@
             tooltipName="Alias"
             (clicked)="toggleCtrl('alias')"
           ></cos-field-edit-button>
-          {{ user.alias }}
+          {{ doesUserHaveAttr['alias'] ? user.alias : '*no alias*' }}
         </b>
-        lives in
+        <span>lives in </span>
         <b>
           <cos-field-edit-button
             class="edit-button"
@@ -59,8 +60,9 @@
             tooltipName="City"
             (clicked)="toggleCtrl('city')"
           ></cos-field-edit-button
-          >{{ user.city }}</b
-        >,
+          >{{ doesUserHaveAttr['city'] ? user.city : '*no city*' }}</b
+        >
+        <span>, </span>
         <b>
           <cos-field-edit-button
             class="edit-button"
@@ -68,8 +70,9 @@
             tooltipName="State"
             (clicked)="toggleCtrl('state')"
           ></cos-field-edit-button
-          >{{ user.state }}</b
-        >,
+          >{{ doesUserHaveAttr['state'] ? user.state : '*no state*' }}</b
+        >
+        <span>, </span>
         <b>
           <cos-field-edit-button
             class="edit-button"
@@ -77,7 +80,7 @@
             tooltipName="Zip Code"
             (clicked)="toggleCtrl('zipCode')"
           ></cos-field-edit-button
-          >{{ user.zipCode }}</b
+          >{{ doesUserHaveAttr['zipCode'] ? user.zipCode : '*no zip*' }}</b
         >
       </p>
     </section>
@@ -90,7 +93,7 @@
       (clicked)="toggleCtrl('bio')"
     ></cos-field-edit-button>
     <p>
-      {{ user.bio }}
+      {{ doesUserHaveAttr['bio'] ? user.bio : '*no bio*' }}
     </p>
   </section>
 

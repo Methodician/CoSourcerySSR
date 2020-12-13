@@ -37,29 +37,9 @@ main {
 
     .basics {
       padding: 0 1em;
-      .names {
-        display: flex;
-        justify-content: space-between;
-        // border: $tb-red;
-        // display: flex;
-        // justify-content: space-between;
-        // display: grid;
-        // grid-template-columns: 1fr 3em 1fr;
 
-        .name {
-          margin-top: 15px;
-        }
-        .full-name {
-          .first-name {
-            margin-right: 0.7em;
-          }
-        }
-        // .aka {
-        //   text-align: center;
-        // }
-        // .alias {
-        //   text-align: right;
-        // }
+      .aka {
+        margin-left: -0.25em;
       }
     }
   }

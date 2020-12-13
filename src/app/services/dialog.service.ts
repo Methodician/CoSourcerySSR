@@ -108,7 +108,10 @@ export class DialogService {
       progress$,
     };
 
-    const dialogRef = this.dialog.open(ProgressDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open<ProgressDialogComponent, any, boolean>(
+      ProgressDialogComponent,
+      dialogConfig,
+    );
     return dialogRef;
   };
 

@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CUserInfo, IUserInfo } from '@models/user-info';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { ISEOtags, SeoService } from '@services/seo.service';
 import { UserService } from '@services/user.service';
-import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest, of } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { isEqual, cloneDeep } from 'lodash';
+import { PlatformService } from '@services/platform.service';
+import { StorageService } from '@services/storage.service';
 
 @Component({
   selector: 'cos-profile',
@@ -16,12 +18,16 @@ import { isEqual, cloneDeep } from 'lodash';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
+  @ViewChild('imageInput') imageInput: ElementRef<HTMLInputElement>;
+
   private unsubscribe$: Subject<void> = new Subject();
 
   user: IUserInfo;
   dbUser: IUserInfo;
   canEdit$ = new BehaviorSubject(false);
   activeCtrlName: CtrlNamesProfileT = 'none';
+  profileImageUrl: string;
+  profileImageFile: File;
 
   // Form emulation for save validation (seems like overkill)
   private form: FormGroup;
@@ -50,11 +56,13 @@ export class ProfileComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
+    private storageSvc: StorageService,
     // private router: Router,
     private userSvc: UserService,
     private authSvc: AuthService,
     private seoSvc: SeoService,
     private dialogSvc: DialogService,
+    private platformSvc: PlatformService,
   ) {}
 
   ngOnInit(): void {
@@ -193,28 +201,102 @@ export class ProfileComponent implements OnInit {
             this.activateCtrl('none');
           });
         break;
+      case 'image':
+        this.openFileDialog();
+        break;
       default:
         break;
     }
   };
 
-  saveChanges = () => {
-    const { user, dbUser, form } = this;
-    console.log({ user, dbUser, form });
+  openFileDialog = () => {
+    // TODO: Consider simplifying body image system
+    // It, too, can probably use static element and maybe assume single image
+
+    if (this.platformSvc.isServer) {
+      alert('Please wait for the application to load first');
+      return;
+    }
+
+    const { imageInput } = this;
+    const inputEl = imageInput.nativeElement;
+
+    inputEl.onchange = () => {
+      const reader = new FileReader();
+
+      const file = inputEl.files[0];
+      this.profileImageFile = file;
+
+      reader.onload = $e => {
+        this.profileImageUrl = $e.target.result.toString();
+      };
+      reader.readAsDataURL(file);
+    };
+    inputEl.click();
+  };
+
+  saveChanges = async () => {
+    const { user, profileImageFile } = this;
+    if (!!this.profileImageFile) {
+      const { task, ref } = this.userSvc.uploadProfileImage(
+        this.authSvc.authInfo$.value.uid,
+        profileImageFile,
+      );
+      const onTaskFulfilled = async snap => {
+        console.log('task fulfilled', snap);
+        if (snap.state === 'success') {
+          const imageUrl = await ref.getDownloadURL().toPromise();
+          user.imageUrl = imageUrl;
+          await this.saveUser();
+        } else {
+          this.dialogSvc.openMessageDialog(
+            'Problems with profile image',
+            "It's weird, and we don't have a good explanation. Try again, maybe select a different image. Let us know if this continues!",
+          );
+        }
+      };
+      const onTaskRejected = err => {
+        console.log('task rejected', err);
+        this.dialogSvc.openMessageDialog(
+          'Problems with profile image',
+          "Uploading the profile image you selected didn't work. Try again, or maybe select a different image. Here's a cryptic error to share with us if this continues:",
+          err.toString(),
+        );
+      };
+      await task.then(onTaskFulfilled, onTaskRejected);
+    } else {
+      await this.saveUser();
+    }
+  };
+
+  saveUser = async () => {
+    try {
+      await this.userSvc.updateUser(this.user);
+    } catch (error) {
+      this.dialogSvc.openMessageDialog(
+        'Problems saving profile',
+        "That didn't work. Here's a cryptic error message... Let us know if this continues, taking note of the error!",
+        error.toString(),
+      );
+    }
   };
 
   cancelChanges = () => {
-    const { user, dbUser, form } = this;
+    const { dbUser, form } = this;
     this.user = dbUser;
-    this.form.patchValue({ ...dbUser });
-    console.log({ user, dbUser, form });
+    this.profileImageFile = null;
+    this.watchImageUrl(this.user.uid);
+    form.patchValue({ ...dbUser });
   };
 
   // LONG-LIVED OBSERVABLES ETC
   watchRouteAndUser = () => {
     const user$ = this.route.params.pipe(
       map(params => params['uid']),
-      tap(uid => this.checkAuthAgainstUid(uid)),
+      tap(uid => {
+        this.checkAuthAgainstUid(uid);
+        this.watchImageUrl(uid);
+      }),
       switchMap(uid => this.userSvc.userRef(uid).valueChanges()),
       takeUntil(this.unsubscribe$),
     );
@@ -227,6 +309,7 @@ export class ProfileComponent implements OnInit {
     combineLatest([user$, this.canEdit$]).subscribe(([user, canEdit]) => {
       if (!!user && canEdit) {
         this.dbUser = cloneDeep(user);
+
         this.form = this.fb.group({
           alias: [user.alias, this.aliasValidators],
           fName: [user.fName, this.fNameValidators],
@@ -235,6 +318,7 @@ export class ProfileComponent implements OnInit {
           city: [user.city, this.cityValidators],
           state: [user.state, this.stateValidators],
           bio: [user.bio, this.bioValidators],
+          imageUrl: [user.imageUrl],
         });
       }
     });
@@ -247,6 +331,15 @@ export class ProfileComponent implements OnInit {
         if (uid === authInfo.uid) {
           this.canEdit$.next(true);
         } else this.canEdit$.next(false);
+      });
+  };
+
+  watchImageUrl = (uid: string) => {
+    this.storageSvc
+      .getImageUrl(`profileImages/${uid}`)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(url => {
+        this.profileImageUrl = url;
       });
   };
 
@@ -280,13 +373,15 @@ export class ProfileComponent implements OnInit {
   };
 
   // HELPERS
-  wasUserEdited = () => !isEqual(this.user, this.dbUser);
+  wasUserEdited = () =>
+    !isEqual(this.user, this.dbUser) || !!this.profileImageFile;
   // wasUserEdited = () => false;
 
   saveTooltipText = () => `save ${this.user.alias}`;
 }
 
 export type CtrlNamesProfileT =
+  | 'image'
   | 'none'
   | 'fName'
   | 'lName'

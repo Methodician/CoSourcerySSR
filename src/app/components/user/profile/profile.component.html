@@ -1,16 +1,27 @@
 <main *ngIf="!!user">
   <h2 class="headline">{{ user.alias }}'s profile</h2>
-  <article class="profile-card">
-    <!-- <section class="pic"> -->
-    <!-- <img
-          src="https://firebasestorage.googleapis.com/v0/b/cosourcery.appspot.com/o/profileImages%2FXb8LjcdbBhhzbsmb9TWarfYx6SK2?alt=media&token=05992704-2731-47a5-a338-c92a1fbe98f1"
-          alt=""
-        /> -->
-    <img
-      src="https://firebasestorage.googleapis.com/v0/b/cosourcery.appspot.com/o/profileImages%2FRGkcnuAnlGYsKuooNuNGELuJjSh2?alt=media&token=e38641c3-2acb-4e80-9490-e6f191210193"
-      alt=""
-    />
-    <!-- </section> -->
+  <article
+    class="profile-card"
+    matTooltip="Pro tip: tap or hover sections for editing options."
+  >
+    <section class="pic" #pic>
+      <img
+        [src]="profileImageUrl ? profileImageUrl : '../assets/images/logo.svg'"
+        alt="Profile Image"
+      />
+      <input
+        type="file"
+        accept="image/png, image/gif, image/jpeg, image/bmp, image/x-icon"
+        class="profile-image-input"
+        #imageInput
+      />
+      <cos-field-edit-button
+        class="edit-button"
+        [isActive]="isCtrlActive('image')"
+        tooltipName="Update profile image"
+        (clicked)="toggleCtrl('image')"
+      ></cos-field-edit-button>
+    </section>
     <section class="basics">
       <p>
         <b>

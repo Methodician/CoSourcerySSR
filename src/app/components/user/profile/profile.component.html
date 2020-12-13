@@ -2,7 +2,11 @@
   <h2 class="headline">{{ user.displayName() }}'s profile</h2>
   <article
     class="profile-card"
-    matTooltip="Pro tip: tap or hover sections for editing options."
+    [matTooltip]="
+      (canEdit$ | async)
+        ? 'Pro tip: tap or hover sections for editing options.'
+        : ''
+    "
   >
     <section class="pic" #pic>
       <img
@@ -16,6 +20,7 @@
         #imageInput
       />
       <cos-field-edit-button
+        *ngIf="canEdit$ | async"
         class="edit-button"
         [isActive]="isCtrlActive('image')"
         tooltipName="Update profile image"
@@ -26,6 +31,7 @@
       <p>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('fName')"
             tooltipName="First Name"
@@ -35,6 +41,7 @@
         </b>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('lName')"
             tooltipName="Last Name"
@@ -45,6 +52,7 @@
         <span class="aka">, also known as</span>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('alias')"
             tooltipName="Alias"
@@ -52,9 +60,10 @@
           ></cos-field-edit-button>
           {{ doesUserHaveAttr['alias'] ? user.alias : '*no alias*' }}
         </b>
-        <span>lives in </span>
+        <span (click)="toggleCtrl('city')">lives in </span>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('city')"
             tooltipName="City"
@@ -65,6 +74,7 @@
         <span>, </span>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('state')"
             tooltipName="State"
@@ -75,6 +85,7 @@
         <span>, </span>
         <b>
           <cos-field-edit-button
+            *ngIf="canEdit$ | async"
             class="edit-button"
             [isActive]="isCtrlActive('zipCode')"
             tooltipName="Zip Code"
@@ -87,6 +98,7 @@
   </article>
   <section class="bio">
     <cos-field-edit-button
+      *ngIf="canEdit$ | async"
       class="edit-button"
       [isActive]="isCtrlActive('bio')"
       tooltipName="bio"

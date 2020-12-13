@@ -30,7 +30,7 @@ export class InputDialogComponent implements OnInit {
       inputPlaceholder: string;
     },
   ) {
-    if (!data.inputLabel || !data.initialValue) {
+    if (!data.inputLabel || !(data.initialValue || data.initialValue === '')) {
       this.dialogRef.close();
       throw new Error(
         `Can't use input dialog without an input label and initial value`,

@@ -37,11 +37,7 @@ export class ProfileComponent implements OnInit {
     Validators.minLength(2),
     Validators.maxLength(12),
   ];
-  private lNameValidators = [
-    Validators.required,
-    Validators.minLength(2),
-    Validators.maxLength(15),
-  ];
+  private lNameValidators = [Validators.minLength(2), Validators.maxLength(15)];
   // private uidValidators = Validators.required;
   // private emailValidators = [
   //   Validators.required,
@@ -121,7 +117,7 @@ export class ProfileComponent implements OnInit {
           )
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.lName = res;
               this.form.patchValue({ lName: res });
             }
@@ -133,7 +129,7 @@ export class ProfileComponent implements OnInit {
           .openInputDialog('Enter alias', this.user.alias, this.aliasValidators)
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.alias = res;
               this.form.patchValue({ alias: res });
             }
@@ -149,10 +145,13 @@ export class ProfileComponent implements OnInit {
           )
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.zipCode = res;
               this.form.patchValue({ zipCode: res });
             }
+            const { user, form } = this;
+            const hasRes = !!res || res === '';
+            console.log({ res, user, form, hasRes });
             this.activateCtrl('none');
           });
         break;
@@ -166,7 +165,7 @@ export class ProfileComponent implements OnInit {
           )
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.bio = res;
               this.form.patchValue({ bio: res });
             }
@@ -182,7 +181,7 @@ export class ProfileComponent implements OnInit {
           )
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.city = res;
               this.form.patchValue({ city: res });
             }
@@ -198,7 +197,7 @@ export class ProfileComponent implements OnInit {
           )
           .afterClosed()
           .subscribe(res => {
-            if (res) {
+            if (!!res || res === '') {
               this.user.state = res;
               this.form.patchValue({ state: res });
             }

@@ -48,7 +48,7 @@
             tooltipName="Last Name"
             (clicked)="toggleCtrl('lName')"
           ></cos-field-edit-button>
-          {{ user.lName }}
+          {{ doesUserHaveAttr('lName') ? user.lName : '*no last name*' }}
         </b>
         <span class="aka">, also known as</span>
         <b (click)="toggleCtrl('alias')">

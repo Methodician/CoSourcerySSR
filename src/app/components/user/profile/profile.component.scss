@@ -38,6 +38,11 @@ main {
     .basics {
       padding: 0 1em;
 
+      p,
+      b {
+        line-height: 2.3em;
+      }
+
       .aka {
         margin-left: -0.25em;
       }

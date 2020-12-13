@@ -23,7 +23,7 @@ export class ProfileComponent implements OnInit {
   private unsubscribe$: Subject<void> = new Subject();
 
   user: CUserInfo;
-  dbUser: IUserInfo;
+  dbUser: CUserInfo;
   canEdit$ = new BehaviorSubject(false);
   activeCtrlName: CtrlNamesProfileT = 'none';
   profileImageUrl: string;
@@ -287,7 +287,7 @@ export class ProfileComponent implements OnInit {
 
   cancelChanges = () => {
     const { dbUser, form } = this;
-    this.user = new CUserInfo(dbUser);
+    this.user = cloneDeep(dbUser);
     this.profileImageFile = null;
     this.watchImageUrl(this.user.uid);
     form.patchValue({ ...dbUser });
@@ -312,7 +312,7 @@ export class ProfileComponent implements OnInit {
 
     combineLatest([user$, this.canEdit$]).subscribe(([user, canEdit]) => {
       if (!!user && canEdit) {
-        this.dbUser = cloneDeep(user);
+        this.dbUser = new CUserInfo(cloneDeep(user));
 
         this.form = this.fb.group({
           alias: [user.alias, this.aliasValidators],
@@ -379,9 +379,8 @@ export class ProfileComponent implements OnInit {
   // HELPERS
   wasUserEdited = () =>
     !isEqual(this.user, this.dbUser) || !!this.profileImageFile;
-  // wasUserEdited = () => false;
 
-  saveTooltipText = () => `save ${this.user.alias}`;
+  saveTooltipText = () => `save ${this.user.displayName()}`;
 
   doesUserHaveAttr = (attrName: string) =>
     !!this.user[attrName] && this.user[attrName] !== '';

@@ -84,6 +84,7 @@ export class ProfileComponent implements OnInit {
   };
 
   activateCtrl = (ctrlName: CtrlNamesProfileT) => {
+    // TODO: Experiment with state machine for this use case:
     if (this.authSvc.authInfo$.value.uid === this.user.uid)
       this.activeCtrlName = ctrlName;
     else
@@ -236,6 +237,7 @@ export class ProfileComponent implements OnInit {
       reader.readAsDataURL(file);
     };
     inputEl.click();
+    this.activateCtrl('none');
   };
 
   saveChanges = async () => {

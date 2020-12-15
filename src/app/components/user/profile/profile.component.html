@@ -96,19 +96,19 @@
         >
       </p>
     </section>
+    <section class="bio">
+      <cos-field-edit-button
+        *ngIf="canEdit$ | async"
+        class="edit-button"
+        [isActive]="isCtrlActive('bio')"
+        tooltipName="bio"
+        (clicked)="toggleCtrl('bio')"
+      ></cos-field-edit-button>
+      <p (click)="toggleCtrl('bio')">
+        {{ doesUserHaveAttr('bio') ? user.bio : '*no bio*' }}
+      </p>
+    </section>
   </article>
-  <section class="bio">
-    <cos-field-edit-button
-      *ngIf="canEdit$ | async"
-      class="edit-button"
-      [isActive]="isCtrlActive('bio')"
-      tooltipName="bio"
-      (clicked)="toggleCtrl('bio')"
-    ></cos-field-edit-button>
-    <p (click)="toggleCtrl('bio')">
-      {{ doesUserHaveAttr('bio') ? user.bio : '*no bio*' }}
-    </p>
-  </section>
 
   <!-- This really belongs in its own component maybe -->
   <!-- SAVE-UNDO UI -->

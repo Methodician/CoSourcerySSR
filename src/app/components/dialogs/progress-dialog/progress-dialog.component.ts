@@ -16,13 +16,13 @@ export class ProgressDialogComponent implements OnInit {
   progress: number;
 
   constructor(
-    private dialogRef: MatDialogRef<ProgressDialogComponent>,
+    private dialogRef: MatDialogRef<ProgressDialogComponent, boolean>,
     @Inject(MAT_DIALOG_DATA)
     data: {
       dialogTitle: string;
       dialogLine1: string;
       progress$: Observable<number>;
-    }
+    },
   ) {
     if (!data.progress$) {
       this.dialogRef.close();
@@ -42,7 +42,7 @@ export class ProgressDialogComponent implements OnInit {
         takeWhile(val => val <= 100),
         tap(progress => {
           if (progress >= 100) this.dialogRef.close(false);
-        })
+        }),
       )
       .subscribe(progress => {
         this.progress = progress;

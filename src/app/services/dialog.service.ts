@@ -7,12 +7,42 @@ import { ConfirmDialogComponent } from '@dialogs/confirm-dialog/confirm-dialog.c
 import { MessageDialogComponent } from '@dialogs/message-dialog/message-dialog.component';
 import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialog.component';
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
+import { InputDialogComponent } from '@dialogs/input-dialog/input-dialog.component';
+import { ValidatorFn } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DialogService {
   constructor(private dialog: MatDialog) {}
+
+  // It may make sense to convert these args to object with named config params
+  openInputDialog = (
+    inputLabel: string,
+    initialValue: string,
+    inputValidators?: ValidatorFn | ValidatorFn[],
+    shouldUseTextArea: boolean = false,
+    dialogTitle?: string,
+    inputPlaceholder?: string,
+  ) => {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      inputLabel,
+      initialValue,
+      shouldUseTextArea,
+      inputValidators,
+      dialogTitle,
+      inputPlaceholder,
+    };
+
+    if (shouldUseTextArea) {
+      dialogConfig.height = '90vh';
+      dialogConfig.width = '90vw';
+    }
+
+    const dialogRef = this.dialog.open(InputDialogComponent, dialogConfig);
+    return dialogRef;
+  };
 
   /**
    * Opens a dialog modal with the given title and messages.
@@ -42,7 +72,7 @@ export class DialogService {
     title?: string,
     msg?: string,
     doneOption?: string,
-    stillWorkingOption?: string
+    stillWorkingOption?: string,
   ) => {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -68,7 +98,7 @@ export class DialogService {
   openProgressDialog = (
     title: string,
     msg1: string,
-    progress$: Observable<number>
+    progress$: Observable<number>,
   ) => {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -78,7 +108,10 @@ export class DialogService {
       progress$,
     };
 
-    const dialogRef = this.dialog.open(ProgressDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open<ProgressDialogComponent, any, boolean>(
+      ProgressDialogComponent,
+      dialogConfig,
+    );
     return dialogRef;
   };
 

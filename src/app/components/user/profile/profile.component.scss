@@ -11,6 +11,9 @@ main {
   }
 
   .profile-card {
+    padding: 15px;
+    box-shadow: 0 3px 7px $light-gray;
+
     display: grid;
     grid-template-rows: auto;
     grid-template-areas:
@@ -53,13 +56,6 @@ main {
     .bio {
       grid-area: bio;
     }
-
-    padding: 15px;
-    box-shadow: 0 3px 7px $light-gray;
-    margin: auto;
-    // // May make sense to switch to grid, but idunno it was hard when I tried
-    // display: flex;
-    // flex-direction: column;
   }
 
   .edit-button {

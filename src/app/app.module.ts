@@ -59,8 +59,6 @@ import { CoverImageComponent } from '@components/article/cover-image/cover-image
 import { CoverImageEditComponent } from '@components/article/cover-image/cover-image-edit/cover-image-edit.component';
 import { CoverImageDisplayComponent } from '@components/article/cover-image/cover-image-display/cover-image-display.component';
 import { TagsComponent } from '@components/article/tags/tags.component';
-import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
-import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { ProfileContributionsComponent } from '@components/user/profile/profile-contributions/profile-contributions.component';
 import { RegisterComponent } from '@components/user/register/register.component';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
@@ -108,8 +106,6 @@ import { InputDialogComponent } from './components/dialogs/input-dialog/input-di
     ReverseArrayPipe,
     CoverImageComponent,
     TagsComponent,
-    ProfileDisplayComponent,
-    ProfileEditComponent,
     CoverImageEditComponent,
     ProfileContributionsComponent,
     LoginDialogComponent,

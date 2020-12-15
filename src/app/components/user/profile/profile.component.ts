@@ -247,11 +247,17 @@ export class ProfileComponent implements OnInit {
         this.authSvc.authInfo$.value.uid,
         profileImageFile,
       );
+      this.dialogSvc.openProgressDialog(
+        'Uploading new profile image',
+        'You can cancel, or close this and continue doing something else but you will not be able to see the progress if you close it',
+        task.percentageChanges(),
+      );
       const onTaskFulfilled = async snap => {
         console.log('task fulfilled', snap);
         if (snap.state === 'success') {
           const imageUrl = await ref.getDownloadURL().toPromise();
           user.imageUrl = imageUrl;
+          this.profileImageFile = null;
           await this.saveUser();
         } else {
           this.dialogSvc.openMessageDialog(

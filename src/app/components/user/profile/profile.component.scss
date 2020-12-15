@@ -220,17 +220,18 @@ main {
   //   // }
   // }
 
-  @media screen and (min-width: $tablet-lg) {
+  @media screen and (min-width: $tablet-md) {
     padding: 36px 36px;
 
     .profile-card {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: 1fr 2fr 2fr;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 7em auto;
       grid-template-areas:
         'pic basics'
         'pic bio'
         'pic bio';
+      column-gap: 1em;
 
       .pic {
         grid-area: pic;
@@ -244,19 +245,16 @@ main {
     }
   }
 
-  @media screen and (min-width: $desktop-sm) {
-    padding: 24px 24px 48px;
-
-    .main-card {
-      padding: 300px;
+  @media screen and (min-width: $tablet-lg) {
+    .profile-card {
+      grid-template-rows: 4em auto;
     }
   }
 
-  // @media screen and (min-width: $desktop-lg) {
-  //   padding: 24px 24px 48px;
-
-  //   .main-card {
-  //     padding: 300px;
-  //   }
-  // }
+  @media screen and (min-width: $desktop-sm) {
+    .profile-card {
+      grid-template-columns: 2fr 5fr;
+      grid-template-rows: 2.5em auto;
+    }
+  }
 }

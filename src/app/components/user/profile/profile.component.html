@@ -30,72 +30,72 @@
       ></cos-field-edit-button>
     </section>
     <section class="basics">
-      <p>
-        <b (click)="toggleCtrl('fName')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('fName')"
-            tooltipName="First Name"
-            (clicked)="toggleCtrl('fName')"
-          ></cos-field-edit-button>
-          {{ user.fName }}
-        </b>
-        <b (click)="toggleCtrl('lName')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('lName')"
-            tooltipName="Last Name"
-            (clicked)="toggleCtrl('lName')"
-          ></cos-field-edit-button>
-          {{ doesUserHaveAttr('lName') ? user.lName : '*no last name*' }}
-        </b>
-        <span class="aka">, also known as</span>
-        <b (click)="toggleCtrl('alias')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('alias')"
-            tooltipName="Alias"
-            (clicked)="toggleCtrl('alias')"
-          ></cos-field-edit-button>
-          {{ doesUserHaveAttr('alias') ? user.alias : '*no alias*' }}
-        </b>
-        <span (click)="toggleCtrl('city')">lives in </span>
-        <b (click)="toggleCtrl('city')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('city')"
-            tooltipName="City"
-            (clicked)="toggleCtrl('city')"
-          ></cos-field-edit-button
-          >{{ doesUserHaveAttr('city') ? user.city : '*no city*' }}</b
-        >
-        <span>, </span>
-        <b (click)="toggleCtrl('state')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('state')"
-            tooltipName="State"
-            (clicked)="toggleCtrl('state')"
-          ></cos-field-edit-button
-          >{{ doesUserHaveAttr('state') ? user.state : '*no state*' }}</b
-        >
-        <span>, </span>
-        <b (click)="toggleCtrl('zipCode')">
-          <cos-field-edit-button
-            *ngIf="canEdit$ | async"
-            class="edit-button"
-            [isActive]="isCtrlActive('zipCode')"
-            tooltipName="Zip Code"
-            (clicked)="toggleCtrl('zipCode')"
-          ></cos-field-edit-button
-          >{{ doesUserHaveAttr('zipCode') ? user.zipCode : '*no zip*' }}</b
-        >
-      </p>
+      <!-- <p> -->
+      <b (click)="toggleCtrl('fName')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('fName')"
+          tooltipName="First Name"
+          (clicked)="toggleCtrl('fName')"
+        ></cos-field-edit-button>
+        {{ user.fName }}
+      </b>
+      <b (click)="toggleCtrl('lName')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('lName')"
+          tooltipName="Last Name"
+          (clicked)="toggleCtrl('lName')"
+        ></cos-field-edit-button>
+        {{ doesUserHaveAttr('lName') ? user.lName : '*no last name*' }}
+      </b>
+      <span class="aka">, also known as</span>
+      <b (click)="toggleCtrl('alias')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('alias')"
+          tooltipName="Alias"
+          (clicked)="toggleCtrl('alias')"
+        ></cos-field-edit-button>
+        {{ doesUserHaveAttr('alias') ? user.alias : '*no alias*' }}
+      </b>
+      <span (click)="toggleCtrl('city')">lives in </span>
+      <b (click)="toggleCtrl('city')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('city')"
+          tooltipName="City"
+          (clicked)="toggleCtrl('city')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('city') ? user.city : '*no city*' }}</b
+      >
+      <span>, </span>
+      <b (click)="toggleCtrl('state')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('state')"
+          tooltipName="State"
+          (clicked)="toggleCtrl('state')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('state') ? user.state : '*no state*' }}</b
+      >
+      <span>, </span>
+      <b (click)="toggleCtrl('zipCode')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('zipCode')"
+          tooltipName="Zip Code"
+          (clicked)="toggleCtrl('zipCode')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('zipCode') ? user.zipCode : '*no zip*' }}</b
+      >
+      <!-- </p> -->
     </section>
     <section class="bio">
       <cos-field-edit-button

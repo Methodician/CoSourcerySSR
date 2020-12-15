@@ -11,6 +11,7 @@ main {
   }
 
   .profile-card {
+    justify-self: center;
     padding: 15px;
     box-shadow: 0 3px 7px $light-gray;
 
@@ -206,19 +207,7 @@ main {
 
   @media screen and (min-width: $phone-lg) {
     padding: 24px 24px 110px;
-
-    // .main-card {
-    //   padding: 300px;
-    // }
   }
-
-  // @media screen and (min-width: $tablet-md) {
-  //   padding: 24px 24px 48px;
-
-  //   // .main-card {
-  //   //   padding: 300px;
-  //   // }
-  // }
 
   @media screen and (min-width: $tablet-md) {
     padding: 36px 36px;
@@ -255,6 +244,9 @@ main {
     .profile-card {
       grid-template-columns: 2fr 5fr;
       grid-template-rows: 2.5em auto;
+
+      max-width: 1200px;
+      margin: auto;
     }
   }
 }

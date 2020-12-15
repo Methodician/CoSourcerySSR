@@ -30,7 +30,6 @@
       ></cos-field-edit-button>
     </section>
     <section class="basics">
-      <!-- <p> -->
       <b (click)="toggleCtrl('fName')">
         <cos-field-edit-button
           *ngIf="canEdit$ | async"
@@ -95,7 +94,6 @@
         ></cos-field-edit-button
         >{{ doesUserHaveAttr('zipCode') ? user.zipCode : '*no zip*' }}</b
       >
-      <!-- </p> -->
     </section>
     <section class="bio">
       <cos-field-edit-button

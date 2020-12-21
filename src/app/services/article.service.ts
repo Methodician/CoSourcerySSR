@@ -44,7 +44,6 @@ export class ArticleService {
       const article = doc.data() as ArticleDetailI;
       const articleId = doc.id;
       const { bodyImageIds, title } = article;
-      console.info({ bodyImageIds, title, articleId });
       if (!article.bodyImageIds) {
         try {
           console.info('adding empty array');

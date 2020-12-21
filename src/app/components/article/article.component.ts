@@ -130,7 +130,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   initializeArticleIdAndState = () => {
     const article$ = this.watchArticleIdAndStatus$().pipe(
       tap(({ id, isNew }) => {
-        console.info('articleId', id);
         if (!!id) {
           this.watchArticleEditors(id);
         }

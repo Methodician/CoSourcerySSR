@@ -2,7 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 const shouldUseEmulator = false;
-const shouldUseProd = false;
+const shouldUseProd = true;
 
 export const environment = {
   production: false,

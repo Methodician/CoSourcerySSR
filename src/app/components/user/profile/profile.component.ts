@@ -6,7 +6,7 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { ISEOtags, SeoService } from '@services/seo.service';
 import { UserService } from '@services/user.service';
-import { BehaviorSubject, Subject, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { isEqual, cloneDeep } from 'lodash';
 import { PlatformService } from '@services/platform.service';

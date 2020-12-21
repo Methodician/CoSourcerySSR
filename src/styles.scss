@@ -165,3 +165,8 @@ a {
 .flex-center-justify {
   justify-content: center;
 }
+
+/* other */
+[mattooltip] {
+  touch-action: auto !important;
+}

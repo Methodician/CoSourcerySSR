@@ -59,8 +59,6 @@ import { CoverImageComponent } from '@components/article/cover-image/cover-image
 import { CoverImageEditComponent } from '@components/article/cover-image/cover-image-edit/cover-image-edit.component';
 import { CoverImageDisplayComponent } from '@components/article/cover-image/cover-image-display/cover-image-display.component';
 import { TagsComponent } from '@components/article/tags/tags.component';
-import { ProfileDisplayComponent } from '@components/user/profile/profile-display/profile-display.component';
-import { ProfileEditComponent } from '@components/user/profile/profile-edit/profile-edit.component';
 import { ProfileContributionsComponent } from '@components/user/profile/profile-contributions/profile-contributions.component';
 import { RegisterComponent } from '@components/user/register/register.component';
 import { NotLoggedInComponent } from '@components/shared/not-logged-in/not-logged-in.component';
@@ -77,6 +75,9 @@ import { VersionNavigationComponent } from './components/article-history/version
 import { PreviewCardStatsComponent } from './components/shared/preview-card-stats/preview-card-stats.component';
 import { TimeElapsedPipe } from './shared/pipes/time-elapsed.pipe';
 import { PreviewGridComponent } from './components/shared/preview-grid/preview-grid.component';
+import { FieldEditButtonComponent } from './components/shared/field-edit-button/field-edit-button.component';
+import { ProfileComponent } from './components/user/profile/profile.component';
+import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
 // end components
 
 @NgModule({
@@ -105,8 +106,6 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     ReverseArrayPipe,
     CoverImageComponent,
     TagsComponent,
-    ProfileDisplayComponent,
-    ProfileEditComponent,
     CoverImageEditComponent,
     ProfileContributionsComponent,
     LoginDialogComponent,
@@ -122,6 +121,9 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
     PreviewCardStatsComponent,
     TimeElapsedPipe,
     PreviewGridComponent,
+    FieldEditButtonComponent,
+    ProfileComponent,
+    InputDialogComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

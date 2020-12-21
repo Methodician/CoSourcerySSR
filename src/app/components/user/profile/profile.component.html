@@ -1,0 +1,161 @@
+<main *ngIf="!!user">
+  <h2 class="headline">{{ user.displayName() }}'s profile</h2>
+  <article
+    class="profile-card"
+    [matTooltip]="
+      (canEdit$ | async)
+        ? 'Pro tip: tap or hover sections for editing options.'
+        : ''
+    "
+  >
+    <section class="pic" #pic>
+      <img
+        (click)="toggleCtrl('image')"
+        [src]="profileImageUrl ? profileImageUrl : '../assets/images/logo.svg'"
+        alt="Profile Image"
+      />
+      <input
+        type="file"
+        accept="image/png, image/gif, image/jpeg, image/bmp, image/x-icon"
+        class="profile-image-input"
+        #imageInput
+      />
+      <cos-field-edit-button
+        *ngIf="canEdit$ | async"
+        class="edit-button"
+        [isActive]="isCtrlActive('image')"
+        tooltipName="Update profile image"
+        (clicked)="toggleCtrl('image')"
+      ></cos-field-edit-button>
+    </section>
+    <section class="basics">
+      <b (click)="toggleCtrl('fName')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('fName')"
+          tooltipName="First Name"
+          (clicked)="toggleCtrl('fName')"
+        ></cos-field-edit-button>
+        {{ user.fName }}
+      </b>
+      <b (click)="toggleCtrl('lName')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('lName')"
+          tooltipName="Last Name"
+          (clicked)="toggleCtrl('lName')"
+        ></cos-field-edit-button>
+        {{ doesUserHaveAttr('lName') ? user.lName : '*no last name*' }}
+      </b>
+      <span class="aka">, also known as</span>
+      <b (click)="toggleCtrl('alias')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('alias')"
+          tooltipName="Alias"
+          (clicked)="toggleCtrl('alias')"
+        ></cos-field-edit-button>
+        {{ doesUserHaveAttr('alias') ? user.alias : '*no alias*' }}
+      </b>
+      <span (click)="toggleCtrl('city')">lives in </span>
+      <b (click)="toggleCtrl('city')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('city')"
+          tooltipName="City"
+          (clicked)="toggleCtrl('city')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('city') ? user.city : '*no city*' }}</b
+      >
+      <span>, </span>
+      <b (click)="toggleCtrl('state')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('state')"
+          tooltipName="State"
+          (clicked)="toggleCtrl('state')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('state') ? user.state : '*no state*' }}</b
+      >
+      <span>, </span>
+      <b (click)="toggleCtrl('zipCode')">
+        <cos-field-edit-button
+          *ngIf="canEdit$ | async"
+          class="edit-button"
+          [isActive]="isCtrlActive('zipCode')"
+          tooltipName="Zip Code"
+          (clicked)="toggleCtrl('zipCode')"
+        ></cos-field-edit-button
+        >{{ doesUserHaveAttr('zipCode') ? user.zipCode : '*no zip*' }}</b
+      >
+    </section>
+    <section class="bio">
+      <cos-field-edit-button
+        *ngIf="canEdit$ | async"
+        class="edit-button"
+        [isActive]="isCtrlActive('bio')"
+        tooltipName="bio"
+        (clicked)="toggleCtrl('bio')"
+      ></cos-field-edit-button>
+      <p (click)="toggleCtrl('bio')">
+        {{ doesUserHaveAttr('bio') ? user.bio : '*no bio*' }}
+      </p>
+    </section>
+  </article>
+
+  <!-- This really belongs in its own component maybe -->
+  <!-- SAVE-UNDO UI -->
+  <section *ngIf="!!form" class="save-undo-flag">
+    <div
+      class="save-undo-sticky-position sticky"
+      [ngClass]="{
+        extended: wasUserEdited(),
+        disabled: !form.valid || !wasUserEdited()
+      }"
+    >
+      <button
+        class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
+        type="button"
+        [disabled]="!form.valid || !wasUserEdited()"
+        (click)="saveChanges()"
+      >
+        <mat-icon>done</mat-icon>
+      </button>
+
+      <div
+        class="restore-control flag flag-axle flag-axle-90"
+        [ngClass]="{ 'flag-axle-90_active': wasUserEdited() }"
+      >
+        <div class="flag flag-pole flag-pole_right">
+          <button
+            class="restore-button mat-icon-btn mat-icon-btn_no-shadow"
+            type="button"
+            [disabled]="!wasUserEdited()"
+            (click)="cancelChanges()"
+          >
+            <mat-icon>replay</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="flag flag-axle flag-axle-270"
+        [ngClass]="{ 'flag-axle-270_active': wasUserEdited() }"
+      >
+        <div class="flag flag-pole flag-pole_left">
+          <div class="flag flag-tooltip">
+            <span class="flag-tooltip_changes">Unsaved</span>
+            <span class="flag-tooltip_save">{{ saveTooltipText() }}</span>
+            <span class="flag-tooltip_restore">Undo Changes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end save-undo ui -->
+</main>

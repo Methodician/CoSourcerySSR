@@ -1,36 +1,251 @@
+// Uses Global Default Styles in src/styles.scss
 @import '../../../sass/vars.scss';
 
-.profile {
-  padding: 24px 24px 48px;
+main {
+  padding: 10px 12px 99px;
 
-  &__title {
+  .headline {
     color: $primary-color;
     text-align: center;
   }
 
-  &__info-wrapper,
-  &__form-wrapper,
-  &__contributions-wrapper {
-    align-items: center;
-    padding: 30px;
-    box-shadow: 0 2px 5px $light-gray-50;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+  .profile-card {
+    justify-self: center;
+    padding: 15px;
+    box-shadow: 0 3px 7px $light-gray;
+
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-areas:
+      'pic'
+      'basics'
+      'bio';
+
+    .pic {
+      grid-area: pic;
+
+      position: relative;
+      img {
+        width: 100%;
+      }
+
+      .edit-button {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .profile-image-input {
+        display: none;
+      }
+    }
+
+    .basics {
+      grid-area: basics;
+
+      p,
+      b {
+        line-height: 2.3em;
+      }
+
+      .aka {
+        margin-left: -0.25em;
+      }
+    }
+
+    .bio {
+      grid-area: bio;
+    }
   }
 
-  &__info-wrapper,
-  &__form-wrapper {
-    max-width: 768px;
+  .edit-button {
+    position: absolute;
+    margin-top: -0.5em;
   }
 
-  &__contributions-wrapper {
-    max-width: 1008px;
-    margin-top: 20px;
-  }
-}
+  .save-undo-flag {
+    height: 58px;
+    width: 58px;
+    position: sticky;
+    bottom: 0;
+    float: right;
+    margin-right: 90px;
+    z-index: 1000;
 
-.top-btn-wrapper {
-  text-align: right;
-  width: 100%;
+    .save-undo-sticky-position {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-top-right-radius: 100%;
+      border-top-left-radius: 100%;
+      box-shadow: 0 1px 5px $light-gray-50;
+      background-color: lighten($accent-color-1-dark, 15%);
+      transform: translateY(100%);
+      transition: transform 0.3s;
+
+      &.disabled {
+        background-color: $medium-gray;
+
+        .flag-pole {
+          background-color: $medium-gray;
+        }
+      }
+
+      &.extended {
+        transform: translateY(0);
+
+        .save-button {
+          transform: scale(1);
+        }
+      }
+
+      &.sticky {
+        position: fixed;
+        bottom: 0;
+      }
+    }
+
+    .flag {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: lighten($accent-color-1-dark, 15%);
+
+      &-axle {
+        height: 0;
+        width: 0;
+
+        &-270 {
+          transform: rotate(-90deg);
+          transition: transform 0.4s;
+
+          &_active {
+            transform: rotate(-360deg);
+            transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+          }
+        }
+
+        &-90 {
+          transform: rotate(90deg);
+          transition: transform 0.8s;
+
+          &_active {
+            transform: rotate(0deg);
+            transition: transform cubic-bezier(0.4, -0.2, 0.4, 1.2) 0.6s;
+          }
+        }
+      }
+
+      &-pole {
+        height: 2px;
+        width: 40px;
+
+        &_left {
+          right: 0;
+        }
+
+        &_right {
+          left: 0;
+        }
+      }
+
+      &-tooltip {
+        left: 0;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: $dark-gray;
+        color: #fff;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transform: translateX(-100%);
+
+        &_changes {
+          display: block;
+        }
+
+        &_save,
+        &_restore {
+          display: none;
+        }
+      }
+    }
+
+    .save-control:hover ~ .flag {
+      .flag-tooltip_changes {
+        display: none;
+      }
+
+      .flag-tooltip_save {
+        display: block;
+      }
+    }
+
+    .restore-control:hover ~ .flag {
+      .flag-tooltip_changes {
+        display: none;
+      }
+
+      .flag-tooltip_restore {
+        display: block;
+      }
+    }
+
+    .save-button {
+      transform: scale(0);
+      transition: transform cubic-bezier(0.5, -0.35, 0.5, 1.35) 0.5s;
+    }
+
+    .restore-button {
+      position: absolute;
+      right: -45px;
+    }
+  }
+
+  @media screen and (min-width: $phone-lg) {
+    padding: 24px 24px 110px;
+  }
+
+  @media screen and (min-width: $tablet-md) {
+    padding: 36px 36px;
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 7em auto;
+      grid-template-areas:
+        'pic basics'
+        'pic bio'
+        'pic bio';
+      column-gap: 1em;
+
+      .pic {
+        grid-area: pic;
+      }
+      .basics {
+        grid-area: basics;
+      }
+      .bio {
+        grid-area: bio;
+      }
+    }
+  }
+
+  @media screen and (min-width: $tablet-lg) {
+    .profile-card {
+      grid-template-rows: 4em auto;
+    }
+  }
+
+  @media screen and (min-width: $desktop-sm) {
+    .profile-card {
+      grid-template-columns: 2fr 5fr;
+      grid-template-rows: 2.5em auto;
+
+      max-width: 1200px;
+      margin: auto;
+    }
+  }
 }

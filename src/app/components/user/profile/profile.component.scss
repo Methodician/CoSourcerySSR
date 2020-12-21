@@ -2,8 +2,6 @@
 @import '../../../sass/vars.scss';
 
 main {
-  padding: 10px 12px 99px;
-
   .headline {
     color: $primary-color;
     text-align: center;
@@ -12,7 +10,14 @@ main {
   .profile-card {
     justify-self: center;
     padding: 15px;
+    margin: 0 12px 50px;
     box-shadow: 0 3px 7px $light-gray;
+
+    // These seem to prevent long words or links from breaking the whole system
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 
     display: grid;
     grid-template-rows: auto;
@@ -23,8 +28,8 @@ main {
 
     .pic {
       grid-area: pic;
-
       position: relative;
+
       img {
         width: 100%;
       }
@@ -205,13 +210,14 @@ main {
   }
 
   @media screen and (min-width: $phone-lg) {
-    padding: 24px 24px 110px;
+    .profile-card {
+      margin: 0 24px 50px;
+    }
   }
 
   @media screen and (min-width: $tablet-md) {
-    padding: 36px 36px;
-
     .profile-card {
+      margin: 0 36px 75px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 7em auto;

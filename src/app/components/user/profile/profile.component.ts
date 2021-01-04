@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
   //   Validators.maxLength(50),
   // ];
   private zipCodeValidators = Validators.maxLength(5);
-  private bioValidators = Validators.maxLength(500);
+  private bioValidators = Validators.maxLength(2000);
   private cityValidators = Validators.maxLength(30);
   private stateValidators = Validators.maxLength(2);
 

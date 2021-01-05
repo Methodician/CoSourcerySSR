@@ -111,17 +111,14 @@ export class ProfileComponent implements OnInit {
         break;
       case 'lName':
         this.dialogSvc
-          .openInputDialog(
-            'Enter last name',
-            this.user.lName,
-            this.lNameValidators,
-          )
+          .openProfileEditDialog(this.user)
           .afterClosed()
           .subscribe(res => {
-            if (!!res || res === '') {
-              this.user.lName = res;
-              this.form.patchValue({ lName: res });
-            }
+            console.log(res);
+            // if (!!res || res === '') {
+            //   this.user.lName = res;
+            //   this.form.patchValue({ lName: res });
+            // }
             this.activateCtrl('none');
           });
         break;

@@ -9,12 +9,25 @@ import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialo
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { InputDialogComponent } from '@dialogs/input-dialog/input-dialog.component';
 import { ValidatorFn } from '@angular/forms';
+import { IUserInfo } from '@models/user-info';
+import { ProfileEditDialogComponent } from '@dialogs/profile-edit-dialog/profile-edit-dialog.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DialogService {
   constructor(private dialog: MatDialog) {}
+
+  openProfileEditDialog = (user: IUserInfo) => {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = { user };
+
+    const dialogRef = this.dialog.open(
+      ProfileEditDialogComponent,
+      dialogConfig,
+    );
+    return dialogRef;
+  };
 
   // It may make sense to convert these args to object with named config params
   openInputDialog = (

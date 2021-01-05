@@ -1,0 +1,43 @@
+<form [formGroup]="form">
+  <h1 class="dialog-title">Change Profile Details</h1>
+  <mat-form-field>
+    <mat-label>First Name(*)</mat-label>
+    <input type="text" matInput formControlName="fName" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Last Name</mat-label>
+    <input type="text" matInput formControlName="lName" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Alias</mat-label>
+    <input type="text" matInput formControlName="alias" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>City</mat-label>
+    <input type="text" matInput formControlName="city" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>State</mat-label>
+    <input type="text" matInput formControlName="state" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>ZipCode</mat-label>
+    <input type="text" matInput formControlName="zipCode" />
+    <mat-error>{{ errorText() }}</mat-error>
+  </mat-form-field>
+
+  <section class="buttons">
+    <button class="cos-btn" (click)="onSubmit()">submit</button>
+    <button class="cos-btn" (click)="onCancel()">cancel</button>
+  </section>
+</form>

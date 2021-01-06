@@ -42,7 +42,7 @@
     "@angular/router": "~10.1.6",
     "@google-cloud/debug-agent": "^4.0.0",
     "@nguniversal/express-engine": "^10.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "express": "^4.17.1",
     "firebase": "^7.23.0",

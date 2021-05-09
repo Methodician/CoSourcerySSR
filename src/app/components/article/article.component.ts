@@ -34,9 +34,7 @@ import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
 import { StorageService } from '@services/storage.service';
 
-const ARTICLE_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
-  'articleState',
-);
+const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
 const BASE_ARTICLE = {
   articleId: '',

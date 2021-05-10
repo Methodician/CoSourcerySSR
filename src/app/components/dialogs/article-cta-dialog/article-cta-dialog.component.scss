@@ -1,0 +1,10 @@
+main {
+  width: 80vw;
+  max-width: 600px;
+  .buttons {
+    margin-top: 1em;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+}

@@ -9,12 +9,31 @@ import { ProgressDialogComponent } from '@dialogs/progress-dialog/progress-dialo
 import { CountdownDialogComponent } from '@dialogs/countdown-dialog/countdown-dialog.component';
 import { InputDialogComponent } from '@dialogs/input-dialog/input-dialog.component';
 import { ValidatorFn } from '@angular/forms';
+import { ArticleCtaDialogComponent } from '@dialogs/article-cta-dialog/article-cta-dialog.component';
+import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DialogService {
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private router: Router) {}
+
+  openArticleCtaDialog = () => {
+    const dialogRef = this.dialog.open(ArticleCtaDialogComponent);
+    dialogRef.afterClosed().subscribe(response => {
+      switch (response) {
+        case 'login':
+          this.dialog.open(LoginDialogComponent);
+          break;
+        case 'register':
+          this.router.navigateByUrl('/register');
+          break;
+        default:
+          break;
+      }
+    });
+  };
 
   // It may make sense to convert these args to object with named config params
   openInputDialog = (

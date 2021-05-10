@@ -78,6 +78,7 @@ import { PreviewGridComponent } from './components/shared/preview-grid/preview-g
 import { FieldEditButtonComponent } from './components/shared/field-edit-button/field-edit-button.component';
 import { ProfileComponent } from './components/user/profile/profile.component';
 import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
+import { ArticleCtaDialogComponent } from './components/dialogs/article-cta-dialog/article-cta-dialog.component';
 // end components
 
 @NgModule({
@@ -124,6 +125,7 @@ import { InputDialogComponent } from './components/dialogs/input-dialog/input-di
     FieldEditButtonComponent,
     ProfileComponent,
     InputDialogComponent,
+    ArticleCtaDialogComponent,
   ],
   entryComponents: [
     LoginDialogComponent,

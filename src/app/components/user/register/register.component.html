@@ -1,7 +1,10 @@
 <form [formGroup]="registerForm" class="register-form">
   <h2 class="register-form__title">Create New Account</h2>
-
   <section *ngIf="!currentLogin" class="register-card">
+    <i
+      >We promise to never share your personal information or sign you up for
+      any spam.</i
+    >
     <div class="register-card__input-group">
       <mat-form-field class="register-card__input">
         <mat-label>First Name</mat-label>
@@ -108,7 +111,7 @@
       [disabled]="!registerForm.valid"
       (click)="register()"
     >
-      Create User
+      Register
     </button>
 
     <mat-hint *ngIf="registerError" class="error" align="center">{{
@@ -123,8 +126,6 @@
     <p class="logout-message__text">
       Please logout first, before creating a new account.
     </p>
-    <button class="cos-btn" (click)="onLogOut()">
-      Logout
-    </button>
+    <button class="cos-btn" (click)="onLogOut()">Logout</button>
   </section>
 </form>

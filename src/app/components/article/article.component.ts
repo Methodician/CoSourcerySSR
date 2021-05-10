@@ -110,6 +110,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeArticleIdAndState();
     this.watchFormChanges();
+    this.authSvc.isSignedIn().subscribe(isSignedIn => {
+      if (!isSignedIn) {
+        this.dialogSvc.openArticleCtaDialog();
+      }
+    });
   }
 
   ngOnDestroy() {

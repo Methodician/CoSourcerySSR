@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NotLoggedInComponent } from './not-logged-in.component';
 
@@ -6,7 +6,7 @@ describe('NotLoggedInComponent', () => {
   let component: NotLoggedInComponent;
   let fixture: ComponentFixture<NotLoggedInComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NotLoggedInComponent ]
     })

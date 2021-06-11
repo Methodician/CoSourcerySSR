@@ -18,12 +18,10 @@ import { Observable, Subject } from 'rxjs';
 import { map, tap, startWith, takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 
-const ALL_ARTICLES_KEY = makeStateKey<Observable<ArticlePreviewI[]>>(
-  'allArticles',
-);
-const LATEST_ARTICLES_KEY = makeStateKey<Observable<ArticlePreviewI[]>>(
-  'latestArticles',
-);
+const ALL_ARTICLES_KEY =
+  makeStateKey<Observable<ArticlePreviewI[]>>('allArticles');
+const LATEST_ARTICLES_KEY =
+  makeStateKey<Observable<ArticlePreviewI[]>>('latestArticles');
 
 @Component({
   selector: 'cos-home',
@@ -106,7 +104,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ssrArticleCollection = (
     articles$: Observable<ArticlePreviewI[]>,
-    stateKey: StateKey<Observable<ArticlePreviewI[]>>,
+    stateKey: StateKey<ArticlePreviewI[]>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return articles$.pipe(

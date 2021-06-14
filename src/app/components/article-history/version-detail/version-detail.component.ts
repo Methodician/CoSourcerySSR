@@ -16,9 +16,7 @@ import { CUserInfo } from '@models/user-info';
 import { SeoService } from '@services/seo.service';
 import { StorageService } from '@services/storage.service';
 
-const VERSION_STATE_KEY = makeStateKey<BehaviorSubject<ArticleDetailI>>(
-  'articleVersionState',
-);
+const VERSION_STATE_KEY = makeStateKey<ArticleDetailI>('articleVersionState');
 
 @Component({
   selector: 'cos-version-detail',
@@ -73,11 +71,9 @@ export class VersionDetailComponent implements OnInit, OnDestroy {
         if (slug) this.articleSlug = slug;
         if (version) this.versionId = version;
       }),
-      switchMap(
-        ({ id, version }): Observable<ArticleDetailI> => {
-          return this.watchArticleVersion$(id, version);
-        },
-      ),
+      switchMap(({ id, version }): Observable<ArticleDetailI> => {
+        return this.watchArticleVersion$(id, version);
+      }),
     );
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
       this.articleVersionState = article;

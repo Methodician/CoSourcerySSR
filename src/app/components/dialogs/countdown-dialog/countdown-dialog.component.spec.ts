@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CountdownDialogComponent } from './countdown-dialog.component';
 
@@ -6,7 +6,7 @@ describe('CountdownDialogComponent', () => {
   let component: CountdownDialogComponent;
   let fixture: ComponentFixture<CountdownDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CountdownDialogComponent ]
     })

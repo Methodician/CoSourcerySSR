@@ -11,9 +11,8 @@ import { map, tap, startWith, switchMap } from 'rxjs/operators';
 import { ArticleDetailI } from '@shared_models/article.models';
 import { ArticleService } from '@services/article.service';
 
-const ALL_ARTICLE_VERSIONS_KEY = makeStateKey<Observable<ArticleDetailI[]>>(
-  'allArticleVersions',
-);
+const ALL_ARTICLE_VERSIONS_KEY =
+  makeStateKey<ArticleDetailI[]>('allArticleVersions');
 
 @Component({
   selector: 'cos-article-history',
@@ -53,7 +52,7 @@ export class ArticleHistoryComponent implements OnInit {
 
   ssrArticleVersionCollection = (
     versions$: Observable<ArticleDetailI[]>,
-    stateKey: StateKey<Observable<ArticleDetailI[]>>,
+    stateKey: StateKey<ArticleDetailI[]>,
   ) => {
     const preExisting$ = this.state.get(stateKey, null as any);
     return versions$.pipe(

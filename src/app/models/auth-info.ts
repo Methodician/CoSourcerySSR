@@ -14,3 +14,10 @@ export class AuthInfoC {
     return !!this.emailVerified;
   }
 }
+
+export interface AuthInfoI {
+  uid: string;
+  emailVerified: boolean;
+  displayName: string;
+  email: string;
+}

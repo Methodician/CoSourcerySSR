@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AuthInfoC } from '@models/auth-info';
+import { AuthInfoI } from '@models/auth-info';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
@@ -18,12 +18,12 @@ export class AuthEffects {
       map(user =>
         user
           ? loadAuthSuccess({
-              authInfo: new AuthInfoC(
-                user.uid,
-                user.emailVerified,
-                user.displayName,
-                user.email,
-              ),
+              authInfo: {
+                uid: user.uid,
+                emailVerified: user.emailVerified,
+                displayName: user.displayName,
+                email: user.email,
+              },
             })
           : loadAuthSuccess({ authInfo: NULL_USER }),
       ),

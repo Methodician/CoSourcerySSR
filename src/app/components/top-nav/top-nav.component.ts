@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CAuthInfo } from '@models/auth-info';
+import { AuthInfoC } from '@models/auth-info';
 import { AuthService } from '@services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
@@ -11,13 +11,13 @@ import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.compone
   styleUrls: ['./top-nav.component.scss'],
 })
 export class TopNavComponent implements OnInit {
-  authInfo: CAuthInfo;
+  authInfo: AuthInfoC;
   showMobileMenu = false;
 
   constructor(
     private authSvc: AuthService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {

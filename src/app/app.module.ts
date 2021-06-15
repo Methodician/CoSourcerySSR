@@ -80,11 +80,16 @@ import { ProfileComponent } from './components/user/profile/profile.component';
 import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
 import { ArticleCtaDialogComponent } from './components/dialogs/article-cta-dialog/article-cta-dialog.component';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './app.effects';
 // end components
+
+// STORE
+import { reducers, metaReducers } from './store';
+import { AuthEffects } from './store/auth/auth.effects';
+
+// end store
 
 @NgModule({
   declarations: [
@@ -160,10 +165,14 @@ import { AppEffects } from './app.effects';
     MatTooltipModule,
     QuillModule.forRoot(),
     StoreModule.forRoot(reducers, {
-      metaReducers
+      metaReducers,
     }),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
     EffectsModule.forRoot([AppEffects]),
+    EffectsModule.forFeature([AuthEffects]),
   ],
   // providers: [],
   providers: [

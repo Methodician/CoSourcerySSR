@@ -132,7 +132,7 @@ export class BodyComponent {
 
   onImageButtonClicked = async () => {
     // ToDo: may migrate this to another file
-    // NOTE: much of the below comes paraphrased from Quill internals and uses
+    // !NOTE: much of the below comes paraphrased from Quill internals and uses
     // other Quill internals and frankly goes a bit over my head.
     // For further reference look into Quill repo base.js => search "image" and uploader.js
     if (!this.isBrowser) {

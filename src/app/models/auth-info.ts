@@ -1,9 +1,9 @@
-export class CAuthInfo {
+export class AuthInfoC {
   constructor(
     readonly uid: string,
     readonly emailVerified = false,
     readonly displayName?: string,
-    readonly email?: string
+    readonly email?: string,
   ) {}
 
   isLoggedIn() {
@@ -13,4 +13,11 @@ export class CAuthInfo {
   isEmailVerified() {
     return !!this.emailVerified;
   }
+}
+
+export interface AuthInfoI {
+  uid: string;
+  emailVerified: boolean;
+  displayName: string;
+  email: string;
 }

@@ -1,0 +1,34 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build:ssr",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build:ssr",
+			"detail": "ng build --prod && ng run cosourcery:server:production"
+		},
+		{
+			"type": "npm",
+			"script": "dev:ssr",
+			"problemMatcher": [],
+			"label": "npm: dev:ssr",
+			"detail": "ng run cosourcery:serve-ssr"
+		},
+		{
+			"type": "npm",
+			"script": "deploy:ssr",
+			"problemMatcher": [],
+			"label": "npm: deploy:ssr",
+			"detail": "npm run build:ssr && gcloud app deploy"
+		},
+		{
+			"type": "npm",
+			"script": "dev",
+			"problemMatcher": [],
+			"label": "npm: dev",
+			"detail": "ng serve"
+		}
+	]
+}

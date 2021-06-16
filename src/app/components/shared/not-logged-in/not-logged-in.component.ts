@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
-import { CAuthInfo } from '@models/auth-info';
+import { AuthInfoC } from '@models/auth-info';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.component';
 
@@ -12,13 +12,13 @@ import { LoginDialogComponent } from '@dialogs/login-dialog/login-dialog.compone
 })
 export class NotLoggedInComponent implements OnInit {
   redirectPath: string;
-  authInfo: CAuthInfo;
+  authInfo: AuthInfoC;
 
   constructor(
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private authSvc: AuthService
+    private authSvc: AuthService,
   ) {}
 
   ngOnInit() {

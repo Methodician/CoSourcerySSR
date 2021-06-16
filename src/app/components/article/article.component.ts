@@ -11,6 +11,7 @@ import {
   timer,
   of,
   Observer,
+  combineLatest,
 } from 'rxjs';
 import {
   tap,
@@ -33,6 +34,9 @@ import { CUserInfo } from '@models/user-info';
 import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
 import { StorageService } from '@services/storage.service';
+import { Store } from '@ngrx/store';
+import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
+import { PlatformService } from '@services/platform.service';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
@@ -99,6 +103,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private seoSvc: SeoService,
     private fbSvc: FirebaseService,
     private storageSvc: StorageService,
+    private store: Store,
+    private platformSvc: PlatformService,
   ) {
     this.userSvc.loggedInUser$
       .pipe(takeUntil(this.unsubscribe))
@@ -110,8 +116,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeArticleIdAndState();
     this.watchFormChanges();
-    this.authSvc.isSignedIn().subscribe(isSignedIn => {
-      if (!isSignedIn) {
+
+    combineLatest([
+      this.store.select(isLoggedIn),
+      this.store.select(hasAuthLoaded),
+    ]).subscribe(([isLoggedIn, hasAuthLoaded]) => {
+      // ToDo: consider migrating platform tracking to NgRx too.
+      const { isBrowser } = this.platformSvc;
+      if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
         this.dialogSvc.openArticleCtaDialog();
       }
     });
@@ -141,16 +153,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
           this.isArticleNew = true;
         } else this.isArticleNew = false;
       }),
-      switchMap(
-        ({ id, isNew }): Observable<ArticleDetailI> => {
-          if (isNew) {
-            return new Observable((observer: Observer<ArticleDetailI>) => {
-              observer.next(this.articleEditForm.value);
-              observer.complete();
-            });
-          } else return this.watchArticle$(id);
-        },
-      ),
+      switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
+        if (isNew) {
+          return new Observable((observer: Observer<ArticleDetailI>) => {
+            observer.next(this.articleEditForm.value);
+            observer.complete();
+          });
+        } else return this.watchArticle$(id);
+      }),
     );
 
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
@@ -191,8 +201,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       articleId: 'fake-news',
       authorId: '',
       authorImageUrl: '../../assets/images/feeling-lost.jpg',
-      body:
-        'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
+      body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
       coverImageId: '',
       editors: null,
       imageAlt: '',
@@ -411,14 +420,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
       isComplete$.next({ isReady: true, imageId: null });
     } else {
       try {
-        const {
-          task,
-          storageRef,
-          newImageId,
-        } = this.articleSvc.uploadCoverImage(
-          this.articleId,
-          this.coverImageFile,
-        );
+        const { task, storageRef, newImageId } =
+          this.articleSvc.uploadCoverImage(this.articleId, this.coverImageFile);
 
         this.coverImageUploadTask = task;
         task.then(() => {

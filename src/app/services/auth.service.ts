@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { take, map, tap } from 'rxjs/operators';
-import { CAuthInfo } from '@models/auth-info';
+import { AuthInfoC } from '@models/auth-info';
 import { MatDialog } from '@angular/material/dialog';
 // import { AngularFireDatabase } from '@angular/fire/database';
 
@@ -10,9 +10,9 @@ import { MatDialog } from '@angular/material/dialog';
   providedIn: 'root',
 })
 export class AuthService {
-  NULL_USER = new CAuthInfo(null, false, null, null);
+  NULL_USER = new AuthInfoC(null, false, null, null);
 
-  authInfo$ = new BehaviorSubject<CAuthInfo>(this.NULL_USER);
+  authInfo$ = new BehaviorSubject<AuthInfoC>(this.NULL_USER);
 
   constructor(
     private dialogue: MatDialog,
@@ -21,7 +21,7 @@ export class AuthService {
     this.afAuth.user.subscribe(user => {
       if (user) {
         this.authInfo$.next(
-          new CAuthInfo(
+          new AuthInfoC(
             user.uid,
             user.emailVerified,
             user.displayName,

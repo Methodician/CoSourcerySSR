@@ -4,6 +4,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { statsIconMap } from '@shared_models/article.models';
 import { PlatformService } from '@services/platform.service';
+import { Store } from '@ngrx/store';
+import { loadAuth } from './store/auth/auth.actions';
 
 @Component({
   selector: 'cos-root',
@@ -17,7 +19,10 @@ export class AppComponent {
     platformSvc: PlatformService,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
+    store: Store,
   ) {
+    store.dispatch(loadAuth());
+
     const { baseUrl } = platformSvc;
     Object.entries(statsIconMap).map(([name, path]) => {
       iconRegistry.addSvgIcon(

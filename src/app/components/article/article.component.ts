@@ -37,6 +37,7 @@ import { StorageService } from '@services/storage.service';
 import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
+import { loadCurrentArticle } from '@store/article/article.actions';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
@@ -154,6 +155,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
+        this.store.dispatch(loadCurrentArticle({ articleId: id }));
         if (isNew) {
           return new Observable((observer: Observer<ArticleDetailI>) => {
             observer.next(this.articleEditForm.value);

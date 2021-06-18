@@ -88,6 +88,7 @@ import { AppEffects } from './app.effects';
 // STORE
 import { reducers, metaReducers } from './store';
 import { AuthEffects } from './store/auth/auth.effects';
+import { ArticleEffects } from './store/article/article.effects';
 
 // end store
 
@@ -172,7 +173,7 @@ import { AuthEffects } from './store/auth/auth.effects';
       logOnly: environment.production,
     }),
     EffectsModule.forRoot([AppEffects]),
-    EffectsModule.forFeature([AuthEffects]),
+    EffectsModule.forFeature([AuthEffects, ArticleEffects]),
   ],
   // providers: [],
   providers: [

@@ -2,16 +2,16 @@ import { createAction, props } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
 
 export const loadCurrentArticle = createAction(
-  '[Article] Load Articles',
+  '[Article] Load Current Article',
   props<{ articleId: string }>(),
 );
 
 export const loadCurrentArticleSuccess = createAction(
-  '[Article] Load Articles Success',
+  '[Article] Load Current Article Success',
   props<{ article: ArticleDetailI }>(),
 );
 
 export const loadCurrentArticleFailure = createAction(
-  '[Article] Load Articles Failure',
+  '[Article] Load Current Article Failure',
   props<{ error: any }>(),
 );

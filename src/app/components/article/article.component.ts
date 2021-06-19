@@ -39,6 +39,9 @@ import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
 import { loadCurrentArticle } from '@store/article/article.actions';
 
+// STORE
+import { selectArticle } from '@store/article/article.selectors';
+
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
 const BASE_ARTICLE = {
@@ -115,6 +118,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // TESTING
+    this.store.select(selectArticle).subscribe(console.log);
+    // end testing
     this.initializeArticleIdAndState();
     this.watchFormChanges();
 

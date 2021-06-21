@@ -20,6 +20,7 @@ import {
   switchMap,
   takeUntil,
   take,
+  debounceTime,
 } from 'rxjs/operators';
 
 // SERVICES
@@ -39,7 +40,8 @@ import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
 import {
   loadCurrentArticle,
-  resetCurrentArticle,
+  resetArticleState,
+  updateCurrentArticle,
 } from '@store/article/article.actions';
 
 // STORE
@@ -124,6 +126,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // TESTING
     this.store.dispatch(loadCurrentArticle());
 
+    // May want to debounce this if we are to use it locally for form updates...
     this.store
       .select(currentArticleDetail)
       .pipe(takeUntil(this.unsubscribe))
@@ -132,6 +135,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // end testing
     this.initializeArticleIdAndState();
     this.watchFormChanges();
+    this.watchFormChangesx();
 
     combineLatest([
       this.store.select(isLoggedIn),
@@ -146,7 +150,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.store.dispatch(resetCurrentArticle());
+    this.store.dispatch(resetArticleState());
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
@@ -184,7 +188,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.articleState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
-        this.watchCoverImageUrl(article);
+        // this.watchCoverImageUrl(article);
         this.updateMetaTags(article);
       }
     });
@@ -278,6 +282,27 @@ export class ArticleComponent implements OnInit, OnDestroy {
           currentEditors[key] = true;
         }
         this.currentArticleEditors = currentEditors;
+      });
+
+  watchFormChangesx = () =>
+    this.articleEditForm.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe(change => {
+        this.store.dispatch(updateCurrentArticle({ article: change }));
+        if (this.articleEditForm.dirty) {
+          this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+            if (isSignedIn) {
+              if (!this.isUserEditingArticle()) {
+                this.updateUserEditingStatus(true);
+              }
+            } else {
+              this.dialogSvc.openMessageDialog(
+                'Must be signed in',
+                'You can not save changes without signing in or regisetering',
+              );
+            }
+          });
+        }
       });
 
   watchFormChanges = () => {

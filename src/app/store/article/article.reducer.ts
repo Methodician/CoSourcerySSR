@@ -4,7 +4,8 @@ import { ArticleDetailI } from '@shared_models/index';
 import {
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
-  resetCurrentArticle,
+  resetArticleState,
+  updateCurrentArticle,
 } from './article.actions';
 
 const NOT_FOUND_ARTICLE: ArticleDetailI = {
@@ -55,10 +56,14 @@ export const articleFeatureKey = 'article';
 
 export interface ArticleStateI {
   currentArticle: ArticleDetailI;
+  dbArticle: ArticleDetailI;
+  isArticleNew: boolean;
 }
 
 export const initialState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
+  dbArticle: null,
+  isArticleNew: false,
 };
 
 export const articleReducer = createReducer(
@@ -66,11 +71,13 @@ export const articleReducer = createReducer(
   on(loadCurrentArticleSuccess, (state, { article }) => ({
     ...state,
     currentArticle: article,
+    dbArticle: article,
   })),
-  on(resetCurrentArticle, (state, _) => ({
+  on(updateCurrentArticle, (state, { article }) => ({
     ...state,
-    currentArticle: BASE_ARTICLE,
+    currentArticle: article,
   })),
+  on(resetArticleState, () => initialState),
   on(loadNotFoundArticle, (state, _) => ({
     ...state,
     currentArticle: NOT_FOUND_ARTICLE,

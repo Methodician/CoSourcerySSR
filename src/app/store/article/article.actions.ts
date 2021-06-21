@@ -5,7 +5,7 @@ export const loadCurrentArticle = createAction(
   '[Article] Load Current Article',
 );
 
-export const resetCurrentArticle = createAction(
+export const resetArticleState = createAction(
   '[Article] Reset Current Article',
 );
 
@@ -21,4 +21,9 @@ export const loadCurrentArticleSuccess = createAction(
 export const loadCurrentArticleFailure = createAction(
   '[Article] Load Current Article Failure',
   props<{ error: any }>(),
+);
+
+export const updateCurrentArticle = createAction(
+  '[Article] Update Current Article',
+  props<{ article: ArticleDetailI }>(),
 );

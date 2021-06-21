@@ -1,12 +1,15 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { selectRouteParams } from '@store/router/router.selectors';
 import { articleFeatureKey, ArticleStateI } from './article.reducer';
 
 export const articleState =
   createFeatureSelector<ArticleStateI>(articleFeatureKey);
 
-export const selectArticle = createSelector(
+export const currentArticleDetail = createSelector(
   articleState,
-  selectRouteParams,
-  (articleState, routeParams) => ({ articleState, routeParams }),
+  state => state.currentArticle,
+);
+
+export const currentArticleId = createSelector(
+  articleState,
+  state => state.currentArticle.articleId,
 );

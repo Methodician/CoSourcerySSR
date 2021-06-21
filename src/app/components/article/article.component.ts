@@ -37,10 +37,13 @@ import { StorageService } from '@services/storage.service';
 import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
-import { loadCurrentArticle } from '@store/article/article.actions';
+import {
+  loadCurrentArticle,
+  resetCurrentArticle,
+} from '@store/article/article.actions';
 
 // STORE
-import { selectArticle } from '@store/article/article.selectors';
+import { currentArticleDetail } from '@store/article/article.selectors';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
@@ -119,7 +122,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // TESTING
-    this.store.select(selectArticle).subscribe(console.log);
+    this.store.dispatch(loadCurrentArticle());
+
+    this.store
+      .select(currentArticleDetail)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(console.log);
+
     // end testing
     this.initializeArticleIdAndState();
     this.watchFormChanges();
@@ -137,6 +146,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.store.dispatch(resetCurrentArticle());
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
@@ -161,7 +171,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
-        this.store.dispatch(loadCurrentArticle({ articleId: id }));
         if (isNew) {
           return new Observable((observer: Observer<ArticleDetailI>) => {
             observer.next(this.articleEditForm.value);

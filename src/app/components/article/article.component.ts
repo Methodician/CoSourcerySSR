@@ -39,13 +39,18 @@ import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
 import {
+  addArticleTag,
   loadCurrentArticle,
   resetArticleState,
   updateCurrentArticle,
 } from '@store/article/article.actions';
 
 // STORE
-import { currentArticleDetail } from '@store/article/article.selectors';
+import {
+  currentArticleDetail,
+  currentArticleTags,
+  dbArticle,
+} from '@store/article/article.selectors';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
@@ -79,6 +84,9 @@ const BASE_ARTICLE = {
 export class ArticleComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
+
+  // Article State (from NgRX)
+  currentArticleTags$ = this.store.select(currentArticleTags);
 
   // Cover Image State
   coverImageFile: File;
@@ -126,11 +134,20 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // TESTING
     this.store.dispatch(loadCurrentArticle());
 
-    // May want to debounce this if we are to use it locally for form updates...
     this.store
       .select(currentArticleDetail)
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(console.log);
+      .subscribe(currentArticle => console.log({ currentArticle }));
+
+    this.store
+      .select(dbArticle)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(dbArticle => console.log({ dbArticle }));
+
+    this.store
+      .select(currentArticleTags)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(tags => console.log({ tags }));
 
     // end testing
     this.initializeArticleIdAndState();
@@ -343,9 +360,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   addTag = (tag: string) => {
-    this.articleState.tags.push(tag);
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags: this.articleState.tags });
+    this.store.dispatch(addArticleTag({ tag }));
+    // !Note: I should not need to patch the new tag value into the form.
+    // Not sure I even need the form value if state is kept up with it.
+    // In any case, I think I can subscribe to a selector for currentArticle tags and just update the template with it, bypassing the form patch
+    // this.articleState.tags.push(tag);
+    // this.articleEditForm.markAsDirty();
+    // this.articleEditForm.patchValue({ tags: this.articleState.tags });
   };
 
   /**

@@ -1,10 +1,13 @@
 import { Validators } from '@angular/forms';
 import { Action, createReducer, on } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
+import { clone } from 'lodash';
 import {
+  addArticleTag,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
   resetArticleState,
+  startNewArticle,
   updateCurrentArticle,
 } from './article.actions';
 
@@ -77,7 +80,16 @@ export const articleReducer = createReducer(
     ...state,
     currentArticle: article,
   })),
+  on(addArticleTag, (state, action) => {
+    const { currentArticle } = state;
+    const tags = clone(currentArticle.tags) || [];
+    const { tag } = action;
+
+    tags.push(tag);
+    return { ...state, currentArticle: { ...currentArticle, tags } };
+  }),
   on(resetArticleState, () => initialState),
+  on(startNewArticle, () => ({ ...initialState, isArticleNew: true })),
   on(loadNotFoundArticle, (state, _) => ({
     ...state,
     currentArticle: NOT_FOUND_ARTICLE,

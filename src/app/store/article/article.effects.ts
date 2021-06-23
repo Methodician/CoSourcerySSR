@@ -12,7 +12,7 @@ import {
   loadCurrentArticleFailure,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
-  resetArticleState,
+  startNewArticle,
 } from './article.actions';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class ArticleEffects {
       switchMap(params => this.idFromSlug(params['id'])),
       switchMap(id =>
         id === 'new'
-          ? of(resetArticleState())
+          ? of(startNewArticle())
           : !!id
           ? this.articleSvc
               .articleDetailRef(id)

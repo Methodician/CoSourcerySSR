@@ -13,3 +13,16 @@ export const currentArticleId = createSelector(
   articleState,
   state => state.currentArticle.articleId,
 );
+
+export const currentArticleTags = createSelector(
+  articleState,
+  state => state.currentArticle.tags,
+);
+
+// !Is this state slice really needed?
+export const isArticleNew = createSelector(
+  articleState,
+  state => state.isArticleNew,
+);
+
+export const dbArticle = createSelector(articleState, state => state.dbArticle);

@@ -89,6 +89,7 @@ import { AppEffects } from './app.effects';
 import { reducers, metaReducers } from './store';
 import { AuthEffects } from './store/auth/auth.effects';
 import { ArticleEffects } from './store/article/article.effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // end store
 
@@ -174,6 +175,7 @@ import { ArticleEffects } from './store/article/article.effects';
     }),
     EffectsModule.forRoot([AppEffects]),
     EffectsModule.forFeature([AuthEffects, ArticleEffects]),
+    StoreRouterConnectingModule.forRoot(),
   ],
   // providers: [],
   providers: [

@@ -20,6 +20,7 @@ import {
   switchMap,
   takeUntil,
   take,
+  debounceTime,
 } from 'rxjs/operators';
 
 // SERVICES
@@ -37,7 +38,14 @@ import { StorageService } from '@services/storage.service';
 import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
-import { loadCurrentArticle } from '@store/article/article.actions';
+import {
+  loadCurrentArticle,
+  resetArticleState,
+  updateCurrentArticle,
+} from '@store/article/article.actions';
+
+// STORE
+import { currentArticleDetail } from '@store/article/article.selectors';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
 
@@ -115,8 +123,19 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // TESTING
+    this.store.dispatch(loadCurrentArticle());
+
+    // May want to debounce this if we are to use it locally for form updates...
+    this.store
+      .select(currentArticleDetail)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(console.log);
+
+    // end testing
     this.initializeArticleIdAndState();
     this.watchFormChanges();
+    this.watchFormChangesx();
 
     combineLatest([
       this.store.select(isLoggedIn),
@@ -131,6 +150,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.store.dispatch(resetArticleState());
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
@@ -155,7 +175,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         } else this.isArticleNew = false;
       }),
       switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
-        this.store.dispatch(loadCurrentArticle({ articleId: id }));
         if (isNew) {
           return new Observable((observer: Observer<ArticleDetailI>) => {
             observer.next(this.articleEditForm.value);
@@ -169,7 +188,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.articleState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
-        this.watchCoverImageUrl(article);
+        // this.watchCoverImageUrl(article);
         this.updateMetaTags(article);
       }
     });
@@ -263,6 +282,27 @@ export class ArticleComponent implements OnInit, OnDestroy {
           currentEditors[key] = true;
         }
         this.currentArticleEditors = currentEditors;
+      });
+
+  watchFormChangesx = () =>
+    this.articleEditForm.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe(change => {
+        this.store.dispatch(updateCurrentArticle({ article: change }));
+        if (this.articleEditForm.dirty) {
+          this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+            if (isSignedIn) {
+              if (!this.isUserEditingArticle()) {
+                this.updateUserEditingStatus(true);
+              }
+            } else {
+              this.dialogSvc.openMessageDialog(
+                'Must be signed in',
+                'You can not save changes without signing in or regisetering',
+              );
+            }
+          });
+        }
       });
 
   watchFormChanges = () => {

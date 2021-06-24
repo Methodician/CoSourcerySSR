@@ -86,11 +86,8 @@
 
   <!-- TAGS UI -->
   <cos-tags
-    [tags]="currentArticleTags$ | async"
     [isActive]="isCtrlActive(ECtrlNames.tags)"
     (onCtrlToggle)="toggleCtrl(ECtrlNames.tags)"
-    (onTagSubmitted)="addTag($event)"
-    (onTagRemoved)="removeTag($event)"
   ></cos-tags>
   <!-- end tags ui -->
 

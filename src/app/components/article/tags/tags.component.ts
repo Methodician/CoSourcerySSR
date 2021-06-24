@@ -1,6 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { DialogService } from '@services/dialog.service';
+import { Store } from '@ngrx/store';
+import {
+  addArticleTag,
+  removeArticleTag,
+} from '@store/article/article.actions';
+import { currentArticleTags } from '@store/article/article.selectors';
+import { map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'cos-tags',
@@ -8,28 +15,23 @@ import { DialogService } from '@services/dialog.service';
   styleUrls: ['./tags.component.scss'],
 })
 export class TagsComponent {
-  @Input() tags: string[] = [];
   @Input() isActive: boolean;
-
   @Output() onCtrlToggle = new EventEmitter();
-  @Output() onTagSubmitted = new EventEmitter<string>();
-  @Output() onTagRemoved = new EventEmitter<number>();
+
+  tags$ = this.store.select(currentArticleTags);
 
   readonly separatorKeyCodes = [ENTER, COMMA];
 
   hasInputChanged = false;
 
-  constructor(private dialogSvc: DialogService) {}
+  constructor(private dialogSvc: DialogService, private store: Store) {}
 
   clickOut = () => console.log('clicked outside tags');
 
   toggleCtrl = () => this.onCtrlToggle.emit();
 
   removeTag = (tag: string) => {
-    const index = this.tags.indexOf(tag);
-    if (index >= 0) {
-      this.onTagRemoved.emit(index);
-    }
+    this.store.dispatch(removeArticleTag({ tag }));
   };
 
   submitTag = $event => {
@@ -39,17 +41,24 @@ export class TagsComponent {
       this.dialogSvc.openMessageDialog(
         'Invalid Tag',
         'Tags must consist only of letters, numbers, and spaces.',
-        'Tags should be short, but can be up to 25 characters long.'
+        'Tags should be short, but can be up to 25 characters long.',
       );
       return;
     }
 
     const tag = value.trim().toUpperCase();
-    if (this.isTagDuplicate(tag)) return (input.value = '');
 
-    this.onTagSubmitted.emit(tag);
-    input.value = '';
-    this.hasInputChanged = false;
+    this.isTagDuplicate$(tag)
+      .pipe(take(1))
+      .subscribe(isTagDuplicate => {
+        if (isTagDuplicate) {
+          return (input.value = '');
+        }
+
+        this.store.dispatch(addArticleTag({ tag }));
+        input.value = '';
+        this.hasInputChanged = false;
+      });
   };
 
   onInputChange = () => (this.hasInputChanged = true);
@@ -59,7 +68,6 @@ export class TagsComponent {
     return !nonLetterNumberSpace.test(value) && !(value.length < 3);
   };
 
-  isTagDuplicate = (tag: string) => {
-    return this.tags.includes(tag);
-  };
+  isTagDuplicate$ = (tag: string) =>
+    this.tags$.pipe(map(tags => tags.includes(tag)));
 }

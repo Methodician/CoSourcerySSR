@@ -6,6 +6,7 @@ import {
   addArticleTag,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
+  removeArticleTag,
   resetArticleState,
   startNewArticle,
   updateCurrentArticle,
@@ -80,12 +81,18 @@ export const articleReducer = createReducer(
     ...state,
     currentArticle: article,
   })),
-  on(addArticleTag, (state, action) => {
+  // !In this current system adding and removing tags fails to mark form as dirty and it's not easy to fix
+  on(addArticleTag, (state, { tag }) => {
     const { currentArticle } = state;
     const tags = clone(currentArticle.tags) || [];
-    const { tag } = action;
-
     tags.push(tag);
+
+    return { ...state, currentArticle: { ...currentArticle, tags } };
+  }),
+  on(removeArticleTag, (state, { tag }) => {
+    const { currentArticle } = state;
+    const tags = currentArticle.tags.filter(item => item !== tag);
+
     return { ...state, currentArticle: { ...currentArticle, tags } };
   }),
   on(resetArticleState, () => initialState),

@@ -21,6 +21,11 @@ export const addArticleTag = createAction(
   props<{ tag: string }>(),
 );
 
+export const removeArticleTag = createAction(
+  '[Article] Remove Tag from Article',
+  props<{ tag: string }>(),
+);
+
 export const loadCurrentArticle = createAction(
   '[Article] Load Current Article',
 );

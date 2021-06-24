@@ -359,28 +359,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     return this.updateUserEditingStatus(false);
   };
 
-  addTag = (tag: string) => {
-    this.store.dispatch(addArticleTag({ tag }));
-    // !Note: I should not need to patch the new tag value into the form.
-    // Not sure I even need the form value if state is kept up with it.
-    // In any case, I think I can subscribe to a selector for currentArticle tags and just update the template with it, bypassing the form patch
-    // this.articleState.tags.push(tag);
-    // this.articleEditForm.markAsDirty();
-    // this.articleEditForm.patchValue({ tags: this.articleState.tags });
-  };
-
-  /**
-   * Expects the index of an article tag.
-   *
-   * Removes that tag, patches the form, marks form as dirty
-   */
-  removeTag = (tagIndex: number) => {
-    const tags = this.articleState.tags;
-    tags.splice(tagIndex, 1);
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags });
-  };
-
   selectCoverImage = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {

@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { isEqual } from 'lodash';
 import { articleFeatureKey, ArticleStateI } from './article.reducer';
 
 export const articleState =
@@ -26,3 +27,9 @@ export const isArticleNew = createSelector(
 );
 
 export const dbArticle = createSelector(articleState, state => state.dbArticle);
+
+export const isArticleChanged = createSelector(
+  currentArticleDetail,
+  dbArticle,
+  (currentArticle, dbArticle) => isEqual(currentArticle, dbArticle),
+);

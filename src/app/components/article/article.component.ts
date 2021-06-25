@@ -50,6 +50,7 @@ import {
   currentArticleDetail,
   currentArticleTags,
   dbArticle,
+  isArticleChanged,
 } from '@store/article/article.selectors';
 
 const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
@@ -134,20 +135,32 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // TESTING
     this.store.dispatch(loadCurrentArticle());
 
-    this.store
-      .select(currentArticleDetail)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(currentArticle => console.log({ currentArticle }));
+    // this.store
+    //   .select(currentArticleDetail)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(currentArticle => console.log({ currentArticle }));
 
-    this.store
-      .select(dbArticle)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(dbArticle => console.log({ dbArticle }));
+    // this.store
+    //   .select(dbArticle)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(dbArticle => console.log({ dbArticle }));
+
+    combineLatest([
+      this.store.select(dbArticle),
+      this.store.select(currentArticleDetail),
+    ]).subscribe(([dbArticle, currentArticle]) =>
+      console.log({ dbArticle, currentArticle }),
+    );
 
     this.store
       .select(currentArticleTags)
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(tags => console.log({ tags }));
+      .subscribe(tags => console.log('tags', tags));
+
+    this.store
+      .select(isArticleChanged)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(isEqual => console.log('isEqual', isEqual));
 
     // end testing
     this.initializeArticleIdAndState();
@@ -235,42 +248,50 @@ export class ArticleComponent implements OnInit, OnDestroy {
       null as any,
     );
 
-    const notFoundArticle: ArticleDetailI = {
-      articleId: 'fake-news',
-      authorId: '',
-      authorImageUrl: '../../assets/images/feeling-lost.jpg',
-      body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
-      coverImageId: '',
-      editors: null,
-      imageAlt: '',
-      imageUrl: '../../assets/images/feeling-lost.jpg',
-      introduction: 'The article you seek is a mirage.',
-      lastEditorId: '',
-      lastUpdated: new Date(),
-      slug: 'no-existing-article',
-      timestamp: new Date(),
-      title: 'Fake News',
-      version: 0,
-      commentCount: 0,
-      tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
-      bodyImageIds: [],
-    };
-    const article$ = this.articleSvc
-      .articleDetailRef(id)
-      .valueChanges()
-      .pipe(
-        map(article => {
-          if (article) {
-            return this.articleSvc.processArticleTimestamps(
-              article,
-            ) as ArticleDetailI;
-          }
-          this.doesArticleExist = false;
-          return notFoundArticle;
-        }),
-        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+    const article$ = this.store.select(dbArticle).pipe(
+      takeUntil(this.unsubscribe),
+      tap(
+        article => this.state.set(ARTICLE_STATE_KEY, article),
         startWith(preExisting),
-      );
+      ),
+    );
+
+    // const notFoundArticle: ArticleDetailI = {
+    //   articleId: 'fake-news',
+    //   authorId: '',
+    //   authorImageUrl: '../../assets/images/feeling-lost.jpg',
+    //   body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
+    //   coverImageId: '',
+    //   editors: null,
+    //   imageAlt: '',
+    //   imageUrl: '../../assets/images/feeling-lost.jpg',
+    //   introduction: 'The article you seek is a mirage.',
+    //   lastEditorId: '',
+    //   lastUpdated: new Date(),
+    //   slug: 'no-existing-article',
+    //   timestamp: new Date(),
+    //   title: 'Fake News',
+    //   version: 0,
+    //   commentCount: 0,
+    //   tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
+    //   bodyImageIds: [],
+    // };
+    // const article$ = this.articleSvc
+    //   .articleDetailRef(id)
+    //   .valueChanges()
+    //   .pipe(
+    //     map(article => {
+    //       if (article) {
+    //         return this.articleSvc.processArticleTimestamps(
+    //           article,
+    //         ) as ArticleDetailI;
+    //       }
+    //       this.doesArticleExist = false;
+    //       return notFoundArticle;
+    //     }),
+    //     tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
+    //     startWith(preExisting),
+    //   );
     return article$;
   };
 

@@ -1,27 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   Subscription,
   BehaviorSubject,
-  Observable,
   Subject,
   timer,
-  of,
-  Observer,
   combineLatest,
 } from 'rxjs';
-import {
-  tap,
-  map,
-  startWith,
-  switchMap,
-  takeUntil,
-  take,
-  debounceTime,
-} from 'rxjs/operators';
+import { map, takeUntil, take, debounceTime } from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -94,7 +82,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
-  // articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
@@ -110,9 +97,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
-    private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private authSvc: AuthService,
@@ -166,8 +151,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .subscribe(isEqual => console.log('isEqual', isEqual));
 
     // end testing
-    // this.initializeArticleIdAndState();
-    // this.watchFormChanges();
+
     this.watchFormChangesx();
 
     combineLatest([
@@ -187,7 +171,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
-    // this.state.set(ARTICLE_STATE_KEY, null);
     this.cancelUpload(this.coverImageUploadTask);
   }
 

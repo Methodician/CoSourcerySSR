@@ -52,8 +52,6 @@ import {
   isArticleChanged,
 } from '@store/article/article.selectors';
 
-const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
-
 const BASE_ARTICLE = {
   articleId: '',
   authorId: '',
@@ -133,8 +131,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // TESTING
     this.store.dispatch(loadCurrentArticle());
+    this.dbArticle$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
+      this.articleEditForm.patchValue(article);
+      this.articleId = article.articleId;
+    });
+    // TESTING
 
     // this.store
     //   .select(currentArticleDetail)
@@ -164,8 +166,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .subscribe(isEqual => console.log('isEqual', isEqual));
 
     // end testing
-    this.initializeArticleIdAndState();
-    this.watchFormChanges();
+    // this.initializeArticleIdAndState();
+    // this.watchFormChanges();
     this.watchFormChangesx();
 
     combineLatest([
@@ -185,90 +187,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
-    this.state.set(ARTICLE_STATE_KEY, null);
+    // this.state.set(ARTICLE_STATE_KEY, null);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
   cancelUpload = (task: AngularFireUploadTask) => {
     if (task) task.cancel();
-  };
-
-  // FORM SETUP & BREAKDOWN
-  initializeArticleIdAndState = () => {
-    const article$ = this.watchArticleIdAndStatus$().pipe(
-      tap(({ id, isNew }) => {
-        if (!!id) {
-          this.watchArticleEditors(id);
-        }
-        if (id) this.articleId = id;
-        if (isNew) {
-          this.isArticleNew = true;
-        } else this.isArticleNew = false;
-      }),
-      switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
-        if (isNew) {
-          return new Observable((observer: Observer<ArticleDetailI>) => {
-            observer.next(this.articleEditForm.value);
-            observer.complete();
-          });
-        } else return this.watchArticle$(id);
-      }),
-    );
-
-    article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      // this.articleState = article;
-      if (article) {
-        this.articleEditForm.patchValue(article);
-        // this.watchCoverImageUrl(article);
-        this.updateMetaTags(article);
-      }
-    });
-  };
-
-  watchArticleIdAndStatus$: () => Observable<{
-    id: any;
-    isNew: boolean;
-  }> = () =>
-    this.route.params.pipe(
-      switchMap(params => {
-        let status$ = of({ id: null, isNew: false });
-        if (params['id']) {
-          status$ = this.articleSvc
-            .getIdFromSlugOrId(params['id'])
-            .pipe(map(id => ({ id, isNew: false })));
-        } else {
-          status$ = of({ id: this.articleSvc.createId(), isNew: true });
-        }
-        return status$;
-      }),
-    );
-
-  watchArticle$ = id => {
-    const preExisting: ArticleDetailI = this.state.get(
-      ARTICLE_STATE_KEY,
-      null as any,
-    );
-
-    const article$ = this.store.select(dbArticle).pipe(
-      takeUntil(this.unsubscribe),
-      tap(
-        article => this.state.set(ARTICLE_STATE_KEY, article),
-        startWith(preExisting),
-      ),
-    );
-
-    return article$;
-  };
-
-  watchCoverImageUrl = (article: ArticleDetailI) => {
-    const { coverImageId, articleId } = article;
-    if (coverImageId && coverImageId !== '') {
-      this.storageSvc
-        .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
-        .subscribe(url => {
-          // this.articleState.imageUrl = url;
-        });
-    }
   };
 
   watchArticleEditors = articleId =>
@@ -308,26 +232,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
       });
 
-  watchFormChanges = () => {
-    this.articleEditForm.valueChanges.subscribe(change => {
-      // this.articleState = change;
-      if (this.articleEditForm.dirty) {
-        this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-          if (isSignedIn) {
-            this.setEditSessionTimeout();
-            if (!this.isUserEditingArticle()) {
-              this.updateUserEditingStatus(true);
-            }
-          } else {
-            this.dialogSvc.openMessageDialog(
-              'Must be signed in',
-              'You can not save changes without signing in or registering',
-            );
-          }
-        });
-      }
-    });
-  };
   // ===end form setup & breakdown
 
   // ===EDITING STUFF

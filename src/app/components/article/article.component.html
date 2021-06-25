@@ -148,6 +148,6 @@
 </form>
 
 <cos-comments
-  *ngIf="(dbArticle$ | async).articleId && !isArticleNew"
-  [articleId]="(dbArticle$ | async).articleId"
+  *ngIf="articleId && !isArticleNew"
+  [articleId]="articleId"
 ></cos-comments>

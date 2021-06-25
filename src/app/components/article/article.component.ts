@@ -39,7 +39,6 @@ import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
 import {
-  addArticleTag,
   loadCurrentArticle,
   resetArticleState,
   updateCurrentArticle,
@@ -89,6 +88,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Article State (from NgRX)
   currentArticleTags$ = this.store.select(currentArticleTags);
+  dbArticle$ = this.store.select(dbArticle);
 
   // Cover Image State
   coverImageFile: File;
@@ -96,7 +96,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
-  articleState: ArticleDetailI;
+  // articleState: ArticleDetailI;
   articleId: string;
   isArticleNew: boolean;
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
@@ -216,7 +216,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     );
 
     article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      this.articleState = article;
+      // this.articleState = article;
       if (article) {
         this.articleEditForm.patchValue(article);
         // this.watchCoverImageUrl(article);
@@ -266,7 +266,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.storageSvc
         .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
         .subscribe(url => {
-          this.articleState.imageUrl = url;
+          // this.articleState.imageUrl = url;
         });
     }
   };
@@ -310,7 +310,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   watchFormChanges = () => {
     this.articleEditForm.valueChanges.subscribe(change => {
-      this.articleState = change;
+      // this.articleState = change;
       if (this.articleEditForm.dirty) {
         this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
           if (isSignedIn) {
@@ -366,9 +366,9 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // Track images that were ever successfully uploaded on most recent
     // version in case we want to do some analytics to remove images
     // that were never added to any versions
-    const bodyImageIds = [...this.articleState.bodyImageIds];
-    bodyImageIds.push(imageId);
-    this.articleEditForm.patchValue({ bodyImageIds });
+    // const bodyImageIds = [...this.articleState.bodyImageIds];
+    // bodyImageIds.push(imageId);
+    // this.articleEditForm.patchValue({ bodyImageIds });
   };
 
   saveChanges = async () => {
@@ -385,14 +385,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
           if (!isReady) return;
 
           // update the id if cover image was changed
-          if (!!imageId) this.articleState.coverImageId = imageId;
+          // if (!!imageId) this.articleState.coverImageId = imageId;
 
-          if (this.articleState.articleId) {
+          // if (this.articleState.articleId) {
+          if (true) {
             // It's not new so just update existing and return
             try {
-              const updateResult = await this.articleSvc.updateArticle(
-                this.articleState,
-              );
+              const updateResult = await this.articleSvc.updateArticle(null);
               this.resetEditSessionTimeout();
               await this.resetEditStates();
               // HACKY: see associated note in UpdateArticle inside ArticleService
@@ -412,11 +411,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
           } else {
             // It's a new article!
             try {
-              await this.articleSvc.createArticle(
-                this.loggedInUser,
-                this.articleState,
-                this.articleId,
-              );
+              // await this.articleSvc.createArticle(
+              //   this.loggedInUser,
+              //   this.articleState,
+              //   this.articleId,
+              // );
               this.resetEditSessionTimeout();
               // TODO: Ensure unsaved changes are actually being checked upon route change
               await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.

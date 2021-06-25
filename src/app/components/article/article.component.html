@@ -1,7 +1,7 @@
 <form
   #formBoundingBox
   [formGroup]="articleEditForm"
-  *ngIf="articleState"
+  *ngIf="dbArticle$ | async as article"
   class="article-form"
 >
   <!-- MAIN IMAGE -->
@@ -10,8 +10,8 @@
     (onCtrlToggle)="toggleCtrl(ECtrlNames.coverImage)"
     (onCoverImageSelected)="selectCoverImage($event)"
     [isActive]="isCtrlActive(ECtrlNames.coverImage)"
-    [imageUrl]="articleState.imageUrl"
-    [imageAlt]="articleState.imageAlt"
+    [imageUrl]="article.imageUrl"
+    [imageAlt]="article.imageAlt"
     [parentForm]="articleEditForm"
   ></cos-cover-image>
   <!-- end main image -->
@@ -22,7 +22,7 @@
     <cos-title
       [parentForm]="articleEditForm"
       [isActive]="isCtrlActive(ECtrlNames.title)"
-      [title]="articleState.title"
+      [title]="article.title"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.title)"
       (onClickOut)="clickoutCtrl(ECtrlNames.title)"
     ></cos-title>
@@ -33,7 +33,7 @@
         Current Date: {{ tempTimestamp().toDate() | date }}
       </span>
       <span *ngIf="!isArticleNew">
-        Last Updated: {{ articleState.lastUpdated | date }}
+        Last Updated: {{ article.lastUpdated | date }}
       </span>
     </p>
 
@@ -41,7 +41,7 @@
     <cos-intro
       [parentForm]="articleEditForm"
       [isActive]="isCtrlActive(ECtrlNames.intro)"
-      [introduction]="articleState.introduction"
+      [introduction]="article.introduction"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.intro)"
       (onClickOut)="clickoutCtrl(ECtrlNames.intro)"
     ></cos-intro>
@@ -50,19 +50,19 @@
     <section class="article-attributions">
       <cos-contributors
         [creatorKey]="loggedInUser.uid"
-        [editorMap]="articleState.editors"
+        [editorMap]="article.editors"
       >
       </cos-contributors>
     </section>
 
     <!-- STATS -->
     <cos-stats
-      [commentCount]="articleState.commentCount"
-      [editCount]="articleState.version"
-      [tagsCount]="articleState.tags.length"
+      [commentCount]="article.commentCount"
+      [editCount]="article.version"
+      [tagsCount]="article.tags.length"
       [articleId]="articleId"
       [isArticleNew]="isArticleNew"
-      [slug]="articleState.slug"
+      [slug]="article.slug"
     ></cos-stats>
   </section>
 
@@ -75,7 +75,7 @@
   >
     <cos-body
       [isActive]="isCtrlActive(ECtrlNames.body)"
-      [body]="articleState.body"
+      [body]="article.body"
       [articleId]="articleId"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
       (onClickOut)="clickoutCtrl(ECtrlNames.body)"
@@ -148,6 +148,6 @@
 </form>
 
 <cos-comments
-  *ngIf="articleState && !isArticleNew"
-  [articleId]="articleState.articleId"
+  *ngIf="(dbArticle$ | async).articleId && !isArticleNew"
+  [articleId]="(dbArticle$ | async).articleId"
 ></cos-comments>

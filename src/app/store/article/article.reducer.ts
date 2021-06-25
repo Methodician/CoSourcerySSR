@@ -66,7 +66,7 @@ export interface ArticleStateI {
 
 export const initialState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
-  dbArticle: null,
+  dbArticle: BASE_ARTICLE,
   isArticleNew: false,
 };
 

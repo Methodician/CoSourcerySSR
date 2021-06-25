@@ -61,6 +61,7 @@ const BASE_ARTICLE = {
   title: ['', [Validators.required, Validators.maxLength(100)]],
   introduction: ['', [Validators.required, Validators.maxLength(300)]],
   body: 'This article is empty.',
+  coverImageId: null,
   imageUrl: '',
   imageAlt: ['', Validators.maxLength(100)],
   authorImageUrl: '',
@@ -256,42 +257,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
       ),
     );
 
-    // const notFoundArticle: ArticleDetailI = {
-    //   articleId: 'fake-news',
-    //   authorId: '',
-    //   authorImageUrl: '../../assets/images/feeling-lost.jpg',
-    //   body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
-    //   coverImageId: '',
-    //   editors: null,
-    //   imageAlt: '',
-    //   imageUrl: '../../assets/images/feeling-lost.jpg',
-    //   introduction: 'The article you seek is a mirage.',
-    //   lastEditorId: '',
-    //   lastUpdated: new Date(),
-    //   slug: 'no-existing-article',
-    //   timestamp: new Date(),
-    //   title: 'Fake News',
-    //   version: 0,
-    //   commentCount: 0,
-    //   tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
-    //   bodyImageIds: [],
-    // };
-    // const article$ = this.articleSvc
-    //   .articleDetailRef(id)
-    //   .valueChanges()
-    //   .pipe(
-    //     map(article => {
-    //       if (article) {
-    //         return this.articleSvc.processArticleTimestamps(
-    //           article,
-    //         ) as ArticleDetailI;
-    //       }
-    //       this.doesArticleExist = false;
-    //       return notFoundArticle;
-    //     }),
-    //     tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-    //     startWith(preExisting),
-    //   );
     return article$;
   };
 

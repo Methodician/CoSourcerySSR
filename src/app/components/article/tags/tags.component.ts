@@ -58,6 +58,7 @@ export class TagsComponent {
         this.store.dispatch(addArticleTag({ tag }));
         input.value = '';
         this.hasInputChanged = false;
+        return;
       });
   };
 

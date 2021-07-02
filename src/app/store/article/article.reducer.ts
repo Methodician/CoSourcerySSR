@@ -1,10 +1,13 @@
-import { Validators } from '@angular/forms';
-import { Action, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
+import { clone } from 'lodash';
 import {
+  addArticleTag,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
+  removeArticleTag,
   resetArticleState,
+  startNewArticle,
   updateCurrentArticle,
 } from './article.actions';
 
@@ -61,9 +64,15 @@ export interface ArticleStateI {
 }
 
 export const initialState: ArticleStateI = {
-  currentArticle: BASE_ARTICLE,
+  currentArticle: null,
   dbArticle: null,
   isArticleNew: false,
+};
+
+const newArticleState: ArticleStateI = {
+  currentArticle: BASE_ARTICLE,
+  dbArticle: BASE_ARTICLE,
+  isArticleNew: true,
 };
 
 export const articleReducer = createReducer(
@@ -77,7 +86,23 @@ export const articleReducer = createReducer(
     ...state,
     currentArticle: article,
   })),
+  // !In this current system adding and removing tags fails to mark form as dirty and it's not easy to fix
+  on(addArticleTag, (state, { tag }) => {
+    const { currentArticle } = state;
+    const tags = clone(currentArticle.tags) || [];
+    tags.push(tag);
+
+    return { ...state, currentArticle: { ...currentArticle, tags } };
+  }),
+  on(removeArticleTag, (state, { tag }) => {
+    const { currentArticle } = state;
+    // Note: filter creates a new array so no need to clone anything
+    const tags = currentArticle.tags.filter(item => item !== tag);
+
+    return { ...state, currentArticle: { ...currentArticle, tags } };
+  }),
   on(resetArticleState, () => initialState),
+  on(startNewArticle, () => newArticleState),
   on(loadNotFoundArticle, (state, _) => ({
     ...state,
     currentArticle: NOT_FOUND_ARTICLE,

@@ -1,27 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   Subscription,
   BehaviorSubject,
-  Observable,
   Subject,
   timer,
-  of,
-  Observer,
   combineLatest,
 } from 'rxjs';
-import {
-  tap,
-  map,
-  startWith,
-  switchMap,
-  takeUntil,
-  take,
-  debounceTime,
-} from 'rxjs/operators';
+import { map, takeUntil, take, debounceTime } from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -34,7 +22,6 @@ import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
 import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
-import { StorageService } from '@services/storage.service';
 import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
@@ -45,9 +32,13 @@ import {
 } from '@store/article/article.actions';
 
 // STORE
-import { currentArticleDetail } from '@store/article/article.selectors';
-
-const ARTICLE_STATE_KEY = makeStateKey<ArticleDetailI>('articleState');
+import {
+  currentArticleDetail,
+  currentArticleTags,
+  dbArticle,
+  isArticleChanged,
+  isArticleNew,
+} from '@store/article/article.selectors';
 
 const BASE_ARTICLE = {
   articleId: '',
@@ -56,6 +47,7 @@ const BASE_ARTICLE = {
   introduction: ['', [Validators.required, Validators.maxLength(300)]],
   body: 'This article is empty.',
   imageUrl: '',
+  coverImageId: '',
   imageAlt: ['', Validators.maxLength(100)],
   authorImageUrl: '',
   lastUpdated: null,
@@ -80,15 +72,23 @@ export class ArticleComponent implements OnInit, OnDestroy {
   private unsubscribe: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
+  // Article State (from NgRX)
+  currentArticleTags$ = this.store.select(currentArticleTags);
+  dbArticle$ = this.store.select(dbArticle);
+  currentArticleDetail$ = this.store.select(currentArticleDetail);
+  currentArticle: ArticleDetailI;
+  articleId: string;
+
+  isArticleNew$ = this.store.select(isArticleNew);
+  isArticleNew: boolean;
+  isArticleChanged$ = this.store.select(isArticleChanged);
+
   // Cover Image State
   coverImageFile: File;
 
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
-  articleState: ArticleDetailI;
-  articleId: string;
-  isArticleNew: boolean;
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
@@ -102,16 +102,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
-    private state: TransferState,
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private authSvc: AuthService,
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
     private fbSvc: FirebaseService,
-    private storageSvc: StorageService,
     private store: Store,
     private platformSvc: PlatformService,
   ) {
@@ -123,19 +120,59 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // TESTING
     this.store.dispatch(loadCurrentArticle());
 
-    // May want to debounce this if we are to use it locally for form updates...
-    this.store
-      .select(currentArticleDetail)
+    combineLatest([this.dbArticle$, this.isArticleNew$])
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(console.log);
+      .subscribe(([article, isNew]) => {
+        if (!article) {
+          return;
+        }
+        if (isNew) {
+          this.articleId = this.articleSvc.createId();
+        } else {
+          this.articleId = article.articleId;
+        }
+        this.isArticleNew = isNew;
+        this.articleEditForm.patchValue(article);
+        this.currentArticle = article;
+      });
+
+    this.currentArticleDetail$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(article => (this.currentArticle = article));
+
+    // TESTING
+
+    // this.store
+    //   .select(currentArticleDetail)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(currentArticle => console.log({ currentArticle }));
+
+    // this.store
+    //   .select(dbArticle)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(dbArticle => console.log({ dbArticle }));
+
+    // combineLatest([
+    //   this.store.select(dbArticle),
+    //   this.store.select(currentArticleDetail),
+    // ]).subscribe(([dbArticle, currentArticle]) =>
+    //   console.log({ dbArticle, currentArticle }),
+    // );
+
+    // this.store
+    //   .select(currentArticleTags)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(tags => console.log('tags', tags));
+
+    // this.isArticleChanged$
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(isChanged => console.log('isChanged', isChanged));
 
     // end testing
-    this.initializeArticleIdAndState();
+
     this.watchFormChanges();
-    this.watchFormChangesx();
 
     combineLatest([
       this.store.select(isLoggedIn),
@@ -154,118 +191,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.complete();
     this.updateUserEditingStatus(false);
-    this.state.set(ARTICLE_STATE_KEY, null);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
   cancelUpload = (task: AngularFireUploadTask) => {
     if (task) task.cancel();
-  };
-
-  // FORM SETUP & BREAKDOWN
-  initializeArticleIdAndState = () => {
-    const article$ = this.watchArticleIdAndStatus$().pipe(
-      tap(({ id, isNew }) => {
-        if (!!id) {
-          this.watchArticleEditors(id);
-        }
-        if (id) this.articleId = id;
-        if (isNew) {
-          this.isArticleNew = true;
-        } else this.isArticleNew = false;
-      }),
-      switchMap(({ id, isNew }): Observable<ArticleDetailI> => {
-        if (isNew) {
-          return new Observable((observer: Observer<ArticleDetailI>) => {
-            observer.next(this.articleEditForm.value);
-            observer.complete();
-          });
-        } else return this.watchArticle$(id);
-      }),
-    );
-
-    article$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      this.articleState = article;
-      if (article) {
-        this.articleEditForm.patchValue(article);
-        // this.watchCoverImageUrl(article);
-        this.updateMetaTags(article);
-      }
-    });
-  };
-
-  watchArticleIdAndStatus$: () => Observable<{
-    id: any;
-    isNew: boolean;
-  }> = () =>
-    this.route.params.pipe(
-      switchMap(params => {
-        let status$ = of({ id: null, isNew: false });
-        if (params['id']) {
-          status$ = this.articleSvc
-            .getIdFromSlugOrId(params['id'])
-            .pipe(map(id => ({ id, isNew: false })));
-        } else {
-          status$ = of({ id: this.articleSvc.createId(), isNew: true });
-        }
-        return status$;
-      }),
-    );
-
-  watchArticle$ = id => {
-    const preExisting: ArticleDetailI = this.state.get(
-      ARTICLE_STATE_KEY,
-      null as any,
-    );
-
-    const notFoundArticle: ArticleDetailI = {
-      articleId: 'fake-news',
-      authorId: '',
-      authorImageUrl: '../../assets/images/feeling-lost.jpg',
-      body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
-      coverImageId: '',
-      editors: null,
-      imageAlt: '',
-      imageUrl: '../../assets/images/feeling-lost.jpg',
-      introduction: 'The article you seek is a mirage.',
-      lastEditorId: '',
-      lastUpdated: new Date(),
-      slug: 'no-existing-article',
-      timestamp: new Date(),
-      title: 'Fake News',
-      version: 0,
-      commentCount: 0,
-      tags: ['FAKE', 'MADE UP', 'UNREAL', 'STUB', 'BAD ROUTE'],
-      bodyImageIds: [],
-    };
-    const article$ = this.articleSvc
-      .articleDetailRef(id)
-      .valueChanges()
-      .pipe(
-        map(article => {
-          if (article) {
-            return this.articleSvc.processArticleTimestamps(
-              article,
-            ) as ArticleDetailI;
-          }
-          this.doesArticleExist = false;
-          return notFoundArticle;
-        }),
-        tap(article => this.state.set(ARTICLE_STATE_KEY, article)),
-        startWith(preExisting),
-      );
-    return article$;
-  };
-
-  watchCoverImageUrl = (article: ArticleDetailI) => {
-    const { coverImageId, articleId } = article;
-    if (coverImageId && coverImageId !== '') {
-      this.storageSvc
-        .getImageUrl(`articleCoverImages/${articleId}/${coverImageId}`)
-        .subscribe(url => {
-          this.articleState.imageUrl = url;
-        });
-    }
   };
 
   watchArticleEditors = articleId =>
@@ -284,7 +214,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         this.currentArticleEditors = currentEditors;
       });
 
-  watchFormChangesx = () =>
+  watchFormChanges = () =>
     this.articleEditForm.valueChanges
       .pipe(debounceTime(1000))
       .subscribe(change => {
@@ -305,26 +235,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         }
       });
 
-  watchFormChanges = () => {
-    this.articleEditForm.valueChanges.subscribe(change => {
-      this.articleState = change;
-      if (this.articleEditForm.dirty) {
-        this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
-          if (isSignedIn) {
-            this.setEditSessionTimeout();
-            if (!this.isUserEditingArticle()) {
-              this.updateUserEditingStatus(true);
-            }
-          } else {
-            this.dialogSvc.openMessageDialog(
-              'Must be signed in',
-              'You can not save changes without signing in or registering',
-            );
-          }
-        });
-      }
-    });
-  };
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
@@ -340,24 +250,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
-  };
-
-  addTag = (tag: string) => {
-    this.articleState.tags.push(tag);
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags: this.articleState.tags });
-  };
-
-  /**
-   * Expects the index of an article tag.
-   *
-   * Removes that tag, patches the form, marks form as dirty
-   */
-  removeTag = (tagIndex: number) => {
-    const tags = this.articleState.tags;
-    tags.splice(tagIndex, 1);
-    this.articleEditForm.markAsDirty();
-    this.articleEditForm.patchValue({ tags });
   };
 
   selectCoverImage = (file: File) => {
@@ -381,13 +273,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // Track images that were ever successfully uploaded on most recent
     // version in case we want to do some analytics to remove images
     // that were never added to any versions
-    const bodyImageIds = [...this.articleState.bodyImageIds];
-    bodyImageIds.push(imageId);
-    this.articleEditForm.patchValue({ bodyImageIds });
+    // const bodyImageIds = [...this.articleState.bodyImageIds];
+    // bodyImageIds.push(imageId);
+    // this.articleEditForm.patchValue({ bodyImageIds });
   };
 
   saveChanges = async () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      // Could do some or all of that isSignedInOrPrompt stuff in the NgRx flow
       if (!isSignedIn) {
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
@@ -400,13 +293,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
           if (!isReady) return;
 
           // update the id if cover image was changed
-          if (!!imageId) this.articleState.coverImageId = imageId;
+          // if (!!imageId) this.articleState.coverImageId = imageId;
 
-          if (this.articleState.articleId) {
+          if (!this.isArticleNew) {
             // It's not new so just update existing and return
+            // !is it still relevant to patch the form at this stage?
+            this.articleEditForm.patchValue({ coverImageId: imageId });
             try {
               const updateResult = await this.articleSvc.updateArticle(
-                this.articleState,
+                this.currentArticle,
               );
               this.resetEditSessionTimeout();
               await this.resetEditStates();
@@ -429,7 +324,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
             try {
               await this.articleSvc.createArticle(
                 this.loggedInUser,
-                this.articleState,
+                this.currentArticle,
                 this.articleId,
               );
               this.resetEditSessionTimeout();
@@ -457,9 +352,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
    * Emits false if it's incomplete or cancelled or errors out
    */
   saveCoverImage = () => {
-    const isComplete$ = new BehaviorSubject({ isReady: false, imageId: null });
+    const uploadAtatus$ = new BehaviorSubject({
+      isReady: false,
+      imageId: null,
+    });
     if (!this.coverImageFile) {
-      isComplete$.next({ isReady: true, imageId: null });
+      uploadAtatus$.next({ isReady: true, imageId: null });
     } else {
       try {
         const { task, storageRef, newImageId } =
@@ -470,7 +368,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           storageRef.getDownloadURL().subscribe(imageUrl => {
             this.articleEditForm.patchValue({ imageUrl });
             this.coverImageFile = null;
-            isComplete$.next({ isReady: true, imageId: newImageId });
+            uploadAtatus$.next({ isReady: true, imageId: newImageId });
           });
         });
 
@@ -485,16 +383,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
             if (shouldCancel) {
               this.cancelUpload(this.coverImageUploadTask);
               this.articleEditForm.markAsDirty();
-              isComplete$.next({ isReady: false, imageId: null });
+              uploadAtatus$.next({ isReady: false, imageId: null });
             }
           });
       } catch (error) {
         console.error(error);
-        isComplete$.next({ isReady: false, imageId: null });
+        uploadAtatus$.next({ isReady: false, imageId: null });
       }
     }
 
-    return isComplete$;
+    return uploadAtatus$;
     // In the original we did more such as keeping track of uploads in the database and
   };
 

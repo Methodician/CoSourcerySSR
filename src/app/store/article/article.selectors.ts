@@ -31,5 +31,5 @@ export const dbArticle = createSelector(articleState, state => state.dbArticle);
 export const isArticleChanged = createSelector(
   currentArticleDetail,
   dbArticle,
-  (currentArticle, dbArticle) => isEqual(currentArticle, dbArticle),
+  (currentArticle, dbArticle) => !isEqual(currentArticle, dbArticle),
 );

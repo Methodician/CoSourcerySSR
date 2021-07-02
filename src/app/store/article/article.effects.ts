@@ -41,7 +41,13 @@ export class ArticleEffects {
               .valueChanges()
               .pipe(
                 // This is in case we want to stop storing articleId in the document itself
-                map(article => ({ ...article, articleId: id })),
+                map(article => ({
+                  ...article,
+                  articleId: id,
+                  // !turns out I am getting some issues from articles in DB that have odd stuff for image url and coverImageId - need to re-think this or maybe clean up data before migration
+                  coverImageId: article.coverImageId,
+                  imageUrl: article.imageUrl,
+                })),
                 // !This whole thing may not be relevant (but maybe it is for author image if we ever display it) since it's not clear the cover image URL is updating after he fact. Not clear when or why we started doing it this way way back when...
                 // switchMap(article => {
                 //   const { articleId, coverImageId } = article;

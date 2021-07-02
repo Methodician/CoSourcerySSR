@@ -1,5 +1,4 @@
-import { Validators } from '@angular/forms';
-import { Action, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
 import { clone } from 'lodash';
 import {
@@ -65,9 +64,15 @@ export interface ArticleStateI {
 }
 
 export const initialState: ArticleStateI = {
+  currentArticle: null,
+  dbArticle: null,
+  isArticleNew: false,
+};
+
+const newArticleState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
   dbArticle: BASE_ARTICLE,
-  isArticleNew: false,
+  isArticleNew: true,
 };
 
 export const articleReducer = createReducer(
@@ -96,7 +101,7 @@ export const articleReducer = createReducer(
     return { ...state, currentArticle: { ...currentArticle, tags } };
   }),
   on(resetArticleState, () => initialState),
-  on(startNewArticle, () => ({ ...initialState, isArticleNew: true })),
+  on(startNewArticle, () => newArticleState),
   on(loadNotFoundArticle, (state, _) => ({
     ...state,
     currentArticle: NOT_FOUND_ARTICLE,

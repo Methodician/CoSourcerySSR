@@ -96,18 +96,14 @@
     <div
       class="save-undo-sticky-position sticky"
       [ngClass]="{
-        extended: isUserEditingArticle(),
-        disabled: !articleEditForm.valid || !isUserEditingArticle()
+        extended: isArticleChanged$ | async,
+        disabled: !articleEditForm.valid
       }"
     >
       <button
         class="save-control save-button mat-icon-btn mat-icon-btn_no-shadow"
         type="button"
-        [disabled]="
-          !articleEditForm.valid ||
-          !isUserEditingArticle() ||
-          isBodyImageUploadPending()
-        "
+        [disabled]="!articleEditForm.valid || isBodyImageUploadPending()"
         (click)="saveChanges()"
       >
         <mat-icon>done</mat-icon>
@@ -116,13 +112,12 @@
       <div
         *ngIf="!isArticleNew"
         class="restore-control flag flag-axle flag-axle-90"
-        [ngClass]="{ 'flag-axle-90_active': isUserEditingArticle() }"
+        [ngClass]="{ 'flag-axle-90_active': isArticleChanged$ | async }"
       >
         <div class="flag flag-pole flag-pole_right">
           <button
             class="restore-button mat-icon-btn mat-icon-btn_no-shadow"
             type="button"
-            [disabled]="!isUserEditingArticle()"
             (click)="cancelChanges()"
           >
             <mat-icon>replay</mat-icon>
@@ -132,7 +127,7 @@
 
       <div
         class="flag flag-axle flag-axle-270"
-        [ngClass]="{ 'flag-axle-270_active': isUserEditingArticle() }"
+        [ngClass]="{ 'flag-axle-270_active': isArticleChanged$ | async }"
       >
         <div class="flag flag-pole flag-pole_left">
           <div class="flag flag-tooltip">

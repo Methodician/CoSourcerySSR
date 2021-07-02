@@ -22,7 +22,6 @@ import { ArticleDetailI } from '@shared_models/article.models';
 import { CUserInfo } from '@models/user-info';
 import { FirebaseService } from '@services/firebase.service';
 import { SeoService } from '@services/seo.service';
-import { StorageService } from '@services/storage.service';
 import { Store } from '@ngrx/store';
 import { hasAuthLoaded, isLoggedIn } from '@store/auth/auth.selectors';
 import { PlatformService } from '@services/platform.service';
@@ -38,6 +37,7 @@ import {
   currentArticleTags,
   dbArticle,
   isArticleChanged,
+  isArticleNew,
 } from '@store/article/article.selectors';
 
 const BASE_ARTICLE = {
@@ -46,8 +46,8 @@ const BASE_ARTICLE = {
   title: ['', [Validators.required, Validators.maxLength(100)]],
   introduction: ['', [Validators.required, Validators.maxLength(300)]],
   body: 'This article is empty.',
-  coverImageId: null,
   imageUrl: '',
+  coverImageId: '',
   imageAlt: ['', Validators.maxLength(100)],
   authorImageUrl: '',
   lastUpdated: null,
@@ -75,6 +75,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // Article State (from NgRX)
   currentArticleTags$ = this.store.select(currentArticleTags);
   dbArticle$ = this.store.select(dbArticle);
+  currentArticleDetail$ = this.store.select(currentArticleDetail);
+  currentArticle: ArticleDetailI;
+  articleId: string;
+
+  isArticleNew$ = this.store.select(isArticleNew);
+  isArticleNew: boolean;
+  isArticleChanged$ = this.store.select(isArticleChanged);
 
   // Cover Image State
   coverImageFile: File;
@@ -82,8 +89,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
   coverImageUploadTask: AngularFireUploadTask;
 
   // Article State
-  articleId: string;
-  isArticleNew: boolean;
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
@@ -104,7 +109,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private dialogSvc: DialogService,
     private seoSvc: SeoService,
     private fbSvc: FirebaseService,
-    private storageSvc: StorageService,
     private store: Store,
     private platformSvc: PlatformService,
   ) {
@@ -117,10 +121,27 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(loadCurrentArticle());
-    this.dbArticle$.pipe(takeUntil(this.unsubscribe)).subscribe(article => {
-      this.articleEditForm.patchValue(article);
-      this.articleId = article.articleId;
-    });
+
+    combineLatest([this.dbArticle$, this.isArticleNew$])
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(([article, isNew]) => {
+        if (!article) {
+          return;
+        }
+        if (isNew) {
+          this.articleId = this.articleSvc.createId();
+        } else {
+          this.articleId = article.articleId;
+        }
+        this.isArticleNew = isNew;
+        this.articleEditForm.patchValue(article);
+        this.currentArticle = article;
+      });
+
+    this.currentArticleDetail$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(article => (this.currentArticle = article));
+
     // TESTING
 
     // this.store
@@ -133,26 +154,25 @@ export class ArticleComponent implements OnInit, OnDestroy {
     //   .pipe(takeUntil(this.unsubscribe))
     //   .subscribe(dbArticle => console.log({ dbArticle }));
 
-    combineLatest([
-      this.store.select(dbArticle),
-      this.store.select(currentArticleDetail),
-    ]).subscribe(([dbArticle, currentArticle]) =>
-      console.log({ dbArticle, currentArticle }),
-    );
+    // combineLatest([
+    //   this.store.select(dbArticle),
+    //   this.store.select(currentArticleDetail),
+    // ]).subscribe(([dbArticle, currentArticle]) =>
+    //   console.log({ dbArticle, currentArticle }),
+    // );
 
-    this.store
-      .select(currentArticleTags)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(tags => console.log('tags', tags));
+    // this.store
+    //   .select(currentArticleTags)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(tags => console.log('tags', tags));
 
-    this.store
-      .select(isArticleChanged)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(isEqual => console.log('isEqual', isEqual));
+    // this.isArticleChanged$
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(isChanged => console.log('isChanged', isChanged));
 
     // end testing
 
-    this.watchFormChangesx();
+    this.watchFormChanges();
 
     combineLatest([
       this.store.select(isLoggedIn),
@@ -194,7 +214,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         this.currentArticleEditors = currentEditors;
       });
 
-  watchFormChangesx = () =>
+  watchFormChanges = () =>
     this.articleEditForm.valueChanges
       .pipe(debounceTime(1000))
       .subscribe(change => {
@@ -260,6 +280,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   saveChanges = async () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
+      // Could do some or all of that isSignedInOrPrompt stuff in the NgRx flow
       if (!isSignedIn) {
         this.dialogSvc.openMessageDialog(
           'Must be signed in',
@@ -274,11 +295,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
           // update the id if cover image was changed
           // if (!!imageId) this.articleState.coverImageId = imageId;
 
-          // if (this.articleState.articleId) {
-          if (true) {
+          if (!this.isArticleNew) {
             // It's not new so just update existing and return
+            // !is it still relevant to patch the form at this stage?
+            this.articleEditForm.patchValue({ coverImageId: imageId });
             try {
-              const updateResult = await this.articleSvc.updateArticle(null);
+              const updateResult = await this.articleSvc.updateArticle(
+                this.currentArticle,
+              );
               this.resetEditSessionTimeout();
               await this.resetEditStates();
               // HACKY: see associated note in UpdateArticle inside ArticleService
@@ -298,11 +322,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
           } else {
             // It's a new article!
             try {
-              // await this.articleSvc.createArticle(
-              //   this.loggedInUser,
-              //   this.articleState,
-              //   this.articleId,
-              // );
+              await this.articleSvc.createArticle(
+                this.loggedInUser,
+                this.currentArticle,
+                this.articleId,
+              );
               this.resetEditSessionTimeout();
               // TODO: Ensure unsaved changes are actually being checked upon route change
               await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
@@ -328,9 +352,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
    * Emits false if it's incomplete or cancelled or errors out
    */
   saveCoverImage = () => {
-    const isComplete$ = new BehaviorSubject({ isReady: false, imageId: null });
+    const uploadAtatus$ = new BehaviorSubject({
+      isReady: false,
+      imageId: null,
+    });
     if (!this.coverImageFile) {
-      isComplete$.next({ isReady: true, imageId: null });
+      uploadAtatus$.next({ isReady: true, imageId: null });
     } else {
       try {
         const { task, storageRef, newImageId } =
@@ -341,7 +368,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           storageRef.getDownloadURL().subscribe(imageUrl => {
             this.articleEditForm.patchValue({ imageUrl });
             this.coverImageFile = null;
-            isComplete$.next({ isReady: true, imageId: newImageId });
+            uploadAtatus$.next({ isReady: true, imageId: newImageId });
           });
         });
 
@@ -356,16 +383,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
             if (shouldCancel) {
               this.cancelUpload(this.coverImageUploadTask);
               this.articleEditForm.markAsDirty();
-              isComplete$.next({ isReady: false, imageId: null });
+              uploadAtatus$.next({ isReady: false, imageId: null });
             }
           });
       } catch (error) {
         console.error(error);
-        isComplete$.next({ isReady: false, imageId: null });
+        uploadAtatus$.next({ isReady: false, imageId: null });
       }
     }
 
-    return isComplete$;
+    return uploadAtatus$;
     // In the original we did more such as keeping track of uploads in the database and
   };
 

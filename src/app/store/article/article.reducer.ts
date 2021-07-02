@@ -96,6 +96,7 @@ export const articleReducer = createReducer(
   }),
   on(removeArticleTag, (state, { tag }) => {
     const { currentArticle } = state;
+    // Note: filter creates a new array so no need to clone anything
     const tags = currentArticle.tags.filter(item => item !== tag);
 
     return { ...state, currentArticle: { ...currentArticle, tags } };

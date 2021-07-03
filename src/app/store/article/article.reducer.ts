@@ -1,3 +1,4 @@
+import { SafeUrl } from '@angular/platform-browser';
 import { createReducer, on } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
 import { clone } from 'lodash';
@@ -8,7 +9,7 @@ import {
   removeArticleTag,
   resetArticleState,
   setCoverImageFile,
-  setCoverImageUri,
+  setCoverImageUriSuccess,
   startNewArticle,
   updateCurrentArticle,
 } from './article.actions';
@@ -64,7 +65,7 @@ export interface ArticleStateI {
   dbArticle: ArticleDetailI;
   isArticleNew: boolean;
   coverImageFile: File;
-  coverImageUri: string | ArrayBuffer;
+  coverImageUri: string | ArrayBuffer | SafeUrl;
 }
 
 export const initialState: ArticleStateI = {
@@ -120,7 +121,7 @@ export const articleReducer = createReducer(
     ...state,
     coverImageFile,
   })),
-  on(setCoverImageUri, (state, { coverImageUri }) => ({
+  on(setCoverImageUriSuccess, (state, { coverImageUri }) => ({
     ...state,
     coverImageUri,
   })),

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
@@ -20,7 +21,9 @@ import {
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
   setCoverImageFile,
+  setCoverImageFileFailure,
   setCoverImageUri,
+  setCoverImageUriSuccess,
   startNewArticle,
 } from './article.actions';
 
@@ -31,6 +34,7 @@ export class ArticleEffects {
     private articleSvc: ArticleService,
     private store: Store,
     private afStorage: AngularFireStorage,
+    private sanitizer: DomSanitizer,
   ) {}
 
   loadCurrengArticle$ = createEffect(() =>
@@ -61,16 +65,22 @@ export class ArticleEffects {
                 mergeMap(article =>
                   concat(
                     of(loadCurrentArticleSuccess({ article })),
-                    this.afStorage
-                      .ref(
-                        `articleCoverImages/${article.articleId}/${article.coverImageId}`,
-                      )
-                      .getDownloadURL()
-                      .pipe(
-                        map(coverImageUri =>
-                          setCoverImageUri({ coverImageUri }),
+                    !!article.coverImageId
+                      ? this.afStorage
+                          .ref(
+                            `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+                          )
+                          .getDownloadURL()
+                          .pipe(
+                            map(coverImageUri =>
+                              setCoverImageUri({ coverImageUri }),
+                            ),
+                          )
+                      : of(
+                          setCoverImageUri({
+                            coverImageUri: 'assets/images/logo.svg',
+                          }),
                         ),
-                      ),
                   ),
                 ),
               )
@@ -84,17 +94,27 @@ export class ArticleEffects {
     this.actions$.pipe(
       ofType(setCoverImageFile),
       exhaustMap(action => {
-        console.log(action);
         const { coverImageFile } = action;
         const reader = new FileReader();
-        const result$ = fromEvent(reader, 'load').pipe(map(_ => reader.result));
-        result$.subscribe(console.log);
         reader.readAsDataURL(coverImageFile);
 
-        return result$.pipe(
+        return fromEvent(reader, 'load').pipe(
+          take(1),
+          map(_ => reader.result),
           map(coverImageUri => setCoverImageUri({ coverImageUri })),
         );
       }),
+      catchError(error => of(setCoverImageFileFailure({ error }))),
+    ),
+  );
+
+  setCoverImageUri$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setCoverImageUri),
+      map(({ coverImageUri }) =>
+        this.sanitizer.bypassSecurityTrustUrl(coverImageUri.toString()),
+      ),
+      map(coverImageUri => setCoverImageUriSuccess({ coverImageUri })),
     ),
   );
 

@@ -145,6 +145,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // TESTING
 
     // this.store
+    //   .select(coverImageFile)
+    //   .pipe(takeUntil(this.unsubscribe))
+    //   .subscribe(console.log);
+
+    // this.store
     //   .select(currentArticleDetail)
     //   .pipe(takeUntil(this.unsubscribe))
     //   .subscribe(currentArticle => console.log({ currentArticle }));
@@ -250,16 +255,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.coverImageFile = null;
     this.activateCtrl(ECtrlNames.none);
     return this.updateUserEditingStatus(false);
-  };
-
-  selectCoverImage = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.articleEditForm.markAsDirty();
-      this.articleEditForm.patchValue({ imageUrl: reader.result });
-    };
-    reader.readAsDataURL(file);
-    this.coverImageFile = file;
   };
 
   changeBody = $e => {

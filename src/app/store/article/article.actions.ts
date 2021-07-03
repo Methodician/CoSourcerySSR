@@ -1,3 +1,4 @@
+import { SafeUrl } from '@angular/platform-browser';
 import { createAction, props } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
 
@@ -45,7 +46,17 @@ export const setCoverImageFile = createAction(
   props<{ coverImageFile: File }>(),
 );
 
+export const setCoverImageFileFailure = createAction(
+  '[Article] Failed to set cover image file',
+  props<{ error: any }>(),
+);
+
 export const setCoverImageUri = createAction(
   '[Article] Set Cover Image URI',
   props<{ coverImageUri: string | ArrayBuffer }>(),
+);
+
+export const setCoverImageUriSuccess = createAction(
+  '[Acticle] Sucessfully set cover image URI',
+  props<{ coverImageUri: string | ArrayBuffer | SafeUrl }>(),
 );

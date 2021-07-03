@@ -3,16 +3,24 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
-import { PlatformService } from '@services/platform.service';
 import { ArticleDetailI } from '@shared_models/article.models';
 import { selectRouteParams } from '@store/router/router.selectors';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap, take } from 'rxjs/operators';
+import { concat, fromEvent, Observable, of } from 'rxjs';
+import {
+  catchError,
+  exhaustMap,
+  map,
+  mergeMap,
+  switchMap,
+  take,
+} from 'rxjs/operators';
 import {
   loadCurrentArticle,
   loadCurrentArticleFailure,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
+  setCoverImageFile,
+  setCoverImageUri,
   startNewArticle,
 } from './article.actions';
 
@@ -23,7 +31,6 @@ export class ArticleEffects {
     private articleSvc: ArticleService,
     private store: Store,
     private afStorage: AngularFireStorage,
-    private platformSvc: PlatformService,
   ) {}
 
   loadCurrengArticle$ = createEffect(() =>
@@ -44,31 +51,50 @@ export class ArticleEffects {
                 map(article => ({
                   ...article,
                   articleId: id,
-                  // !turns out I am getting some issues from articles in DB that have odd stuff for image url and coverImageId - need to re-think this or maybe clean up data before migration
+                  // !turns out I am getting some issues from articles in DB that
+                  // ! have odd stuff for image url and coverImageId - need to re-think this or maybe clean up data before migration
                   coverImageId: article.coverImageId,
+                  // !May eleiminate this part alltogether because now keeping imageUri on store
                   imageUrl: article.imageUrl,
                 })),
-                // !This whole thing may not be relevant (but maybe it is for author image if we ever display it) since it's not clear the cover image URL is updating after he fact. Not clear when or why we started doing it this way way back when...
-                // switchMap(article => {
-                //   const { articleId, coverImageId } = article;
-                //   if (
-                //      !!this.platformSvc.isBrowser &&
-                //     !!coverImageId &&
-                //     coverImageId !== ''
-                //   ) {
-                //     return this.afStorage
-                //       .ref(`articleCoverImages/${articleId}/${coverImageId}`)
-                //       .getDownloadURL()
-                //       .pipe(map(imageUrl => ({ ...article, imageUrl })));
-                //   }
-                //   return of(article);
-                // }),
                 map(article => this.processArticleTimestamps(article)),
-                map(article => loadCurrentArticleSuccess({ article })),
+                mergeMap(article =>
+                  concat(
+                    of(loadCurrentArticleSuccess({ article })),
+                    this.afStorage
+                      .ref(
+                        `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+                      )
+                      .getDownloadURL()
+                      .pipe(
+                        map(coverImageUri =>
+                          setCoverImageUri({ coverImageUri }),
+                        ),
+                      ),
+                  ),
+                ),
               )
           : of(loadNotFoundArticle()),
       ),
       catchError(error => of(loadCurrentArticleFailure({ error }))),
+    ),
+  );
+
+  setCoverImageFromFile$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setCoverImageFile),
+      exhaustMap(action => {
+        console.log(action);
+        const { coverImageFile } = action;
+        const reader = new FileReader();
+        const result$ = fromEvent(reader, 'load').pipe(map(_ => reader.result));
+        result$.subscribe(console.log);
+        reader.readAsDataURL(coverImageFile);
+
+        return result$.pipe(
+          map(coverImageUri => setCoverImageUri({ coverImageUri })),
+        );
+      }),
     ),
   );
 

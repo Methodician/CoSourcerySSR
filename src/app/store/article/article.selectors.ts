@@ -33,3 +33,13 @@ export const isArticleChanged = createSelector(
   dbArticle,
   (currentArticle, dbArticle) => !isEqual(currentArticle, dbArticle),
 );
+
+export const coverImageUri = createSelector(
+  articleState,
+  ({ coverImageUri }) => coverImageUri,
+);
+
+export const coverImageAlt = createSelector(
+  currentArticleDetail,
+  article => article?.imageAlt,
+);

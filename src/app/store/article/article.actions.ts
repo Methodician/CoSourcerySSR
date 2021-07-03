@@ -39,3 +39,13 @@ export const loadCurrentArticleFailure = createAction(
   '[Article] Load Current Article Failure',
   props<{ error: any }>(),
 );
+
+export const setCoverImageFile = createAction(
+  '[Article] Set Cover Image File',
+  props<{ coverImageFile: File }>(),
+);
+
+export const setCoverImageUri = createAction(
+  '[Article] Set Cover Image URI',
+  props<{ coverImageUri: string | ArrayBuffer }>(),
+);

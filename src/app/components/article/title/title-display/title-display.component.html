@@ -1,4 +1,4 @@
-<h2 class="static-display">
+<h2 class="static-display" *ngIf="title$ | async as title">
   {{ title }}
   <span *ngIf="title === ''">Add a Short, Descriptive Title</span>
 </h2>

@@ -16,8 +16,13 @@ export const currentArticleId = createSelector(
 );
 
 export const currentArticleTags = createSelector(
-  articleState,
-  state => state.currentArticle.tags,
+  currentArticleDetail,
+  article => article.tags,
+);
+
+export const currentArticleTitle = createSelector(
+  currentArticleDetail,
+  article => article.title,
 );
 
 export const isArticleNew = createSelector(

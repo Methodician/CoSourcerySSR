@@ -20,7 +20,6 @@ export const currentArticleTags = createSelector(
   state => state.currentArticle.tags,
 );
 
-// !Is this state slice really needed?
 export const isArticleNew = createSelector(
   articleState,
   state => state.isArticleNew,

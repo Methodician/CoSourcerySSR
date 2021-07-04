@@ -25,7 +25,9 @@ import {
   setCoverImageUri,
   setCoverImageUriSuccess,
   startNewArticle,
+  undoArticleEdits,
 } from './article.actions';
+import { dbArticle } from './article.selectors';
 
 @Injectable()
 export class ArticleEffects {
@@ -87,6 +89,27 @@ export class ArticleEffects {
           : of(loadNotFoundArticle()),
       ),
       catchError(error => of(loadCurrentArticleFailure({ error }))),
+    ),
+  );
+
+  undoArticleEdits$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(undoArticleEdits),
+      switchMap(() => this.store.select(dbArticle)),
+      switchMap(article =>
+        !!article.coverImageId
+          ? this.afStorage
+              .ref(
+                `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+              )
+              .getDownloadURL()
+              .pipe(map(coverImageUri => setCoverImageUri({ coverImageUri })))
+          : of(
+              setCoverImageUri({
+                coverImageUri: 'assets/images/logo.svg',
+              }),
+            ),
+      ),
     ),
   );
 

@@ -17,6 +17,8 @@ export const updateCurrentArticle = createAction(
   props<{ article: ArticleDetailI }>(),
 );
 
+export const undoArticleEdits = createAction('[Article] Undo Article Edits');
+
 export const addArticleTag = createAction(
   '[Article] Add Tag to Article',
   props<{ tag: string }>(),

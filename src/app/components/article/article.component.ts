@@ -233,6 +233,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
         if (this.articleEditForm.dirty) {
           this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
             if (isSignedIn) {
+              this.setEditSessionTimeout();
               if (!this.isUserEditingArticle()) {
                 this.updateUserEditingStatus(true);
               }
@@ -406,7 +407,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     if (this.editSessionTimeoutSubscription) this.resetEditSessionTimeout();
 
     // 300000 ms = 5 minutes
-    this.editSessionTimeoutSubscription = timer(300000)
+    this.editSessionTimeoutSubscription = timer(3000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
         this.openTimeoutDialog();

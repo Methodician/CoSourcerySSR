@@ -28,8 +28,25 @@ export const isArticleNew = createSelector(
 
 export const dbArticle = createSelector(articleState, state => state.dbArticle);
 
+export const coverImageUri = createSelector(
+  articleState,
+  ({ coverImageUri }) => coverImageUri,
+);
+
+export const coverImageFile = createSelector(
+  articleState,
+  ({ coverImageFile }) => coverImageFile,
+);
+
+export const coverImageAlt = createSelector(
+  currentArticleDetail,
+  article => article?.imageAlt,
+);
+
 export const isArticleChanged = createSelector(
   currentArticleDetail,
   dbArticle,
-  (currentArticle, dbArticle) => !isEqual(currentArticle, dbArticle),
+  coverImageFile,
+  (currentArticle, dbArticle, coverImageFile) =>
+    !isEqual(currentArticle, dbArticle) || !!coverImageFile,
 );

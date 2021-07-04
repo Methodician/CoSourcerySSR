@@ -8,15 +8,11 @@ import { FormGroup } from '@angular/forms';
 })
 export class CoverImageComponent {
   @Input() isActive = false;
-  @Input() imageUrl: string;
-  @Input() imageAlt: string;
   @Input() parentForm: FormGroup;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
-  @Output() onCoverImageSelected = new EventEmitter<File>();
 
   toggleCtrl = () => this.onCtrlToggle.emit();
   clickOut = () => this.onClickOut.emit();
-  selectCoverImage = file => this.onCoverImageSelected.emit(file);
 }

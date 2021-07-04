@@ -1,3 +1,4 @@
+import { SafeUrl } from '@angular/platform-browser';
 import { createReducer, on } from '@ngrx/store';
 import { ArticleDetailI } from '@shared_models/index';
 import { clone } from 'lodash';
@@ -7,6 +8,8 @@ import {
   loadNotFoundArticle,
   removeArticleTag,
   resetArticleState,
+  setCoverImageFile,
+  setCoverImageUriSuccess,
   startNewArticle,
   updateCurrentArticle,
 } from './article.actions';
@@ -18,7 +21,7 @@ const NOT_FOUND_ARTICLE: ArticleDetailI = {
   body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
   coverImageId: '',
   editors: null,
-  imageAlt: '',
+  imageAlt: 'Cover Image',
   imageUrl: '../../assets/images/feeling-lost.jpg',
   introduction: 'The article you seek is a mirage.',
   lastEditorId: '',
@@ -40,7 +43,7 @@ const BASE_ARTICLE: ArticleDetailI = {
   introduction: '',
   body: 'This article is empty.',
   imageUrl: '',
-  imageAlt: '',
+  imageAlt: 'Cover Image',
   authorImageUrl: '',
   lastUpdated: null,
   timestamp: 0,
@@ -61,18 +64,24 @@ export interface ArticleStateI {
   currentArticle: ArticleDetailI;
   dbArticle: ArticleDetailI;
   isArticleNew: boolean;
+  coverImageFile: File;
+  coverImageUri: string | ArrayBuffer | SafeUrl;
 }
 
 export const initialState: ArticleStateI = {
   currentArticle: null,
   dbArticle: null,
   isArticleNew: false,
+  coverImageFile: null,
+  coverImageUri: 'assets/images/logo.svg',
 };
 
 const newArticleState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
   dbArticle: BASE_ARTICLE,
   isArticleNew: true,
+  coverImageFile: null,
+  coverImageUri: 'assets/images/logo.svg',
 };
 
 export const articleReducer = createReducer(
@@ -86,7 +95,8 @@ export const articleReducer = createReducer(
     ...state,
     currentArticle: article,
   })),
-  // !In this current system adding and removing tags fails to mark form as dirty and it's not easy to fix
+  // !In this current system adding and removing tags fails
+  // !to mark form as dirty and it's not easy to fix
   on(addArticleTag, (state, { tag }) => {
     const { currentArticle } = state;
     const tags = clone(currentArticle.tags) || [];
@@ -106,5 +116,13 @@ export const articleReducer = createReducer(
   on(loadNotFoundArticle, (state, _) => ({
     ...state,
     currentArticle: NOT_FOUND_ARTICLE,
+  })),
+  on(setCoverImageFile, (state, { coverImageFile }) => ({
+    ...state,
+    coverImageFile,
+  })),
+  on(setCoverImageUriSuccess, (state, { coverImageUri }) => ({
+    ...state,
+    coverImageUri,
   })),
 );

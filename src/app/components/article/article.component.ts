@@ -40,7 +40,7 @@ import {
   isArticleNew,
 } from '@store/article/article.selectors';
 
-const BASE_ARTICLE = {
+const BASE_ARTICLE_FORM = {
   articleId: '',
   authorId: '',
   title: ['', [Validators.required, Validators.maxLength(100)]],
@@ -95,7 +95,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
 
-  articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE);
+  articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE_FORM);
 
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
@@ -111,36 +111,16 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private fbSvc: FirebaseService,
     private store: Store,
     private platformSvc: PlatformService,
-  ) {
-    this.userSvc.loggedInUser$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(user => {
-        this.loggedInUser = user;
-      });
-  }
+  ) {}
 
   ngOnInit() {
-    this.store.dispatch(loadCurrentArticle());
+    this.initializeAndWatchArticle();
 
-    combineLatest([this.dbArticle$, this.isArticleNew$])
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(([article, isNew]) => {
-        if (!article) {
-          return;
-        }
-        if (isNew) {
-          this.articleId = this.articleSvc.createId();
-        } else {
-          this.articleId = article.articleId;
-        }
-        this.isArticleNew = isNew;
-        this.articleEditForm.patchValue(article);
-        this.currentArticle = article;
-      });
+    this.watchFormChanges();
 
-    this.currentArticleDetail$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(article => (this.currentArticle = article));
+    this.watchAuth();
+
+    this.watchUser();
 
     // TESTING
 
@@ -176,19 +156,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     //   .subscribe(isChanged => console.log('isChanged', isChanged));
 
     // end testing
-
-    this.watchFormChanges();
-
-    combineLatest([
-      this.store.select(isLoggedIn),
-      this.store.select(hasAuthLoaded),
-    ]).subscribe(([isLoggedIn, hasAuthLoaded]) => {
-      // ToDo: consider migrating platform tracking to NgRx too.
-      const { isBrowser } = this.platformSvc;
-      if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
-        this.dialogSvc.openArticleCtaDialog();
-      }
-    });
   }
 
   ngOnDestroy() {
@@ -199,9 +166,48 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.cancelUpload(this.coverImageUploadTask);
   }
 
-  cancelUpload = (task: AngularFireUploadTask) => {
-    if (task) task.cancel();
+  initializeAndWatchArticle = () => {
+    this.store.dispatch(loadCurrentArticle());
+
+    combineLatest([this.dbArticle$, this.isArticleNew$])
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(([article, isNew]) => {
+        if (!article) {
+          return;
+        }
+        if (isNew) {
+          this.articleId = this.articleSvc.createId();
+        } else {
+          this.articleId = article.articleId;
+        }
+        this.isArticleNew = isNew;
+        this.articleEditForm.patchValue(article);
+        this.currentArticle = article;
+      });
+
+    this.currentArticleDetail$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(article => (this.currentArticle = article));
   };
+
+  watchAuth = () =>
+    combineLatest([
+      this.store.select(isLoggedIn),
+      this.store.select(hasAuthLoaded),
+    ]).subscribe(([isLoggedIn, hasAuthLoaded]) => {
+      // ToDo: consider migrating platform tracking to NgRx too.
+      const { isBrowser } = this.platformSvc;
+      if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
+        this.dialogSvc.openArticleCtaDialog();
+      }
+    });
+
+  watchUser = () =>
+    this.userSvc.loggedInUser$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(user => {
+        this.loggedInUser = user;
+      });
 
   watchArticleEditors = articleId =>
     this.articleSvc
@@ -243,6 +249,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // ===end form setup & breakdown
 
   // ===EDITING STUFF
+  cancelUpload = (task: AngularFireUploadTask) => {
+    if (task) task.cancel();
+  };
+
   updateUserEditingStatus = async (status: boolean) =>
     this.articleSvc.updateArticleEditStatus(
       this.articleId,

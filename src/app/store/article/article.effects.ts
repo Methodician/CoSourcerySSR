@@ -67,7 +67,7 @@ export class ArticleEffects {
                 mergeMap(article =>
                   concat(
                     of(loadCurrentArticleSuccess({ article })),
-                    !!article.coverImageId
+                    !!article?.coverImageId
                       ? this.afStorage
                           .ref(
                             `articleCoverImages/${article.articleId}/${article.coverImageId}`,

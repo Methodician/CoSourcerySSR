@@ -11,6 +11,7 @@ import {
   setCoverImageFile,
   setCoverImageUriSuccess,
   startNewArticle,
+  undoArticleEdits,
   updateCurrentArticle,
 } from './article.actions';
 
@@ -95,8 +96,6 @@ export const articleReducer = createReducer(
     ...state,
     currentArticle: article,
   })),
-  // !In this current system adding and removing tags fails
-  // !to mark form as dirty and it's not easy to fix
   on(addArticleTag, (state, { tag }) => {
     const { currentArticle } = state;
     const tags = clone(currentArticle.tags) || [];
@@ -111,6 +110,11 @@ export const articleReducer = createReducer(
 
     return { ...state, currentArticle: { ...currentArticle, tags } };
   }),
+  on(undoArticleEdits, state => ({
+    ...state,
+    coverImageFile: null,
+    currentArticle: state.dbArticle,
+  })),
   on(resetArticleState, () => initialState),
   on(startNewArticle, () => newArticleState),
   on(loadNotFoundArticle, (state, _) => ({

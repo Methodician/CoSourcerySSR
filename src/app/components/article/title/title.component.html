@@ -3,7 +3,7 @@
   [ngClass]="{ border: isActive }"
   (cosClickOut)="clickOut()"
 >
-  <cos-title-display *ngIf="!isActive" [title]="title"></cos-title-display>
+  <cos-title-display *ngIf="!isActive"></cos-title-display>
   <cos-title-edit *ngIf="isActive" [parentForm]="parentForm"></cos-title-edit>
   <!-- TODO: Abstract below out into shared component -->
   <button

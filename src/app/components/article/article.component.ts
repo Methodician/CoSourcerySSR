@@ -28,6 +28,7 @@ import { PlatformService } from '@services/platform.service';
 import {
   loadCurrentArticle,
   resetArticleState,
+  undoArticleEdits,
   updateCurrentArticle,
 } from '@store/article/article.actions';
 
@@ -407,7 +408,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     if (this.editSessionTimeoutSubscription) this.resetEditSessionTimeout();
 
     // 300000 ms = 5 minutes
-    this.editSessionTimeoutSubscription = timer(3000)
+    this.editSessionTimeoutSubscription = timer(300000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
         this.openTimeoutDialog();
@@ -419,7 +420,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   openTimeoutDialog = () => {
     const response$ = this.dialogSvc.openTimeoutDialog(
-      45,
+      60,
       'Are you still there?',
       'Your changes will be discarded and the page will reload so that others can have a chance to make edits.',
       "I'm done. Discard my changes now",
@@ -428,8 +429,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     response$.afterClosed().subscribe(shouldEndSession => {
       if (shouldEndSession) {
-        this.resetEditStates();
-        location.reload();
+        this.undoAllEdits();
       } else this.setEditSessionTimeout();
     });
   };
@@ -438,17 +438,25 @@ export class ArticleComponent implements OnInit, OnDestroy {
     const response$ = this.dialogSvc
       .openConfirmDialog(
         'Undo Edits',
-        'Any unsaved changes will be discarded and the page will refresh.',
+        'Any unsaved changes will be discarded.',
         'Are you sure?',
       )
       .afterClosed();
 
     response$.subscribe(shouldCancel => {
       if (shouldCancel) {
-        this.resetEditStates();
-        location.reload();
+        this.undoAllEdits();
       }
     });
+  };
+
+  undoAllEdits = () => {
+    this.store.dispatch(undoArticleEdits());
+    this.store
+      .select(dbArticle)
+      .pipe(take(1))
+      .subscribe(article => this.articleEditForm.patchValue(article));
+    this.resetEditStates();
   };
 
   // ===end editing stuff

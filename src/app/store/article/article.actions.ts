@@ -17,6 +17,11 @@ export const updateCurrentArticle = createAction(
   props<{ article: ArticleDetailI }>(),
 );
 
+export const setCurrentArticleId = createAction(
+  '[Article] Set article ID',
+  props<{ currentArticleId: string }>(),
+);
+
 export const undoArticleEdits = createAction('[Article] Undo Article Edits');
 
 export const addArticleTag = createAction(
@@ -41,6 +46,14 @@ export const loadCurrentArticleSuccess = createAction(
 export const loadCurrentArticleFailure = createAction(
   '[Article] Load Current Article Failure',
   props<{ error: any }>(),
+);
+
+export const saveArticleChanges = createAction('[Article] Save Changes');
+export const saveArticleSuccess = createAction(
+  '[Article] Successfully saved changes',
+);
+export const saveArticleFailure = createAction(
+  '[Article] Failed to save changes',
 );
 
 export const setCoverImageFile = createAction(

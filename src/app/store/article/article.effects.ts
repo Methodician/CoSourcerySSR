@@ -20,10 +20,12 @@ import {
   loadCurrentArticleFailure,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
+  saveArticleChanges,
   setCoverImageFile,
   setCoverImageFileFailure,
   setCoverImageUri,
   setCoverImageUriSuccess,
+  setCurrentArticleId,
   startNewArticle,
   undoArticleEdits,
 } from './article.actions';
@@ -47,45 +49,68 @@ export class ArticleEffects {
       switchMap(params => this.idFromSlug(params['id'])),
       switchMap(id =>
         id === 'new'
-          ? of(startNewArticle())
+          ? this.startNewArticle()
           : !!id
-          ? this.articleSvc
-              .articleDetailRef(id)
-              .valueChanges()
-              .pipe(
-                // This is in case we want to stop storing articleId in the document itself
-                map(article => ({
-                  ...article,
-                  articleId: id,
-                  // !turns out I am getting some issues from articles in DB that
-                  // ! have odd stuff for image url and coverImageId - need to re-think this or maybe clean up data before migration
-                  coverImageId: article.coverImageId,
-                  // !May eleiminate this part alltogether because now keeping imageUri on store
-                  imageUrl: article.imageUrl,
-                })),
-                map(article => this.processArticleTimestamps(article)),
-                switchMap(article =>
-                  !!article.coverImageId
-                    ? this.afStorage
-                        .ref(
-                          `articleCoverImages/${article.articleId}/${article.coverImageId}`,
-                        )
-                        .getDownloadURL()
-                        .pipe(
-                          map(coverImageUri => ({ coverImageUri, article })),
-                        )
-                    : of({ coverImageUri: 'assets/images/logo.svg', article }),
-                ),
-                mergeMap(({ coverImageUri, article }) => [
-                  loadCurrentArticleSuccess({ article }),
-                  setCoverImageUriSuccess({ coverImageUri }),
-                ]),
-              )
-          : of(loadNotFoundArticle()),
+          ? this.setExistingArticle(id)
+          : this.setNotfoundArticle(),
       ),
       catchError(error => of(loadCurrentArticleFailure({ error }))),
     ),
   );
+
+  // set new article state and create new article ID
+  startNewArticle = () => [
+    startNewArticle(),
+    setCurrentArticleId({ currentArticleId: this.articleSvc.createId() }),
+  ];
+
+  setExistingArticle = (currentArticleId: string) =>
+    this.articleSvc
+      .articleDetailRef(currentArticleId)
+      .valueChanges()
+      .pipe(
+        // This is in case we want to stop storing articleId in the document itself
+        map(article => ({
+          ...article,
+          // !No need for articleId (kept in store) so remove this after refactor
+          articleId: currentArticleId,
+          // !turns out I am getting some issues from articles in DB that
+          // ! have odd stuff for image url and coverImageId - need to re-think this or maybe clean up data before migration
+          coverImageId: article.coverImageId,
+          // !May eleiminate this part alltogether because now keeping imageUri on store
+          imageUrl: article.imageUrl,
+        })),
+        map(article => this.processArticleTimestamps(article)),
+        switchMap(article =>
+          !!article.coverImageId
+            ? this.afStorage
+                .ref(
+                  `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+                )
+                .getDownloadURL()
+                .pipe(map(coverImageUri => ({ coverImageUri, article })))
+            : of({ coverImageUri: 'assets/images/logo.svg', article }),
+        ),
+        mergeMap(({ coverImageUri, article }) => [
+          loadCurrentArticleSuccess({ article }),
+          setCoverImageUriSuccess({ coverImageUri }),
+          setCurrentArticleId({ currentArticleId }),
+        ]),
+      );
+
+  setNotfoundArticle = () => [
+    loadNotFoundArticle(),
+    setCurrentArticleId({ currentArticleId: null }),
+  ];
+
+  // saveArticleChanges$ = createEffect(() =>
+  //     this.actions$.pipe(
+  //       ofType(saveArticleChanges),
+  //       exhaustMap(() => {
+
+  //       })
+  //     )
+  // )
 
   undoArticleEdits$ = createEffect(() =>
     this.actions$.pipe(

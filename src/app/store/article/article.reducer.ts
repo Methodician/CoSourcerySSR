@@ -10,6 +10,7 @@ import {
   resetArticleState,
   setCoverImageFile,
   setCoverImageUriSuccess,
+  setCurrentArticleId,
   startNewArticle,
   undoArticleEdits,
   updateCurrentArticle,
@@ -64,6 +65,7 @@ export const articleFeatureKey = 'article';
 export interface ArticleStateI {
   currentArticle: ArticleDetailI;
   dbArticle: ArticleDetailI;
+  currentArticleId: string;
   isArticleNew: boolean;
   coverImageFile: File;
   coverImageUri: string | ArrayBuffer | SafeUrl;
@@ -72,6 +74,7 @@ export interface ArticleStateI {
 export const initialState: ArticleStateI = {
   currentArticle: null,
   dbArticle: null,
+  currentArticleId: null,
   isArticleNew: false,
   coverImageFile: null,
   coverImageUri: 'assets/images/logo.svg',
@@ -80,6 +83,7 @@ export const initialState: ArticleStateI = {
 const newArticleState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
   dbArticle: BASE_ARTICLE,
+  currentArticleId: null,
   isArticleNew: true,
   coverImageFile: null,
   coverImageUri: 'assets/images/logo.svg',
@@ -95,6 +99,10 @@ export const articleReducer = createReducer(
   on(updateCurrentArticle, (state, { article }) => ({
     ...state,
     currentArticle: article,
+  })),
+  on(setCurrentArticleId, (state, { currentArticleId }) => ({
+    ...state,
+    currentArticleId,
   })),
   on(addArticleTag, (state, { tag }) => {
     const { currentArticle } = state;

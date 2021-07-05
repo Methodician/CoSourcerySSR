@@ -9,7 +9,6 @@ import { FormGroup } from '@angular/forms';
 export class IntroComponent {
   @Input() parentForm: FormGroup;
   @Input() isActive: boolean;
-  @Input() introduction: string;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();

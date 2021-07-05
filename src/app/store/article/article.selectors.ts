@@ -25,6 +25,11 @@ export const currentArticleTitle = createSelector(
   article => article.title,
 );
 
+export const currentArticleIntro = createSelector(
+  currentArticleDetail,
+  article => article.introduction,
+);
+
 export const isArticleNew = createSelector(
   articleState,
   state => state.isArticleNew,

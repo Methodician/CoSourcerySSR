@@ -1,7 +1,7 @@
 <form
   #formBoundingBox
   [formGroup]="articleEditForm"
-  *ngIf="dbArticle$ | async as article"
+  *ngIf="currentArticle as article"
   class="article-form"
 >
   <!-- MAIN IMAGE -->
@@ -20,7 +20,6 @@
     <cos-title
       [parentForm]="articleEditForm"
       [isActive]="isCtrlActive(ECtrlNames.title)"
-      [title]="article.title"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.title)"
       (onClickOut)="clickoutCtrl(ECtrlNames.title)"
     ></cos-title>
@@ -39,7 +38,6 @@
     <cos-intro
       [parentForm]="articleEditForm"
       [isActive]="isCtrlActive(ECtrlNames.intro)"
-      [introduction]="article.introduction"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.intro)"
       (onClickOut)="clickoutCtrl(ECtrlNames.intro)"
     ></cos-intro>

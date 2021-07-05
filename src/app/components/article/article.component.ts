@@ -452,6 +452,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   undoAllEdits = () => {
     this.store.dispatch(undoArticleEdits());
+    this.store
+      .select(dbArticle)
+      .pipe(take(1))
+      .subscribe(article => this.articleEditForm.patchValue(article));
     this.resetEditStates();
   };
 

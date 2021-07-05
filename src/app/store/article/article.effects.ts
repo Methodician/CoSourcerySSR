@@ -64,27 +64,22 @@ export class ArticleEffects {
                   imageUrl: article.imageUrl,
                 })),
                 map(article => this.processArticleTimestamps(article)),
-                mergeMap(article =>
-                  concat(
-                    of(loadCurrentArticleSuccess({ article })),
-                    !!article.coverImageId
-                      ? this.afStorage
-                          .ref(
-                            `articleCoverImages/${article.articleId}/${article.coverImageId}`,
-                          )
-                          .getDownloadURL()
-                          .pipe(
-                            map(coverImageUri =>
-                              setCoverImageUri({ coverImageUri }),
-                            ),
-                          )
-                      : of(
-                          setCoverImageUri({
-                            coverImageUri: 'assets/images/logo.svg',
-                          }),
-                        ),
-                  ),
+                switchMap(article =>
+                  !!article.coverImageId
+                    ? this.afStorage
+                        .ref(
+                          `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+                        )
+                        .getDownloadURL()
+                        .pipe(
+                          map(coverImageUri => ({ coverImageUri, article })),
+                        )
+                    : of({ coverImageUri: 'assets/images/logo.svg', article }),
                 ),
+                mergeMap(({ coverImageUri, article }) => [
+                  loadCurrentArticleSuccess({ article }),
+                  setCoverImageUriSuccess({ coverImageUri }),
+                ]),
               )
           : of(loadNotFoundArticle()),
       ),

@@ -28,6 +28,7 @@ import { PlatformService } from '@services/platform.service';
 import {
   loadCurrentArticle,
   resetArticleState,
+  saveArticleChanges,
   undoArticleEdits,
   updateCurrentArticle,
 } from '@store/article/article.actions';
@@ -293,8 +294,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
           'Must be signed in',
           'You can not save changes without signing in or registering',
         );
+
         return;
       }
+      this.store.dispatch(saveArticleChanges());
+
+      return;
+
       const coverImageSub = this.saveCoverImage().subscribe(
         async ({ isReady, imageId }) => {
           if (!isReady) return;

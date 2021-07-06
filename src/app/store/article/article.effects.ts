@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
 import { ArticleDetailI } from '@shared_models/article.models';
 import { selectRouteParams } from '@store/router/router.selectors';
-import { concat, fromEvent, Observable, of } from 'rxjs';
+import { fromEvent, Observable, of } from 'rxjs';
 import {
   catchError,
   exhaustMap,
@@ -21,6 +21,7 @@ import {
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
   saveArticleChanges,
+  saveArticleSuccess,
   setCoverImageFile,
   setCoverImageFileFailure,
   setCoverImageUri,
@@ -29,7 +30,7 @@ import {
   startNewArticle,
   undoArticleEdits,
 } from './article.actions';
-import { dbArticle } from './article.selectors';
+import { currentArticleChanges, dbArticle } from './article.selectors';
 
 @Injectable()
 export class ArticleEffects {
@@ -103,14 +104,102 @@ export class ArticleEffects {
     setCurrentArticleId({ currentArticleId: null }),
   ];
 
-  // saveArticleChanges$ = createEffect(() =>
-  //     this.actions$.pipe(
-  //       ofType(saveArticleChanges),
-  //       exhaustMap(() => {
+  saveArticleChanges$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveArticleChanges),
+      switchMap(() => this.store.select(currentArticleChanges)),
+      take(1),
+      // switchMap(
+      //   ({ currentArticle, currentArticleId, coverImageFile, isArticleNew }) =>
+      //     of({
+      //       currentArticle,
+      //       currentArticleId,
+      //       coverImageFile,
+      //       isArticleNew,
+      //     }),
+      // ),
+      switchMap(
+        ({
+          currentArticle,
+          currentArticleId,
+          coverImageFile,
+          isArticleNew,
+        }) => {
+          const coverImageId = this.articleSvc.createId();
+          return this.afStorage
+            .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
+            .put(coverImageFile)
+            .snapshotChanges()
+            .pipe(
+              map(snapshot => ({
+                currentArticle,
+                currentArticleId,
+                isArticleNew,
+                coverImageId,
+                snapshot,
+              })),
+            );
+        },
+        // {
+        //   const coverImageId = this.articleSvc.createId();
+        //   return !!coverImageFile
+        //     ? this.afStorage
+        //         .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
+        //         .put(coverImageFile)
+        //         .snapshotChanges()
+        //         .pipe(
+        //           map(snapshot => ({
+        //             currentArticle,
+        //             currentArticleId,
+        //             isArticleNew,
+        //             coverImageId,
+        //             snapshot,
+        //           })),
+        //         )
+        //     : of({
+        //         currentArticle,
+        //         currentArticleId,
+        //         isArticleNew,
+        //         coverImageId: null,
+        //         snapshot: null,
+        //       });
+        // },
+      ),
+      map(
+        ({
+          currentArticle,
+          currentArticleId,
+          isArticleNew,
+          coverImageId,
+          snapshot,
+        }) => {
+          const { state, task } = snapshot;
+          console.log({
+            currentArticle,
+            currentArticleId,
+            isArticleNew,
+            coverImageId,
+            state,
+            task,
+          });
 
-  //       })
-  //     )
-  // )
+          // if (!!coverImageFile) {
+          //   // Save the cover image and set its id on currentArticle
+          //   const coverImageId = this.articleSvc.createId();
+          //   const storageRef = this.afStorage.ref(
+          //     `articleCoverImages/${currentArticleId}/${coverImageId}`,
+          //   );
+          //   const task = storageRef.put(coverImageFile);
+          //   task.snapshotChanges().subscribe(res => console.log(res));
+          // }
+
+          if (state === 'success') {
+            return saveArticleSuccess();
+          } else return;
+        },
+      ),
+    ),
+  );
 
   undoArticleEdits$ = createEffect(() =>
     this.actions$.pipe(

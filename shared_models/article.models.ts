@@ -22,7 +22,8 @@ export interface ArticlePreviewI {
 
 export interface ArticleDetailI extends ArticlePreviewI {
   body: string;
-  authorImageUrl: string;
+  // I think this can be removed. Never has been used and could be added on with automations.
+  authorImageUrl?: string;
   lastEditorId: string;
   tags?: string[];
   bodyImageIds: string[];

@@ -19,7 +19,7 @@ import {
 const NOT_FOUND_ARTICLE: ArticleDetailI = {
   articleId: 'fake-news',
   authorId: '',
-  authorImageUrl: '../../assets/images/feeling-lost.jpg',
+  // authorImageUrl: '../../assets/images/feeling-lost.jpg',
   body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
   coverImageId: '',
   editors: null,
@@ -46,7 +46,7 @@ const BASE_ARTICLE: ArticleDetailI = {
   body: 'Please enter a body.',
   imageUrl: '',
   imageAlt: 'Cover Image',
-  authorImageUrl: '',
+  // authorImageUrl: '',
   lastUpdated: null,
   timestamp: 0,
   lastEditorId: '',

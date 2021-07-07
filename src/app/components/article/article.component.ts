@@ -51,6 +51,7 @@ const BASE_ARTICLE_FORM = {
   imageUrl: '',
   coverImageId: '',
   imageAlt: ['', Validators.maxLength(100)],
+  // Would like to remove authorImageUrl but would require data cleanup
   authorImageUrl: '',
   lastUpdated: null,
   timestamp: 0,

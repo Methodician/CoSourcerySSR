@@ -54,6 +54,7 @@ export const saveArticleSuccess = createAction(
 );
 export const saveArticleFailure = createAction(
   '[Article] Failed to save changes',
+  props<{ error: any }>(),
 );
 
 export const setCoverImageFile = createAction(

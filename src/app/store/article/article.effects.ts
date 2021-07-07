@@ -5,6 +5,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
 import { ArticleDetailI } from '@shared_models/article.models';
+import { isLoggedIn } from '@store/auth/auth.selectors';
 import { selectRouteParams } from '@store/router/router.selectors';
 import { fromEvent, Observable, of } from 'rxjs';
 import {
@@ -12,6 +13,7 @@ import {
   exhaustMap,
   map,
   mergeMap,
+  single,
   switchMap,
   take,
 } from 'rxjs/operators';
@@ -21,6 +23,7 @@ import {
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
   saveArticleChanges,
+  saveArticleFailure,
   saveArticleSuccess,
   setCoverImageFile,
   setCoverImageFileFailure,
@@ -42,7 +45,7 @@ export class ArticleEffects {
     private sanitizer: DomSanitizer,
   ) {}
 
-  loadCurrengArticle$ = createEffect(() =>
+  loadCurrentArticle$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadCurrentArticle),
       switchMap(() => this.store.select(selectRouteParams).pipe(take(1))),
@@ -104,102 +107,113 @@ export class ArticleEffects {
     setCurrentArticleId({ currentArticleId: null }),
   ];
 
-  saveArticleChanges$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(saveArticleChanges),
-      switchMap(() => this.store.select(currentArticleChanges)),
-      take(1),
-      // switchMap(
-      //   ({ currentArticle, currentArticleId, coverImageFile, isArticleNew }) =>
-      //     of({
-      //       currentArticle,
-      //       currentArticleId,
-      //       coverImageFile,
-      //       isArticleNew,
-      //     }),
-      // ),
-      switchMap(
-        ({
-          currentArticle,
-          currentArticleId,
-          coverImageFile,
-          isArticleNew,
-        }) => {
-          const coverImageId = this.articleSvc.createId();
-          return this.afStorage
-            .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
-            .put(coverImageFile)
-            .snapshotChanges()
-            .pipe(
-              map(snapshot => ({
-                currentArticle,
-                currentArticleId,
-                isArticleNew,
-                coverImageId,
-                snapshot,
-              })),
-            );
-        },
-        // {
-        //   const coverImageId = this.articleSvc.createId();
-        //   return !!coverImageFile
-        //     ? this.afStorage
-        //         .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
-        //         .put(coverImageFile)
-        //         .snapshotChanges()
-        //         .pipe(
-        //           map(snapshot => ({
-        //             currentArticle,
-        //             currentArticleId,
-        //             isArticleNew,
-        //             coverImageId,
-        //             snapshot,
-        //           })),
-        //         )
-        //     : of({
-        //         currentArticle,
-        //         currentArticleId,
-        //         isArticleNew,
-        //         coverImageId: null,
-        //         snapshot: null,
-        //       });
-        // },
-      ),
-      map(
-        ({
-          currentArticle,
-          currentArticleId,
-          isArticleNew,
-          coverImageId,
-          snapshot,
-        }) => {
-          const { state, task } = snapshot;
-          console.log({
+  saveArticleChanges$ = createEffect(() => {
+    const saveArticleCoverImage$ = ({
+      currentArticle,
+      currentArticleId,
+      coverImageFile,
+      isArticleNew,
+    }) => {
+      const coverImageId = this.articleSvc.createId();
+      return this.afStorage
+        .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
+        .put(coverImageFile)
+        .snapshotChanges()
+        .pipe(
+          single(snapshot => snapshot.state === 'success'),
+          map(snapshot => ({
             currentArticle,
             currentArticleId,
             isArticleNew,
             coverImageId,
-            state,
-            task,
-          });
+            snapshot,
+          })),
+        );
+    };
 
-          // if (!!coverImageFile) {
-          //   // Save the cover image and set its id on currentArticle
-          //   const coverImageId = this.articleSvc.createId();
-          //   const storageRef = this.afStorage.ref(
-          //     `articleCoverImages/${currentArticleId}/${coverImageId}`,
-          //   );
-          //   const task = storageRef.put(coverImageFile);
-          //   task.snapshotChanges().subscribe(res => console.log(res));
-          // }
+    const skipCoverImage$ = ({
+      currentArticle,
+      currentArticleId,
+      isArticleNew,
+    }) =>
+      of({
+        currentArticle,
+        currentArticleId,
+        isArticleNew,
+        coverImageId: null,
+        snapshot: null,
+      });
 
-          if (state === 'success') {
-            return saveArticleSuccess();
-          } else return;
-        },
+    const processArticleChanges$ = () =>
+      this.store.select(currentArticleChanges).pipe(
+        take(1),
+        switchMap(changes => {
+          if (!!changes.coverImageFile) {
+            return saveArticleCoverImage$(changes);
+          } else {
+            return skipCoverImage$(changes);
+          }
+        }),
+        map(
+          ({
+            currentArticle,
+            currentArticleId,
+            isArticleNew,
+            coverImageId,
+          }) => {
+            console.log({
+              currentArticle,
+              currentArticleId,
+              isArticleNew,
+              coverImageId,
+            });
+            if (!coverImageId) {
+              // Would actually save the article first
+              console.log('There is no cover image, saving article', {
+                currentArticle,
+                currentArticleId,
+                isArticleNew,
+              });
+              return saveArticleSuccess();
+            } else {
+              // Would actually set coverImageId on the article before saving it.
+              console.log(
+                'There is a cover image, updating article before saving',
+                {
+                  currentArticle,
+                  currentArticleId,
+                  isArticleNew,
+                  coverImageId,
+                },
+              );
+
+              return saveArticleSuccess();
+            }
+          },
+        ),
+        catchError(error => of(saveArticleFailure({ error }))),
+      );
+
+    return this.actions$.pipe(
+      ofType(saveArticleChanges),
+      exhaustMap(() =>
+        this.store.select(isLoggedIn).pipe(
+          take(1),
+          switchMap(isLoggedIn =>
+            isLoggedIn
+              ? processArticleChanges$()
+              : of(
+                  saveArticleFailure({
+                    error: new Error(
+                      'Can not save changes unless authenticated',
+                    ),
+                  }),
+                ),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  });
 
   undoArticleEdits$ = createEffect(() =>
     this.actions$.pipe(

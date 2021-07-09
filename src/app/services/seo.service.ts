@@ -9,7 +9,7 @@ export class SeoService {
   constructor(
     @Inject(DOCUMENT) private doc,
     private meta: Meta,
-    private title: Title
+    private title: Title,
   ) {}
 
   generateTags = (tags?: ISEOtags) => {

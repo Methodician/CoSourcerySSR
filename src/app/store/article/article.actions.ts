@@ -49,9 +49,20 @@ export const loadCurrentArticleFailure = createAction(
 );
 
 export const saveArticleChanges = createAction('[Article] Save Changes');
-export const saveArticleSuccess = createAction(
-  '[Article] Successfully saved changes',
+
+export const createArticleSuccess = createAction(
+  '[Article] Successfully added new article to database',
+  props<{ newArticleSlug: string }>(),
 );
+
+export const createArticleRedirect = createAction(
+  '[Article] Redirect user to new article page',
+);
+
+export const updateArticleSuccess = createAction(
+  '[Article] Successfully updated existing article in database',
+);
+
 export const saveArticleFailure = createAction(
   '[Article] Failed to save changes',
   props<{ error: any }>(),

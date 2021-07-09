@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
@@ -20,13 +21,14 @@ import {
   take,
 } from 'rxjs/operators';
 import {
+  createArticleRedirect,
+  createArticleSuccess,
   loadCurrentArticle,
   loadCurrentArticleFailure,
   loadCurrentArticleSuccess,
   loadNotFoundArticle,
   saveArticleChanges,
   saveArticleFailure,
-  saveArticleSuccess,
   setCoverImageFile,
   setCoverImageFileFailure,
   setCoverImageUri,
@@ -34,6 +36,7 @@ import {
   setCurrentArticleId,
   startNewArticle,
   undoArticleEdits,
+  updateArticleSuccess,
 } from './article.actions';
 import { currentArticleChanges, dbArticle } from './article.selectors';
 
@@ -46,6 +49,7 @@ export class ArticleEffects {
     private store: Store,
     private afStorage: AngularFireStorage,
     private afDatabase: AngularFireDatabase,
+    private router: Router,
     private sanitizer: DomSanitizer,
   ) {}
 
@@ -115,6 +119,8 @@ export class ArticleEffects {
   );
 
   saveArticleChanges$ = createEffect(() => {
+    // Possibly overkill function to handle both updating and creating articles.
+    // May break out into separate actions later...
     const processArticleChanges$ = () =>
       this.store.select(currentArticleChanges).pipe(
         take(1),
@@ -124,36 +130,46 @@ export class ArticleEffects {
             currentArticleId,
             coverImageFile,
             isArticleNew,
+          }: {
+            currentArticle: ArticleDetailI;
+            currentArticleId: string;
+            coverImageFile: File;
+            isArticleNew: boolean;
           }) => {
             const coverImageId = this.articleSvc.createId();
-            return this.afStorage
+            const task = this.afStorage
               .ref(`articleCoverImages/${currentArticleId}/${coverImageId}`)
-              .put(coverImageFile)
-              .snapshotChanges()
-              .pipe(
-                single(snapshot => snapshot.state === 'success'),
-                map(snapshot => ({
-                  currentArticle,
-                  currentArticleId,
-                  isArticleNew,
-                  coverImageId,
-                  snapshot,
-                })),
-              );
+              .put(coverImageFile);
+
+            return task.snapshotChanges().pipe(
+              single(snapshot => snapshot.state === 'success'),
+              map(snapshot => ({
+                currentArticle,
+                currentArticleId,
+                isArticleNew,
+                coverImageId,
+                snapshot,
+              })),
+            );
           };
 
           const skipCoverImage$ = ({
             currentArticle,
             currentArticleId,
             isArticleNew,
-          }) =>
-            of({
+          }: {
+            currentArticle: ArticleDetailI;
+            currentArticleId: string;
+            isArticleNew: boolean;
+          }) => {
+            return of({
               currentArticle,
               currentArticleId,
               isArticleNew,
-              coverImageId: null,
+              coverImageId: null as string,
               snapshot: null,
             });
+          };
 
           if (!!changes.coverImageFile) {
             return saveArticleCoverImage$(changes);
@@ -173,64 +189,134 @@ export class ArticleEffects {
                 'Can not save article without specified article ID',
               );
 
-            const createArticle$ = () =>
-              this.store.select(authUid).pipe(
-                take(1),
-                switchMap(authUid => {
-                  const newSlug = this.articleSvc.slugify(currentArticle.title);
-                  const isNewSlugValid$ = () =>
+            const isNewSlugValid$ = (newSlug: string) =>
+              this.afDatabase
+                .object<string>(`articleData/slugs/${newSlug}`)
+                .valueChanges()
+                .pipe(
+                  take(1),
+                  map(articleId => !articleId),
+                );
+
+            const throwBadSlugError = () => {
+              throw new Error(
+                'The title provided is not unique enough to produce an available URL slug',
+              );
+            };
+
+            // This part is triggered if the article is new
+            const createArticle$ = (authUid: string, newSlug: string) => {
+              return isNewSlugValid$(newSlug).pipe(
+                switchMap(isValid => {
+                  if (!isValid) {
+                    throwBadSlugError();
+                  }
+
+                  const newArticle: ArticleDetailI = {
+                    ...currentArticle,
+                    editors: { [authUid]: 1 },
+                    authorId: authUid,
+                    lastEditorId: authUid,
+                    coverImageId,
+                    lastUpdated: this.fbSvc.fsServerTimestamp(),
+                    timestamp: this.fbSvc.fsServerTimestamp(),
+                    slug: newSlug,
+                  };
+
+                  const createTrackingSlugPromise = () =>
                     this.afDatabase
-                      .object<string>(`articleData/slugs/${newSlug}`)
-                      .valueChanges()
-                      .pipe(
-                        take(1),
-                        map(articleId => !articleId),
-                      );
+                      .object(`articleData/slugs/${newSlug}`)
+                      .set(currentArticleId);
 
-                  return isNewSlugValid$().pipe(
-                    switchMap(isValid => {
-                      if (!isValid) {
-                        throw new Error(
-                          'The title provided is not unique enough to produce an available URL slug',
-                        );
-                      }
+                  const setArticlePromise = () =>
+                    this.articleSvc
+                      .articleDetailRef(currentArticleId)
+                      .set(newArticle, { merge: true });
 
-                      const newArticle: ArticleDetailI = {
-                        ...currentArticle,
-                        editors: { [authUid]: 1 },
-                        authorId: authUid,
-                        lastEditorId: authUid,
-                        coverImageId,
-                        lastUpdated: this.fbSvc.fsServerTimestamp(),
-                        timestamp: this.fbSvc.fsServerTimestamp(),
-                        slug: newSlug,
-                      };
-
-                      const createTrackingSlug = () =>
-                        this.afDatabase
-                          .object(`articleData/slugs/${newSlug}`)
-                          .set(currentArticleId);
-
-                      const setArticle = () =>
-                        this.articleSvc
-                          .articleDetailRef(currentArticleId)
-                          .set(newArticle, { merge: true });
-
-                      const mergedPromises = Promise.all([
-                        createTrackingSlug(),
-                        setArticle(),
-                      ]);
-
-                      return from(mergedPromises).pipe(
-                        map(_ => saveArticleSuccess()),
-                      );
-                    }),
+                  return from(
+                    Promise.all([
+                      createTrackingSlugPromise(),
+                      setArticlePromise(),
+                    ]),
+                  ).pipe(
+                    map(_ => createArticleSuccess({ newArticleSlug: newSlug })),
                   );
                 }),
               );
-            const updateArticle = () => of(saveArticleSuccess());
+            };
 
-            return isArticleNew ? createArticle$() : updateArticle();
+            // This part is triggered if the article is not new
+            const updateArticle$ = (authUid: string, newSlug: string) => {
+              const isSlugChanged = newSlug !== currentArticle.slug;
+
+              const updateTrackingSlugPromise = () => {
+                const newSlugPath = `articleData/slugs/${newSlug}`;
+                const oldSlugPath = `articleData/slugs/${currentArticle.slug}`;
+
+                const updates = {
+                  [newSlugPath]: currentArticleId,
+                  [oldSlugPath]: null,
+                };
+
+                const batch = this.afDatabase.database.ref().update(updates);
+                return batch;
+              };
+
+              const previousEditCount = currentArticle.editors[authUid] || 0;
+
+              const changedArticle = {
+                ...currentArticle,
+                slug: newSlug,
+                editors: {
+                  ...currentArticle.editors,
+                  [authUid]: previousEditCount + 1,
+                },
+                lastEditorId: authUid,
+                coverImageId,
+                lastUpdated: this.fbSvc.fsServerTimestamp(),
+                version: currentArticle.version + 1,
+              };
+
+              const articleUpdatePromise = this.articleSvc
+                .articleDetailRef(currentArticleId)
+                .update(changedArticle);
+
+              return isSlugChanged
+                ? isNewSlugValid$(newSlug).pipe(
+                    switchMap(isValid => {
+                      if (!isValid) {
+                        throwBadSlugError();
+                      }
+
+                      const slugUpdateBatchPromise =
+                        updateTrackingSlugPromise();
+
+                      const updates$ = from(
+                        Promise.all([
+                          slugUpdateBatchPromise,
+                          articleUpdatePromise,
+                        ]),
+                      );
+
+                      return updates$.pipe(map(_ => updateArticleSuccess()));
+                    }),
+                  )
+                : from(articleUpdatePromise).pipe(
+                    map(_ => updateArticleSuccess()),
+                  );
+            };
+
+            return this.store.select(authUid).pipe(
+              take(1),
+              switchMap(authUid => {
+                const newSlug = this.articleSvc.slugify(
+                  currentArticle.title,
+                ) as string;
+                return isArticleNew
+                  ? createArticle$(authUid, newSlug)
+                  : updateArticle$(authUid, newSlug);
+              }),
+            );
           },
         ),
         catchError(error => of(saveArticleFailure({ error }))),
@@ -255,6 +341,16 @@ export class ArticleEffects {
           catchError(error => of(saveArticleFailure({ error }))),
         ),
       ),
+    );
+  });
+
+  createArticleSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(createArticleSuccess),
+      exhaustMap(({ newArticleSlug }) =>
+        this.router.navigateByUrl(`/article/${newArticleSlug}`),
+      ),
+      map(_ => createArticleRedirect()),
     );
   });
 

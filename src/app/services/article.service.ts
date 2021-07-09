@@ -188,7 +188,8 @@ export class ArticleService {
 
   // RTDB REF BUILDERS
 
-  slugIdRef = (slug: string) => this.afd.object(`articleData/slugs/${slug}`);
+  slugIdRef = (slug: string) =>
+    this.afd.object<string>(`articleData/slugs/${slug}`);
 
   // FIRESTORE REF BUILDERS
 
@@ -270,12 +271,10 @@ export class ArticleService {
 
   bookmarkArticle = (uid: string, articleId: string) => {
     const updates = {};
-    updates[
-      `userInfo/articleBookmarksPerUser/${uid}/${articleId}`
-    ] = this.fbSvc.rtServerTimestamp;
-    updates[
-      `articleData/userBookmarksPerArticle/${articleId}/${uid}`
-    ] = this.fbSvc.rtServerTimestamp;
+    updates[`userInfo/articleBookmarksPerUser/${uid}/${articleId}`] =
+      this.fbSvc.rtServerTimestamp;
+    updates[`articleData/userBookmarksPerArticle/${articleId}/${uid}`] =
+      this.fbSvc.rtServerTimestamp;
     this.afd.database.ref().update(updates);
   };
   // end bookmark stuff

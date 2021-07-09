@@ -1,8 +1,5 @@
 <section [ngClass]="{ border: isActive }" (cosClickOut)="clickOut()">
-  <cos-cover-image-display
-    [imageAlt]="imageAlt"
-    [imageUrl]="imageUrl"
-  ></cos-cover-image-display>
+  <cos-cover-image-display></cos-cover-image-display>
   <cos-cover-image-edit
     *ngIf="isActive"
     [parentForm]="parentForm"

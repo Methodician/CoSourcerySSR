@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { currentArticleIntro } from '@store/article/article.selectors';
 
 @Component({
   selector: 'cos-intro-display',
@@ -6,5 +8,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./intro-display.component.scss', '../intro.component.scss'],
 })
 export class IntroDisplayComponent {
-  @Input() introduction: string;
+  intro$ = this.store.select(currentArticleIntro);
+
+  constructor(private store: Store) {}
 }

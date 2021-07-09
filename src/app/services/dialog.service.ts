@@ -19,6 +19,8 @@ import { Router } from '@angular/router';
 export class DialogService {
   constructor(private dialog: MatDialog, private router: Router) {}
 
+  openLoginDialog = () => this.dialog.open(LoginDialogComponent);
+
   openArticleCtaDialog = () => {
     const dialogRef = this.dialog.open(ArticleCtaDialogComponent);
     dialogRef.afterClosed().subscribe(response => {

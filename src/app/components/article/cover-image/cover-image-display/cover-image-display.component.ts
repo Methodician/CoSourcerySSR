@@ -1,4 +1,6 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { coverImageAlt, coverImageUri } from '@store/article/article.selectors';
 
 @Component({
   selector: 'cos-cover-image-display',
@@ -6,16 +8,8 @@ import { Component, Input, SimpleChanges } from '@angular/core';
   styleUrls: ['./cover-image-display.component.scss'],
 })
 export class CoverImageDisplayComponent {
-  @Input() imageUrl;
-  @Input() imageAlt;
+  imageUri$ = this.store.select(coverImageUri);
+  imageAlt$ = this.store.select(coverImageAlt);
 
-  _imageUrl = 'assets/images/logo.svg';
-  _imageAlt = 'Cover Image';
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.imageUrl || changes.imageAlt) {
-      if (this.imageUrl) this._imageUrl = this.imageUrl;
-      if (this.imageAlt) this._imageAlt = this.imageAlt;
-    }
-  }
+  constructor(private store: Store) {}
 }

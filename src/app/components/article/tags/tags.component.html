@@ -4,16 +4,16 @@
   (cosClickOut)="clickOut()"
 >
   <h3>Tags</h3>
-  <p *ngIf="tags.length === 0 && !isActive">
+  <p *ngIf="(tags$ | async).length === 0 && !isActive">
     This article has no tags. Click the edit icon, enter a tag, and press enter.
   </p>
   <mat-chip-list *ngIf="!isActive">
-    <mat-chip *ngFor="let tag of tags">{{ tag }}</mat-chip>
+    <mat-chip *ngFor="let tag of tags$ | async">{{ tag }}</mat-chip>
   </mat-chip-list>
 
   <mat-form-field *ngIf="isActive">
     <mat-chip-list #chipList>
-      <mat-chip *ngFor="let tag of tags" (removed)="removeTag(tag)">
+      <mat-chip *ngFor="let tag of tags$ | async" (removed)="removeTag(tag)">
         {{ tag }}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>

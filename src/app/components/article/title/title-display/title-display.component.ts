@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { currentArticleTitle } from '@store/article/article.selectors';
 
 @Component({
   selector: 'cos-title-display',
@@ -6,5 +8,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['../title.component.scss'],
 })
 export class TitleDisplayComponent {
-  @Input() title: string;
+  title$ = this.store.select(currentArticleTitle);
+
+  constructor(private store: Store) {}
 }

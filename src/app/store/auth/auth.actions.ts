@@ -12,3 +12,11 @@ export const loadAuthFailure = createAction(
   '[Auth] Load Auths Failure',
   props<{ error: any }>(),
 );
+
+export const promptIfNotLoggedIn = createAction(
+  '[Auth] Prompt if not logged in',
+);
+
+export const authConfirmed = createAction('[Auth] Auth Confirmed');
+
+export const authRefuted = createAction('[Auth] Auth Refuted');

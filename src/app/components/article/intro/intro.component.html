@@ -3,10 +3,7 @@
   [ngClass]="{ border: isActive }"
   (cosClickOut)="clickOut()"
 >
-  <cos-intro-display
-    *ngIf="!isActive"
-    [introduction]="introduction"
-  ></cos-intro-display>
+  <cos-intro-display *ngIf="!isActive"></cos-intro-display>
   <cos-intro-edit *ngIf="isActive" [parentForm]="parentForm"></cos-intro-edit>
   <!-- TODO: Abstract below out into shared component -->
   <button

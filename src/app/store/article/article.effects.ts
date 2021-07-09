@@ -7,6 +7,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
 import { FirebaseService } from '@services/firebase.service';
+import { SeoService } from '@services/seo.service';
 import { ArticleDetailI } from '@shared_models/article.models';
 import { authUid, isLoggedIn } from '@store/auth/auth.selectors';
 import { selectRouteParams } from '@store/router/router.selectors';
@@ -36,22 +37,81 @@ import {
   setCurrentArticleId,
   startNewArticle,
   undoArticleEdits,
+  updateArticleMetatagsFailure,
+  updateArticleMetatagsSuccess,
   updateArticleSuccess,
 } from './article.actions';
 import { currentArticleChanges, dbArticle } from './article.selectors';
 
+export interface SEOtagsI {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  keywords?: string;
+  canonicalUrl?: string;
+  slug?: string;
+  tags?: string[];
+}
 @Injectable()
 export class ArticleEffects {
   constructor(
     private actions$: Actions,
     private articleSvc: ArticleService,
     private fbSvc: FirebaseService,
+    private seoSvc: SeoService,
     private store: Store,
     private afStorage: AngularFireStorage,
     private afDatabase: AngularFireDatabase,
     private router: Router,
     private sanitizer: DomSanitizer,
   ) {}
+
+  updateMetaTags$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadCurrentArticleSuccess),
+      exhaustMap(({ article }) =>
+        !!article.coverImageId
+          ? this.afStorage
+              .ref(
+                `articleCoverImages/${article.articleId}/${article.coverImageId}`,
+              )
+              .getDownloadURL()
+              .pipe(map(coverImageUri => ({ coverImageUri, article })))
+          : of({ coverImageUri: 'assets/images/logo.svg', article }),
+      ),
+      exhaustMap(({ coverImageUri, article }) => {
+        const { title, introduction, body, tags, slug } = article;
+
+        const createMetaDescription = () => {
+          const introLength = introduction.length;
+          if (introLength > 325)
+            return introduction.substr(0, 325).concat('...');
+          const lengthToFill = 346 - introLength;
+          const cleanBody = body
+            .replace(/<\/?[^>]+(>|$)/g, ' ')
+            .replace('&nbsp;', '')
+            .replace(/\s+/g, ' ');
+          return introduction
+            .concat(' - ')
+            .concat(cleanBody.substr(0, lengthToFill))
+            .concat('...');
+        };
+
+        const SEOTags: SEOtagsI = {
+          title,
+          imageUrl: coverImageUri,
+          description: createMetaDescription(),
+          keywords: tags.join(', ').toLowerCase(),
+          canonicalUrl: `https://cosourcery.com/article/${slug}`,
+        };
+
+        this.seoSvc.generateTags(SEOTags);
+
+        return of(updateArticleMetatagsSuccess());
+      }),
+      catchError(error => of(updateArticleMetatagsFailure({ error }))),
+    ),
+  );
 
   // LOADS CURRENT ARTICLE OR NEW ARTICLE INITIALLY
   loadCurrentArticle$ = createEffect(() =>

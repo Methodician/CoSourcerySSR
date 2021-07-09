@@ -48,6 +48,15 @@ export const loadCurrentArticleFailure = createAction(
   props<{ error: any }>(),
 );
 
+export const updateArticleMetatagsSuccess = createAction(
+  '[Article] Successfully updated metatags for article',
+);
+
+export const updateArticleMetatagsFailure = createAction(
+  '[Article] Failed to update metatags for article',
+  props<{ error: any }>(),
+);
+
 export const saveArticleChanges = createAction('[Article] Save Changes');
 
 export const createArticleSuccess = createAction(

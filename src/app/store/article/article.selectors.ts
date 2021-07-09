@@ -12,7 +12,17 @@ export const currentArticleDetail = createSelector(
 
 export const currentArticleId = createSelector(
   articleState,
-  state => state.currentArticle.articleId,
+  state => state.currentArticleId,
+);
+
+export const currentArticleChanges = createSelector(
+  articleState,
+  ({ currentArticle, currentArticleId, coverImageFile, isArticleNew }) => ({
+    currentArticle,
+    currentArticleId,
+    coverImageFile,
+    isArticleNew,
+  }),
 );
 
 export const currentArticleTags = createSelector(

@@ -28,6 +28,7 @@ import { PlatformService } from '@services/platform.service';
 import {
   loadCurrentArticle,
   resetArticleState,
+  saveArticleChanges,
   undoArticleEdits,
   updateCurrentArticle,
 } from '@store/article/article.actions';
@@ -50,6 +51,7 @@ const BASE_ARTICLE_FORM = {
   imageUrl: '',
   coverImageId: '',
   imageAlt: ['', Validators.maxLength(100)],
+  // Would like to remove authorImageUrl but would require data cleanup
   authorImageUrl: '',
   lastUpdated: null,
   timestamp: 0,
@@ -285,7 +287,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     // this.articleEditForm.patchValue({ bodyImageIds });
   };
 
-  saveChanges = async () => {
+  saveChanges = () => {
     this.authSvc.isSignedInOrPrompt().subscribe(isSignedIn => {
       // Could do some or all of that isSignedInOrPrompt stuff in the NgRx flow
       if (!isSignedIn) {
@@ -293,114 +295,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
           'Must be signed in',
           'You can not save changes without signing in or registering',
         );
+
         return;
       }
-      const coverImageSub = this.saveCoverImage().subscribe(
-        async ({ isReady, imageId }) => {
-          if (!isReady) return;
+      this.store.dispatch(saveArticleChanges());
+      // !These should be done more synchronously, probably in the effects.
+      this.resetEditStates().then(() => this.resetEditSessionTimeout());
 
-          // update the id if cover image was changed
-          // if (!!imageId) this.articleState.coverImageId = imageId;
-
-          if (!this.isArticleNew) {
-            // It's not new so just update existing and return
-            // !is it still relevant to patch the form at this stage?
-            this.articleEditForm.patchValue({ coverImageId: imageId });
-            try {
-              const updateResult = await this.articleSvc.updateArticle(
-                this.currentArticle,
-              );
-              this.resetEditSessionTimeout();
-              await this.resetEditStates();
-              // HACKY: see associated note in UpdateArticle inside ArticleService
-              if (updateResult && updateResult[2]) {
-                this.router.navigate([`article/${updateResult[2]}`]);
-              }
-            } catch (error) {
-              this.dialogSvc.openMessageDialog(
-                'Error saving article',
-                'Attempting to save your changes returned the following error',
-                error.message || error,
-              );
-            } finally {
-              if (coverImageSub) coverImageSub.unsubscribe();
-              return;
-            }
-          } else {
-            // It's a new article!
-            try {
-              await this.articleSvc.createArticle(
-                this.loggedInUser,
-                this.currentArticle,
-                this.articleId,
-              );
-              this.resetEditSessionTimeout();
-              // TODO: Ensure unsaved changes are actually being checked upon route change
-              await this.resetEditStates(); // This could still result in race condition where real time updates are too slow.
-              this.router.navigate([`article/${this.articleId}`]);
-            } catch (error) {
-              this.dialogSvc.openMessageDialog(
-                'Error creating article',
-                'Attempting to create the article returned the following error. If this persists, please let us know...',
-                `Error: ${error.message || error}`,
-              );
-            } finally {
-              if (coverImageSub) coverImageSub.unsubscribe();
-              return;
-            }
-          }
-        },
-      );
+      return;
     });
-  };
-
-  /**
-   * Emits true if the process is complete (either the image was saved or there was nothing to save)
-   * Emits false if it's incomplete or cancelled or errors out
-   */
-  saveCoverImage = () => {
-    const uploadAtatus$ = new BehaviorSubject({
-      isReady: false,
-      imageId: null,
-    });
-    if (!this.coverImageFile) {
-      uploadAtatus$.next({ isReady: true, imageId: null });
-    } else {
-      try {
-        const { task, storageRef, newImageId } =
-          this.articleSvc.uploadCoverImage(this.articleId, this.coverImageFile);
-
-        this.coverImageUploadTask = task;
-        task.then(() => {
-          storageRef.getDownloadURL().subscribe(imageUrl => {
-            this.articleEditForm.patchValue({ imageUrl });
-            this.coverImageFile = null;
-            uploadAtatus$.next({ isReady: true, imageId: newImageId });
-          });
-        });
-
-        this.dialogSvc
-          .openProgressDialog(
-            'Uploading new cover image',
-            'You can hide this dialog while you wait, or cancel the upload to go back to editing',
-            task.percentageChanges(),
-          )
-          .afterClosed()
-          .subscribe(shouldCancel => {
-            if (shouldCancel) {
-              this.cancelUpload(this.coverImageUploadTask);
-              this.articleEditForm.markAsDirty();
-              uploadAtatus$.next({ isReady: false, imageId: null });
-            }
-          });
-      } catch (error) {
-        console.error(error);
-        uploadAtatus$.next({ isReady: false, imageId: null });
-      }
-    }
-
-    return uploadAtatus$;
-    // In the original we did more such as keeping track of uploads in the database and
   };
 
   // ---Editor Session Management
@@ -416,7 +319,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   };
 
   resetEditSessionTimeout = () =>
-    this.editSessionTimeoutSubscription.unsubscribe();
+    this.editSessionTimeoutSubscription?.unsubscribe();
 
   openTimeoutDialog = () => {
     const response$ = this.dialogSvc.openTimeoutDialog(

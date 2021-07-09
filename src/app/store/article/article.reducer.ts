@@ -10,6 +10,7 @@ import {
   resetArticleState,
   setCoverImageFile,
   setCoverImageUriSuccess,
+  setCurrentArticleId,
   startNewArticle,
   undoArticleEdits,
   updateCurrentArticle,
@@ -18,7 +19,7 @@ import {
 const NOT_FOUND_ARTICLE: ArticleDetailI = {
   articleId: 'fake-news',
   authorId: '',
-  authorImageUrl: '../../assets/images/feeling-lost.jpg',
+  // authorImageUrl: '../../assets/images/feeling-lost.jpg',
   body: 'No article exists for the route supplied. Please return to home by clicking the CoSourcery icon in the upper left.',
   coverImageId: '',
   editors: null,
@@ -40,12 +41,12 @@ const BASE_ARTICLE: ArticleDetailI = {
   articleId: '',
   authorId: '',
   coverImageId: false,
-  title: '',
-  introduction: '',
-  body: 'This article is empty.',
+  title: 'Please enter a title.',
+  introduction: 'Please enter an introduction.',
+  body: 'Please enter a body.',
   imageUrl: '',
   imageAlt: 'Cover Image',
-  authorImageUrl: '',
+  // authorImageUrl: '',
   lastUpdated: null,
   timestamp: 0,
   lastEditorId: '',
@@ -64,6 +65,7 @@ export const articleFeatureKey = 'article';
 export interface ArticleStateI {
   currentArticle: ArticleDetailI;
   dbArticle: ArticleDetailI;
+  currentArticleId: string;
   isArticleNew: boolean;
   coverImageFile: File;
   coverImageUri: string | ArrayBuffer | SafeUrl;
@@ -72,6 +74,7 @@ export interface ArticleStateI {
 export const initialState: ArticleStateI = {
   currentArticle: null,
   dbArticle: null,
+  currentArticleId: null,
   isArticleNew: false,
   coverImageFile: null,
   coverImageUri: 'assets/images/logo.svg',
@@ -80,6 +83,7 @@ export const initialState: ArticleStateI = {
 const newArticleState: ArticleStateI = {
   currentArticle: BASE_ARTICLE,
   dbArticle: BASE_ARTICLE,
+  currentArticleId: null,
   isArticleNew: true,
   coverImageFile: null,
   coverImageUri: 'assets/images/logo.svg',
@@ -95,6 +99,10 @@ export const articleReducer = createReducer(
   on(updateCurrentArticle, (state, { article }) => ({
     ...state,
     currentArticle: article,
+  })),
+  on(setCurrentArticleId, (state, { currentArticleId }) => ({
+    ...state,
+    currentArticleId,
   })),
   on(addArticleTag, (state, { tag }) => {
     const { currentArticle } = state;

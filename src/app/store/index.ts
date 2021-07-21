@@ -7,16 +7,23 @@ import {
   ArticleStateI,
 } from './article/article.reducer';
 import { authFeatureKey, authReducer, AuthStateI } from './auth/auth.reducer';
+import {
+  browseArticlesFeatureKey,
+  browseArticlesReducer,
+  BrowseArticleStateI,
+} from './browse-articles/browse-articles.reducer';
 
 export interface StateI {
   [authFeatureKey]: AuthStateI;
   [articleFeatureKey]: ArticleStateI;
+  [browseArticlesFeatureKey]: BrowseArticleStateI;
   router: RouterReducerState;
 }
 
 export const reducers: ActionReducerMap<StateI> = {
   [authFeatureKey]: authReducer,
   [articleFeatureKey]: articleReducer,
+  [browseArticlesFeatureKey]: browseArticlesReducer,
   router: routerReducer,
 };
 

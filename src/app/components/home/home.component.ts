@@ -17,6 +17,8 @@ import { SeoService } from '@services/seo.service';
 import { Observable, Subject } from 'rxjs';
 import { map, tap, startWith, takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
+import { Store } from '@ngrx/store';
+import { loadAllArticlePreviews } from '@store/browse-articles/browse-articles.actions';
 
 const ALL_ARTICLES_KEY =
   makeStateKey<Observable<ArticlePreviewI[]>>('allArticles');
@@ -44,12 +46,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private articleSvc: ArticleService,
+    private store: Store,
     private seoSvc: SeoService,
     private authSvc: AuthService,
     private state: TransferState,
   ) {}
 
   ngOnInit() {
+    this.store.dispatch(loadAllArticlePreviews());
     this.initializeArticles();
     this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
     this.watchAuthInfo();

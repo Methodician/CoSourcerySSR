@@ -18,7 +18,14 @@ import { Observable, Subject } from 'rxjs';
 import { map, tap, startWith, takeUntil } from 'rxjs/operators';
 import { AuthService } from '@services/auth.service';
 import { Store } from '@ngrx/store';
-import { loadAllArticlePreviews } from '@store/browse-articles/browse-articles.actions';
+import {
+  loadAllArticlePreviews,
+  loadLatestArticlePreviews,
+} from '@store/browse-articles/browse-articles.actions';
+import {
+  allPreviews,
+  latestPreviews,
+} from '@store/browse-articles/browse-articles.selectors';
 
 const ALL_ARTICLES_KEY =
   makeStateKey<Observable<ArticlePreviewI[]>>('allArticles');
@@ -54,9 +61,22 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(loadAllArticlePreviews());
+    this.store.dispatch(loadLatestArticlePreviews());
     this.initializeArticles();
     this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
     this.watchAuthInfo();
+
+    // TESTING
+    this.store
+      .select(allPreviews)
+      .pipe(map(previews => previews?.map(preview => preview?.lastUpdated)))
+      .subscribe(console.log);
+
+    this.store
+      .select(latestPreviews)
+      .pipe(map(previews => previews?.map(preview => preview?.lastUpdated)))
+      .subscribe(console.log);
+    // end testing
   }
 
   ngOnDestroy() {

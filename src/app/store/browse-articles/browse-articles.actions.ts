@@ -6,11 +6,25 @@ export const loadAllArticlePreviews = createAction(
 );
 
 export const loadAllArticlePreviewsSuccess = createAction(
-  '[BrowseArticles] Load article previews Success',
-  props<{ articlePreviews: ReadonlyArray<ArticlePreviewI> }>(),
+  '[BrowseArticles] Load all article previews Success',
+  props<{ allArticlePreviews: ReadonlyArray<ArticlePreviewI> }>(),
 );
 
 export const loadAllArticlePreviewsFailure = createAction(
-  '[BrowseArticles] Load article previews Failure',
+  '[BrowseArticles] Load all article previews Failure',
+  props<{ error: any }>(),
+);
+
+export const loadLatestArticlePreviews = createAction(
+  '[BrowseArticles] Load latest article previews',
+);
+
+export const loadLatestArticlePreviewsSuccess = createAction(
+  '[BrowseArticles] Load latest article previews Success',
+  props<{ latestArticlePreviews: ReadonlyArray<ArticlePreviewI> }>(),
+);
+
+export const loadLatestArticlePreviewsFailure = createAction(
+  '[BrowseArticles] Load latest article previews Failure',
   props<{ error: any }>(),
 );

@@ -1,20 +1,30 @@
 import { createReducer, on } from '@ngrx/store';
 import { ArticlePreviewI } from '@shared_models/index';
-import { loadAllArticlePreviewsSuccess } from './browse-articles.actions';
+import {
+  loadAllArticlePreviewsSuccess,
+  loadLatestArticlePreviewsSuccess,
+} from './browse-articles.actions';
 
 export const browseArticlesFeatureKey = 'browseArticles';
 
 export interface BrowseArticleStateI {
-  articlePreviews: ReadonlyArray<ArticlePreviewI>;
+  allArticlePreviews: ReadonlyArray<ArticlePreviewI>;
+  latestArticlePreviews: ReadonlyArray<ArticlePreviewI>;
 }
 
 export const initialState: BrowseArticleStateI = {
-  articlePreviews: [],
+  allArticlePreviews: [],
+  latestArticlePreviews: [],
 };
 
 export const browseArticlesReducer = createReducer(
   initialState,
-  on(loadAllArticlePreviewsSuccess, (_, { articlePreviews }) => ({
-    articlePreviews,
+  on(loadAllArticlePreviewsSuccess, (state, { allArticlePreviews }) => ({
+    ...state,
+    allArticlePreviews,
+  })),
+  on(loadLatestArticlePreviewsSuccess, (state, { latestArticlePreviews }) => ({
+    ...state,
+    latestArticlePreviews,
   })),
 );

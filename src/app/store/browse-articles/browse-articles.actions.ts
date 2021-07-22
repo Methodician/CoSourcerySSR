@@ -28,3 +28,17 @@ export const loadLatestArticlePreviewsFailure = createAction(
   '[BrowseArticles] Load latest article previews Failure',
   props<{ error: any }>(),
 );
+
+export const loadBookmarkedArticlePreviews = createAction(
+  '[BrowseArticles] Load bookmarked article previews',
+);
+
+export const loadBookmarkedArticlePreviewsSuccess = createAction(
+  '[BrowseArticles] Load bookmarked article previews Success',
+  props<{ bookmarkedArticlePreviews: ReadonlyArray<ArticlePreviewI> }>(),
+);
+
+export const loadBookmarkedArticlePreviewsFailure = createAction(
+  '[BrowseArticles] Load bookmarked article previews Failure',
+  props<{ error: any }>(),
+);

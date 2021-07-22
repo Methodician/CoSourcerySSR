@@ -1,18 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { ArticleService } from '@services/article.service';
 import { ArticlePreviewI } from '@shared_models/index';
-import { exhaustMap, map } from 'rxjs/operators';
+import { authUid } from '@store/auth/auth.selectors';
+import { exhaustMap, map, switchMap } from 'rxjs/operators';
 import {
   loadAllArticlePreviews,
   loadAllArticlePreviewsSuccess,
+  loadBookmarkedArticlePreviews,
+  loadBookmarkedArticlePreviewsSuccess,
   loadLatestArticlePreviews,
   loadLatestArticlePreviewsSuccess,
 } from './browse-articles.actions';
 
 @Injectable()
 export class BrowseArticlesEffects {
-  constructor(private articleSvc: ArticleService, private actions$: Actions) {}
+  constructor(
+    private articleSvc: ArticleService,
+    private actions$: Actions,
+    private store: Store,
+  ) {}
 
   loadAllArticlePreviews$ = createEffect(() =>
     this.actions$.pipe(
@@ -42,6 +50,20 @@ export class BrowseArticlesEffects {
       ),
       map(latestArticlePreviews =>
         loadLatestArticlePreviewsSuccess({ latestArticlePreviews }),
+      ),
+    ),
+  );
+
+  loadBookmarkedPreviews$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadBookmarkedArticlePreviews),
+      exhaustMap(() => this.store.select(authUid)),
+      switchMap(uid => this.articleSvc.watchBookmarkedArticles(uid)),
+      map(rawPreviews =>
+        rawPreviews.map(preview => this.processPreviewTimestamps(preview)),
+      ),
+      map(bookmarkedArticlePreviews =>
+        loadBookmarkedArticlePreviewsSuccess({ bookmarkedArticlePreviews }),
       ),
     ),
   );

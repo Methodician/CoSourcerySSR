@@ -17,3 +17,8 @@ export const latestPreviews = createSelector(
   browseState,
   state => state.latestArticlePreviews,
 );
+
+export const bookmarkedPreviews = createSelector(
+  browseState,
+  state => state.bookmarkedArticlePreviews,
+);

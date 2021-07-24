@@ -1,14 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { Router } from '@angular/router';
-import {
-  Subscription,
-  BehaviorSubject,
-  Subject,
-  timer,
-  combineLatest,
-} from 'rxjs';
+import { Subscription, Subject, timer, combineLatest } from 'rxjs';
 import { map, takeUntil, take, debounceTime } from 'rxjs/operators';
 
 // SERVICES
@@ -35,7 +28,8 @@ import {
 
 // STORE
 import {
-  currentArticleDetail,
+  currentArticle,
+  currentArticleId,
   currentArticleTags,
   dbArticle,
   isArticleChanged,
@@ -72,19 +66,32 @@ const BASE_ARTICLE_FORM = {
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  private unsubscribe: Subject<void> = new Subject();
+  private unsubscribe$: Subject<void> = new Subject();
   loggedInUser = new CUserInfo({ fName: null, lName: null });
 
   // Article State (from NgRX)
-  currentArticleTags$ = this.store.select(currentArticleTags);
-  dbArticle$ = this.store.select(dbArticle);
-  currentArticleDetail$ = this.store.select(currentArticleDetail);
+  currentArticleTags$ = this.store
+    .select(currentArticleTags)
+    .pipe(takeUntil(this.unsubscribe$));
+  dbArticle$ = this.store.select(dbArticle).pipe(takeUntil(this.unsubscribe$));
+  currentArticle$ = this.store
+    .select(currentArticle)
+    .pipe(takeUntil(this.unsubscribe$));
+  currentArticleId$ = this.store
+    .select(currentArticleId)
+    .pipe(takeUntil(this.unsubscribe$));
+  isArticleNew$ = this.store
+    .select(isArticleNew)
+    .pipe(takeUntil(this.unsubscribe$));
+  isArticleChanged$ = this.store
+    .select(isArticleChanged)
+    .pipe(takeUntil(this.unsubscribe$));
+
+  // Article State (more static)
   currentArticle: ArticleDetailI;
   articleId: string;
 
-  isArticleNew$ = this.store.select(isArticleNew);
   isArticleNew: boolean;
-  isArticleChanged$ = this.store.select(isArticleChanged);
 
   // Cover Image State
   coverImageFile: File;
@@ -105,7 +112,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private authSvc: AuthService,
@@ -117,97 +123,80 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.initializeAndWatchArticle();
+    this.store.dispatch(loadCurrentArticle());
+
+    this.checkIdAndNewness();
+    this.watchDbArticle();
 
     this.watchFormChanges();
 
-    this.watchAuth();
+    this.initiateAuthCta();
 
     this.watchUser();
 
     // TESTING
 
-    // this.store
-    //   .select(coverImageFile)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(console.log);
+    this.currentArticleId$.subscribe(id =>
+      console.log('currentArticleId:', id),
+    );
 
-    // this.store
-    //   .select(currentArticleDetail)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(currentArticle => console.log({ currentArticle }));
+    this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
 
-    // this.store
-    //   .select(dbArticle)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(dbArticle => console.log({ dbArticle }));
-
-    // combineLatest([
-    //   this.store.select(dbArticle),
-    //   this.store.select(currentArticleDetail),
-    // ]).subscribe(([dbArticle, currentArticle]) =>
-    //   console.log({ dbArticle, currentArticle }),
-    // );
-
-    // this.store
-    //   .select(currentArticleTags)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(tags => console.log('tags', tags));
-
-    // this.isArticleChanged$
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(isChanged => console.log('isChanged', isChanged));
+    this.currentArticle$.subscribe(art => console.log('currentArt:', art));
 
     // end testing
   }
 
   ngOnDestroy() {
     this.store.dispatch(resetArticleState());
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
     this.updateUserEditingStatus(false);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
-  initializeAndWatchArticle = () => {
-    this.store.dispatch(loadCurrentArticle());
-
-    combineLatest([this.dbArticle$, this.isArticleNew$])
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(([article, isNew]) => {
-        if (!article) {
-          return;
-        }
-        if (isNew) {
-          this.articleId = this.articleSvc.createId();
-        } else {
-          this.articleId = article.articleId;
+  checkIdAndNewness = () =>
+    combineLatest([this.currentArticleId$, this.isArticleNew$]).subscribe(
+      ([articleId, isNew]) => {
+        if (!!articleId) {
+          if (isNew) {
+            this.articleId = this.articleSvc.createId();
+          } else {
+            this.articleId = articleId;
+          }
         }
         this.isArticleNew = isNew;
-        this.articleEditForm.patchValue(article);
-        this.currentArticle = article;
-      });
+      },
+    );
 
-    this.currentArticleDetail$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(article => (this.currentArticle = article));
-  };
+  watchDbArticle = () =>
+    this.dbArticle$.subscribe(dbArticle => {
+      this.articleEditForm.patchValue(dbArticle);
+      this.currentArticle = dbArticle;
+    });
 
-  watchAuth = () =>
+  watchCurrentArticle = () =>
+    this.currentArticle$.subscribe(
+      currentArticle => (this.currentArticle = currentArticle),
+    );
+
+  initiateAuthCta = () =>
     combineLatest([
       this.store.select(isLoggedIn),
       this.store.select(hasAuthLoaded),
-    ]).subscribe(([isLoggedIn, hasAuthLoaded]) => {
-      // ToDo: consider migrating platform tracking to NgRx too.
-      const { isBrowser } = this.platformSvc;
-      if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
-        this.dialogSvc.openArticleCtaDialog();
-      }
-    });
+    ])
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(([isLoggedIn, hasAuthLoaded]) => {
+        // ToDo: consider migrating platform tracking to NgRx too.
+        const { isBrowser } = this.platformSvc;
+        if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
+          this.dialogSvc.openArticleCtaDialog();
+        }
+      });
 
   watchUser = () =>
     this.userSvc.loggedInUser$
-      .pipe(takeUntil(this.unsubscribe))
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(user => {
         this.loggedInUser = user;
       });
@@ -218,7 +207,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
-        takeUntil(this.unsubscribe),
+        takeUntil(this.unsubscribe$),
       )
       .subscribe(keys => {
         const currentEditors = {};
@@ -312,7 +301,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     // 300000 ms = 5 minutes
     this.editSessionTimeoutSubscription = timer(300000)
-      .pipe(takeUntil(this.unsubscribe))
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() => {
         this.openTimeoutDialog();
       });

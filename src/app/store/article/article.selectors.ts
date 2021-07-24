@@ -5,7 +5,7 @@ import { articleFeatureKey, ArticleStateI } from './article.reducer';
 export const articleState =
   createFeatureSelector<ArticleStateI>(articleFeatureKey);
 
-export const currentArticleDetail = createSelector(
+export const currentArticle = createSelector(
   articleState,
   state => state.currentArticle,
 );
@@ -26,17 +26,17 @@ export const currentArticleChanges = createSelector(
 );
 
 export const currentArticleTags = createSelector(
-  currentArticleDetail,
+  currentArticle,
   article => article.tags,
 );
 
 export const currentArticleTitle = createSelector(
-  currentArticleDetail,
+  currentArticle,
   article => article.title,
 );
 
 export const currentArticleIntro = createSelector(
-  currentArticleDetail,
+  currentArticle,
   article => article.introduction,
 );
 
@@ -58,12 +58,12 @@ export const coverImageFile = createSelector(
 );
 
 export const coverImageAlt = createSelector(
-  currentArticleDetail,
+  currentArticle,
   article => article?.imageAlt,
 );
 
 export const isArticleChanged = createSelector(
-  currentArticleDetail,
+  currentArticle,
   dbArticle,
   coverImageFile,
   (currentArticle, dbArticle, coverImageFile) =>

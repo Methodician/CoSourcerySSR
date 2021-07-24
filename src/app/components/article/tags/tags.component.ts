@@ -7,8 +7,11 @@ import {
   removeArticleTag,
 } from '@store/article/article.actions';
 import { currentArticleTags } from '@store/article/article.selectors';
-import { map, take } from 'rxjs/operators';
+import { filter, map, startWith, take, tap } from 'rxjs/operators';
+import { makeStateKey, TransferState } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
 
+const TAGS_KEY = makeStateKey<string[]>('articleTags');
 @Component({
   selector: 'cos-tags',
   templateUrl: './tags.component.html',
@@ -18,13 +21,29 @@ export class TagsComponent {
   @Input() isActive: boolean;
   @Output() onCtrlToggle = new EventEmitter();
 
-  tags$ = this.store.select(currentArticleTags);
+  tags$: Observable<string[]>;
 
   readonly separatorKeyCodes = [ENTER, COMMA];
 
   hasInputChanged = false;
 
-  constructor(private dialogSvc: DialogService, private store: Store) {}
+  constructor(
+    private dialogSvc: DialogService,
+    private store: Store,
+    private state: TransferState,
+  ) {
+    this.tags$ = this.ssrTags$();
+  }
+
+  ssrTags$ = () => {
+    const preExisting = this.state.get(TAGS_KEY, []);
+
+    return this.store.select(currentArticleTags).pipe(
+      filter(tags => !!tags),
+      tap(tags => this.state.set(TAGS_KEY, tags)),
+      startWith(preExisting),
+    );
+  };
 
   clickOut = () => console.log('clicked outside tags');
 

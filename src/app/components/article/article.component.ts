@@ -2,7 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
 import { Subscription, Subject, timer, combineLatest } from 'rxjs';
-import { map, takeUntil, take, debounceTime } from 'rxjs/operators';
+import {
+  map,
+  takeUntil,
+  take,
+  debounceTime,
+  first,
+  tap,
+  startWith,
+} from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -35,6 +43,7 @@ import {
   isArticleChanged,
   isArticleNew,
 } from '@store/article/article.selectors';
+import { makeStateKey, TransferState } from '@angular/platform-browser';
 
 const BASE_ARTICLE_FORM = {
   articleId: '',
@@ -59,6 +68,9 @@ const BASE_ARTICLE_FORM = {
   editors: {},
   bodyImageIds: [],
 };
+
+const CURRENT_ARTICLE_STATE_KEY =
+  makeStateKey<ArticleDetailI>('currentArticle');
 
 @Component({
   selector: 'cos-article',
@@ -120,6 +132,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private fbSvc: FirebaseService,
     private store: Store,
     private platformSvc: PlatformService,
+    private state: TransferState,
   ) {}
 
   ngOnInit() {
@@ -169,11 +182,21 @@ export class ArticleComponent implements OnInit, OnDestroy {
       },
     );
 
-  watchDbArticle = () =>
-    this.dbArticle$.subscribe(dbArticle => {
-      this.articleEditForm.patchValue(dbArticle);
-      this.currentArticle = dbArticle;
-    });
+  watchDbArticle = () => {
+    const preExisting = this.state.get(CURRENT_ARTICLE_STATE_KEY, null);
+
+    this.dbArticle$
+      .pipe(
+        first(article => !!article),
+        tap(article => this.state.set(CURRENT_ARTICLE_STATE_KEY, article)),
+        startWith(preExisting),
+      )
+      .subscribe(dbArticle => {
+        console.log('SSR dbArt:', dbArticle);
+        this.articleEditForm.patchValue(dbArticle);
+        this.currentArticle = dbArticle;
+      });
+  };
 
   watchCurrentArticle = () =>
     this.currentArticle$.subscribe(

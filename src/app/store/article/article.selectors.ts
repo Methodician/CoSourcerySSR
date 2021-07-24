@@ -27,17 +27,17 @@ export const currentArticleChanges = createSelector(
 
 export const currentArticleTags = createSelector(
   currentArticle,
-  article => article.tags,
+  article => article?.tags || [],
 );
 
 export const currentArticleTitle = createSelector(
   currentArticle,
-  article => article.title,
+  article => article?.title,
 );
 
 export const currentArticleIntro = createSelector(
   currentArticle,
-  article => article.introduction,
+  article => article?.introduction,
 );
 
 export const isArticleNew = createSelector(

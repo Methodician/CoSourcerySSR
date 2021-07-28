@@ -21,13 +21,13 @@
   <!-- <quill-editor
   *ngIf="isBrowser && articleId" -->
   <quill-view-html
-    *ngIf="!isBrowser"
+    *ngIf="!hasEditingInitiated"
     [content]="body"
     theme="bubble"
   ></quill-view-html>
 
   <quill-editor
-    *ngIf="!!quillModules && isBrowser"
+    *ngIf="!!quillModules && hasEditingInitiated && isBrowser"
     theme="bubble"
     [(ngModel)]="body"
     [modules]="quillModules"

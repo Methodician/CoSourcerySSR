@@ -332,10 +332,13 @@ export class ArticleEffects {
                   [authUid]: previousEditCount + 1,
                 },
                 lastEditorId: authUid,
-                coverImageId,
                 lastUpdated: this.fbSvc.fsServerTimestamp(),
                 version: currentArticle.version + 1,
               };
+
+              if (!!coverImageId) {
+                changedArticle.coverImageId = coverImageId;
+              }
 
               const articleUpdatePromise = this.articleSvc
                 .articleDetailRef(currentArticleId)

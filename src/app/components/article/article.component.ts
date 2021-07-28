@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireUploadTask } from '@angular/fire/storage';
-import { Router } from '@angular/router';
+import { Subscription, Subject, timer, combineLatest } from 'rxjs';
 import {
-  Subscription,
-  BehaviorSubject,
-  Subject,
-  timer,
-  combineLatest,
-} from 'rxjs';
-import { map, takeUntil, take, debounceTime } from 'rxjs/operators';
+  map,
+  takeUntil,
+  take,
+  debounceTime,
+  first,
+  tap,
+  startWith,
+} from 'rxjs/operators';
 
 // SERVICES
 import { ArticleService } from '@services/article.service';
@@ -35,12 +36,12 @@ import {
 
 // STORE
 import {
-  currentArticleDetail,
-  currentArticleTags,
+  currentArticleId,
   dbArticle,
   isArticleChanged,
   isArticleNew,
 } from '@store/article/article.selectors';
+import { makeStateKey, TransferState } from '@angular/platform-browser';
 
 const BASE_ARTICLE_FORM = {
   articleId: '',
@@ -66,46 +67,51 @@ const BASE_ARTICLE_FORM = {
   bodyImageIds: [],
 };
 
+const CURRENT_ARTICLE_STATE_KEY =
+  makeStateKey<ArticleDetailI>('currentArticle');
+
 @Component({
   selector: 'cos-article',
   templateUrl: './article.component.html',
   styleUrls: ['./article.component.scss'],
 })
 export class ArticleComponent implements OnInit, OnDestroy {
-  private unsubscribe: Subject<void> = new Subject();
-  loggedInUser = new CUserInfo({ fName: null, lName: null });
+  private unsubscribe$: Subject<void> = new Subject();
+
+  isLoggedIn$ = this.store.select(isLoggedIn);
 
   // Article State (from NgRX)
-  currentArticleTags$ = this.store.select(currentArticleTags);
-  dbArticle$ = this.store.select(dbArticle);
-  currentArticleDetail$ = this.store.select(currentArticleDetail);
+  dbArticle$ = this.store.select(dbArticle).pipe(takeUntil(this.unsubscribe$));
+  currentArticleId$ = this.store
+    .select(currentArticleId)
+    .pipe(takeUntil(this.unsubscribe$));
+  isArticleNew$ = this.store
+    .select(isArticleNew)
+    .pipe(takeUntil(this.unsubscribe$));
+  isArticleChanged$ = this.store
+    .select(isArticleChanged)
+    .pipe(takeUntil(this.unsubscribe$));
+
+  // Article State (more static)
   currentArticle: ArticleDetailI;
   articleId: string;
-
-  isArticleNew$ = this.store.select(isArticleNew);
   isArticleNew: boolean;
-  isArticleChanged$ = this.store.select(isArticleChanged);
-
-  // Cover Image State
-  coverImageFile: File;
-
-  coverImageUploadTask: AngularFireUploadTask;
-
-  // Article State
+  wasArticleLoadDispatched = false;
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
-
   articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE_FORM);
-
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
 
+  // Cover Image State
+  coverImageFile: File;
+  coverImageUploadTask: AngularFireUploadTask;
+
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private articleSvc: ArticleService,
     private userSvc: UserService,
     private authSvc: AuthService,
@@ -114,102 +120,85 @@ export class ArticleComponent implements OnInit, OnDestroy {
     private fbSvc: FirebaseService,
     private store: Store,
     private platformSvc: PlatformService,
+    private state: TransferState,
   ) {}
 
   ngOnInit() {
-    this.initializeAndWatchArticle();
+    if (!this.state.get(CURRENT_ARTICLE_STATE_KEY, null)) {
+      this.dispatchArticleLoading();
+    }
+    this.watchDbArticle();
+
+    this.watchArticleId();
+
+    this.watchNewness();
 
     this.watchFormChanges();
 
-    this.watchAuth();
-
-    this.watchUser();
+    this.initiateAuthCta();
 
     // TESTING
 
-    // this.store
-    //   .select(coverImageFile)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(console.log);
-
-    // this.store
-    //   .select(currentArticleDetail)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(currentArticle => console.log({ currentArticle }));
-
-    // this.store
-    //   .select(dbArticle)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(dbArticle => console.log({ dbArticle }));
-
-    // combineLatest([
-    //   this.store.select(dbArticle),
-    //   this.store.select(currentArticleDetail),
-    // ]).subscribe(([dbArticle, currentArticle]) =>
-    //   console.log({ dbArticle, currentArticle }),
-    // );
-
-    // this.store
-    //   .select(currentArticleTags)
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(tags => console.log('tags', tags));
-
-    // this.isArticleChanged$
-    //   .pipe(takeUntil(this.unsubscribe))
-    //   .subscribe(isChanged => console.log('isChanged', isChanged));
+    // this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
+    // this.ssrDbArticle$().subscribe(art => console.log('ssrDbArt:', art));
 
     // end testing
   }
 
   ngOnDestroy() {
     this.store.dispatch(resetArticleState());
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
+    this.state.remove(CURRENT_ARTICLE_STATE_KEY);
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
     this.updateUserEditingStatus(false);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
-  initializeAndWatchArticle = () => {
-    this.store.dispatch(loadCurrentArticle());
+  // === ARTICLE SETUP
 
-    combineLatest([this.dbArticle$, this.isArticleNew$])
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(([article, isNew]) => {
-        if (!article) {
-          return;
-        }
-        if (isNew) {
-          this.articleId = this.articleSvc.createId();
-        } else {
-          this.articleId = article.articleId;
-        }
-        this.isArticleNew = isNew;
-        this.articleEditForm.patchValue(article);
-        this.currentArticle = article;
-      });
+  dispatchArticleLoading = () => {
+    if (!this.wasArticleLoadDispatched) {
+      this.store.dispatch(loadCurrentArticle());
+      this.wasArticleLoadDispatched = true;
+    }
+  };
+  ssrDbArticle$ = () => {
+    const preExisting = this.state.get(CURRENT_ARTICLE_STATE_KEY, null);
 
-    this.currentArticleDetail$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(article => (this.currentArticle = article));
+    return this.dbArticle$.pipe(
+      first(article => !!article),
+      tap(article => this.state.set(CURRENT_ARTICLE_STATE_KEY, article)),
+      startWith(preExisting),
+    );
   };
 
-  watchAuth = () =>
+  watchDbArticle = () => {
+    this.ssrDbArticle$().subscribe(dbArticle => {
+      this.articleEditForm.patchValue(dbArticle);
+      this.currentArticle = dbArticle;
+    });
+  };
+
+  watchArticleId = () =>
+    this.currentArticleId$.subscribe(id => (this.articleId = id));
+
+  watchNewness = () =>
+    this.isArticleNew$.subscribe(isNew => (this.isArticleNew = isNew));
+
+  // === end article setup
+
+  initiateAuthCta = () =>
     combineLatest([
       this.store.select(isLoggedIn),
       this.store.select(hasAuthLoaded),
-    ]).subscribe(([isLoggedIn, hasAuthLoaded]) => {
-      // ToDo: consider migrating platform tracking to NgRx too.
-      const { isBrowser } = this.platformSvc;
-      if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
-        this.dialogSvc.openArticleCtaDialog();
-      }
-    });
-
-  watchUser = () =>
-    this.userSvc.loggedInUser$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(user => {
-        this.loggedInUser = user;
+    ])
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(([isLoggedIn, hasAuthLoaded]) => {
+        // ToDo: consider migrating platform tracking to NgRx too.
+        const { isBrowser } = this.platformSvc;
+        if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
+          this.dialogSvc.openArticleCtaDialog();
+        }
       });
 
   watchArticleEditors = articleId =>
@@ -218,7 +207,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       .snapshotChanges()
       .pipe(
         map(snapList => snapList.map(snap => snap.key)),
-        takeUntil(this.unsubscribe),
+        takeUntil(this.unsubscribe$),
       )
       .subscribe(keys => {
         const currentEditors = {};
@@ -312,7 +301,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     // 300000 ms = 5 minutes
     this.editSessionTimeoutSubscription = timer(300000)
-      .pipe(takeUntil(this.unsubscribe))
+      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() => {
         this.openTimeoutDialog();
       });
@@ -397,6 +386,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     } else {
       this.authSvc.isSignedInOrPrompt().subscribe(isLoggedIn => {
         if (isLoggedIn) {
+          this.dispatchArticleLoading();
           this.ctrlBeingEdited = ctrl;
         }
       });
@@ -410,6 +400,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.activateCtrl(ECtrlNames.none);
       return;
     }
+
     this.activateCtrl(ctrl);
   };
 

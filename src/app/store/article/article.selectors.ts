@@ -5,7 +5,7 @@ import { articleFeatureKey, ArticleStateI } from './article.reducer';
 export const articleState =
   createFeatureSelector<ArticleStateI>(articleFeatureKey);
 
-export const currentArticleDetail = createSelector(
+export const currentArticle = createSelector(
   articleState,
   state => state.currentArticle,
 );
@@ -26,18 +26,18 @@ export const currentArticleChanges = createSelector(
 );
 
 export const currentArticleTags = createSelector(
-  currentArticleDetail,
-  article => article.tags,
+  currentArticle,
+  article => article?.tags || [],
 );
 
 export const currentArticleTitle = createSelector(
-  currentArticleDetail,
-  article => article.title,
+  currentArticle,
+  article => article?.title,
 );
 
 export const currentArticleIntro = createSelector(
-  currentArticleDetail,
-  article => article.introduction,
+  currentArticle,
+  article => article?.introduction,
 );
 
 export const isArticleNew = createSelector(
@@ -46,6 +46,21 @@ export const isArticleNew = createSelector(
 );
 
 export const dbArticle = createSelector(articleState, state => state.dbArticle);
+
+export const dbArticleAuthorId = createSelector(
+  dbArticle,
+  article => article?.authorId,
+);
+
+export const dbArticleBody = createSelector(
+  dbArticle,
+  article => article?.body,
+);
+
+export const dbArticleEditors = createSelector(
+  dbArticle,
+  article => article?.editors || {},
+);
 
 export const coverImageUri = createSelector(
   articleState,
@@ -58,12 +73,12 @@ export const coverImageFile = createSelector(
 );
 
 export const coverImageAlt = createSelector(
-  currentArticleDetail,
+  currentArticle,
   article => article?.imageAlt,
 );
 
 export const isArticleChanged = createSelector(
-  currentArticleDetail,
+  currentArticle,
   dbArticle,
   coverImageFile,
   (currentArticle, dbArticle, coverImageFile) =>

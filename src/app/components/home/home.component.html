@@ -23,7 +23,7 @@
     <section id="latest-articles" *ngIf="filterMenu.isTabSelected('Latest')">
       <cos-preview-grid>
         <cos-article-preview-card
-          *ngFor="let article of latestArticles$ | async"
+          *ngFor="let article of latestArticles"
           [articleData]="article"
           [linkTo]="createPreviewLink(article)"
         >
@@ -34,7 +34,7 @@
     <section id="all-articles" *ngIf="filterMenu.isTabSelected('All')">
       <cos-preview-grid>
         <cos-article-preview-card
-          *ngFor="let article of allArticles$ | async"
+          *ngFor="let article of allArticles"
           [articleData]="article"
           [linkTo]="createPreviewLink(article)"
         >

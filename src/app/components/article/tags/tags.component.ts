@@ -39,7 +39,7 @@ export class TagsComponent {
     const preExisting = this.state.get(TAGS_KEY, []);
 
     return this.store.select(currentArticleTags).pipe(
-      filter(tags => !!tags),
+      filter(tags => !!tags && tags.length !== 0),
       tap(tags => this.state.set(TAGS_KEY, tags)),
       startWith(preExisting),
     );

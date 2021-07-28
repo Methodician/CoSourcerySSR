@@ -22,15 +22,7 @@ export class CoverImageDisplayComponent {
   imageUri$ = this.store.select(coverImageUri);
   imageAlt$ = this.store.select(coverImageAlt);
 
-  imageUri: string | ArrayBuffer | SafeUrl;
-  imageAlt: string;
-
-  constructor(private store: Store, private state: TransferState) {
-    this.ssrCoverImageState$().subscribe(({ imageUri, imageAlt }) => {
-      this.imageUri = imageUri;
-      this.imageAlt = imageAlt;
-    });
-  }
+  constructor(private store: Store, private state: TransferState) {}
 
   ssrCoverImageState$ = () => {
     const preExisting = this.state.get(LOCAL_STATE_KEY, {

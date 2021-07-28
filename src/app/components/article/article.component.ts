@@ -102,8 +102,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
   // Article State (more static)
   currentArticle: ArticleDetailI;
   articleId: string;
-
   isArticleNew: boolean;
+  wasArticleLoadDispatched = false;
 
   // Cover Image State
   coverImageFile: File;
@@ -136,10 +136,14 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.store.dispatch(loadCurrentArticle());
-
-    this.checkIdAndNewness();
+    if (!this.state.get(CURRENT_ARTICLE_STATE_KEY, null)) {
+      this.dispatchArticleLoading();
+    }
     this.watchDbArticle();
+
+    this.watchArticleId();
+
+    this.watchNewness();
 
     this.watchFormChanges();
 
@@ -149,59 +153,59 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     // TESTING
 
-    this.currentArticleId$.subscribe(id =>
-      console.log('currentArticleId:', id),
-    );
+    // this.currentArticleId$.subscribe(id =>
+    //   console.log('currentArticleId:', id),
+    // );
 
-    this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
+    // this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
+    // this.ssrDbArticle$().subscribe(art => console.log('ssrDbArt:', art));
 
-    this.currentArticle$.subscribe(art => console.log('currentArt:', art));
+    // this.currentArticle$.subscribe(art => console.log('currentArt:', art));
 
     // end testing
   }
 
   ngOnDestroy() {
     this.store.dispatch(resetArticleState());
+    this.state.remove(CURRENT_ARTICLE_STATE_KEY);
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     this.updateUserEditingStatus(false);
     this.cancelUpload(this.coverImageUploadTask);
   }
 
-  checkIdAndNewness = () =>
-    combineLatest([this.currentArticleId$, this.isArticleNew$]).subscribe(
-      ([articleId, isNew]) => {
-        if (!!articleId) {
-          if (isNew) {
-            this.articleId = this.articleSvc.createId();
-          } else {
-            this.articleId = articleId;
-          }
-        }
-        this.isArticleNew = isNew;
-      },
-    );
+  // === ARTICLE SETUP
 
-  watchDbArticle = () => {
+  dispatchArticleLoading = () => {
+    if (!this.wasArticleLoadDispatched) {
+      this.store.dispatch(loadCurrentArticle());
+      this.wasArticleLoadDispatched = true;
+    }
+  };
+  ssrDbArticle$ = () => {
     const preExisting = this.state.get(CURRENT_ARTICLE_STATE_KEY, null);
 
-    this.dbArticle$
-      .pipe(
-        first(article => !!article),
-        tap(article => this.state.set(CURRENT_ARTICLE_STATE_KEY, article)),
-        startWith(preExisting),
-      )
-      .subscribe(dbArticle => {
-        console.log('SSR dbArt:', dbArticle);
-        this.articleEditForm.patchValue(dbArticle);
-        this.currentArticle = dbArticle;
-      });
+    return this.dbArticle$.pipe(
+      first(article => !!article),
+      tap(article => this.state.set(CURRENT_ARTICLE_STATE_KEY, article)),
+      startWith(preExisting),
+    );
   };
 
-  watchCurrentArticle = () =>
-    this.currentArticle$.subscribe(
-      currentArticle => (this.currentArticle = currentArticle),
-    );
+  watchDbArticle = () => {
+    this.ssrDbArticle$().subscribe(dbArticle => {
+      this.articleEditForm.patchValue(dbArticle);
+      this.currentArticle = dbArticle;
+    });
+  };
+
+  watchArticleId = () =>
+    this.currentArticleId$.subscribe(id => (this.articleId = id));
+
+  watchNewness = () =>
+    this.isArticleNew$.subscribe(isNew => (this.isArticleNew = isNew));
+
+  // === end article setup
 
   initiateAuthCta = () =>
     combineLatest([
@@ -409,6 +413,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
     } else {
       this.authSvc.isSignedInOrPrompt().subscribe(isLoggedIn => {
         if (isLoggedIn) {
+          this.dispatchArticleLoading();
           this.ctrlBeingEdited = ctrl;
         }
       });
@@ -422,6 +427,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
       this.activateCtrl(ECtrlNames.none);
       return;
     }
+
     this.activateCtrl(ctrl);
   };
 

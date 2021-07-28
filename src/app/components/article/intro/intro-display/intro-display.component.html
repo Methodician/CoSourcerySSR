@@ -1,6 +1,6 @@
 <p>
-  {{ intro$ | async }}
-  <span *ngIf="(intro$ | async) === ''"
+  {{ ssrIntro$() | async }}
+  <span *ngIf="(ssrIntro$() | async) === ''"
     >Add an introduction to tell people what your article is about. It can be a
     few words or several sentences, but should be pretty short.</span
   >

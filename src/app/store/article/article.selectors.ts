@@ -52,6 +52,11 @@ export const dbArticleAuthorId = createSelector(
   article => article?.authorId,
 );
 
+export const dbArticleBody = createSelector(
+  dbArticle,
+  article => article?.body,
+);
+
 export const dbArticleEditors = createSelector(
   dbArticle,
   article => article?.editors || {},

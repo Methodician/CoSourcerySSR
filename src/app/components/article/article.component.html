@@ -67,8 +67,6 @@
   >
     <cos-body
       [isActive]="isCtrlActive(ECtrlNames.body)"
-      [body]="article.body"
-      [articleId]="articleId"
       (onCtrlToggle)="toggleCtrl(ECtrlNames.body)"
       (onClickOut)="clickoutCtrl(ECtrlNames.body)"
       (onBodyChange)="changeBody($event)"

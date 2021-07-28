@@ -1,5 +1,5 @@
 <div class="wrapper">
-  <span style="display: inline-flex;"><h5>Attributions</h5></span>
+  <span style="display: inline-flex"><h5>Attributions</h5></span>
   <button
     [class.hidden]="!hasTransitioned"
     [disabled]="!hasTransitioned || transitionRight || transitionLeft"
@@ -22,7 +22,7 @@
       >
         <cos-profile-card
           [userKey]="key"
-          [shouldHighlight]="key === creatorKey"
+          [shouldHighlight]="key === authorId"
           [displayText]="displayText(key)"
         ></cos-profile-card>
       </div>
@@ -36,7 +36,7 @@
       >
         <cos-profile-card
           [userKey]="key"
-          [shouldHighlight]="key === creatorKey"
+          [shouldHighlight]="key === authorId"
           [displayText]="displayText(key)"
         ></cos-profile-card>
       </div>
@@ -50,14 +50,14 @@
       >
         <cos-profile-card
           [userKey]="key"
-          [shouldHighlight]="key === creatorKey"
+          [shouldHighlight]="key === authorId"
           [displayText]="displayText(key)"
         ></cos-profile-card>
       </div>
     </div>
   </section>
   <button
-    *ngIf="editorKeys?.length > 3"
+    *ngIf="editorIds?.length > 3"
     class="transition-btn right-btn"
     [disabled]="transitionRight || transitionLeft"
     (click)="nextEditorPanel()"

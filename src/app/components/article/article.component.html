@@ -44,11 +44,7 @@
 
     <!-- ATTRIBUTIONS -->
     <section class="article-attributions">
-      <cos-contributors
-        [creatorKey]="loggedInUser.uid"
-        [editorMap]="article.editors"
-      >
-      </cos-contributors>
+      <cos-contributors [editorMap]="article.editors"> </cos-contributors>
     </section>
 
     <!-- STATS -->
@@ -66,7 +62,7 @@
   <section
     class="article-body"
     [ngClass]="{
-      'not-editable': !loggedInUser.uid || !isCtrlActive(ECtrlNames.body)
+      'not-editable': !(isLoggedIn$ | async) || !isCtrlActive(ECtrlNames.body)
     }"
   >
     <cos-body

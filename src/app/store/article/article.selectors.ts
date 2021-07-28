@@ -47,6 +47,16 @@ export const isArticleNew = createSelector(
 
 export const dbArticle = createSelector(articleState, state => state.dbArticle);
 
+export const dbArticleAuthorId = createSelector(
+  dbArticle,
+  article => article?.authorId,
+);
+
+export const dbArticleEditors = createSelector(
+  dbArticle,
+  article => article?.editors || {},
+);
+
 export const coverImageUri = createSelector(
   articleState,
   ({ coverImageUri }) => coverImageUri,

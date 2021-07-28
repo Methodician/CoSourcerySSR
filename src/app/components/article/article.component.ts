@@ -36,9 +36,7 @@ import {
 
 // STORE
 import {
-  currentArticle,
   currentArticleId,
-  currentArticleTags,
   dbArticle,
   isArticleChanged,
   isArticleNew,
@@ -79,16 +77,11 @@ const CURRENT_ARTICLE_STATE_KEY =
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   private unsubscribe$: Subject<void> = new Subject();
-  loggedInUser = new CUserInfo({ fName: null, lName: null });
+
+  isLoggedIn$ = this.store.select(isLoggedIn);
 
   // Article State (from NgRX)
-  currentArticleTags$ = this.store
-    .select(currentArticleTags)
-    .pipe(takeUntil(this.unsubscribe$));
   dbArticle$ = this.store.select(dbArticle).pipe(takeUntil(this.unsubscribe$));
-  currentArticle$ = this.store
-    .select(currentArticle)
-    .pipe(takeUntil(this.unsubscribe$));
   currentArticleId$ = this.store
     .select(currentArticleId)
     .pipe(takeUntil(this.unsubscribe$));
@@ -104,23 +97,18 @@ export class ArticleComponent implements OnInit, OnDestroy {
   articleId: string;
   isArticleNew: boolean;
   wasArticleLoadDispatched = false;
-
-  // Cover Image State
-  coverImageFile: File;
-
-  coverImageUploadTask: AngularFireUploadTask;
-
-  // Article State
   doesArticleExist = true; // hacky and quick. Should really be defaulting to negative but I just want to add something for a non-found article real fast...
   currentArticleEditors = {};
 
   // Article Form State
   editSessionTimeoutSubscription: Subscription;
-
   articleEditForm: FormGroup = this.fb.group(BASE_ARTICLE_FORM);
-
   ECtrlNames = ECtrlNames; // Enum Availability in HTML Template
   ctrlBeingEdited: ECtrlNames = ECtrlNames.none;
+
+  // Cover Image State
+  coverImageFile: File;
+  coverImageUploadTask: AngularFireUploadTask;
 
   constructor(
     private fb: FormBuilder,
@@ -149,18 +137,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     this.initiateAuthCta();
 
-    this.watchUser();
-
     // TESTING
-
-    // this.currentArticleId$.subscribe(id =>
-    //   console.log('currentArticleId:', id),
-    // );
 
     // this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
     // this.ssrDbArticle$().subscribe(art => console.log('ssrDbArt:', art));
-
-    // this.currentArticle$.subscribe(art => console.log('currentArt:', art));
 
     // end testing
   }
@@ -219,13 +199,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
         if (!isLoggedIn && !!hasAuthLoaded && isBrowser) {
           this.dialogSvc.openArticleCtaDialog();
         }
-      });
-
-  watchUser = () =>
-    this.userSvc.loggedInUser$
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(user => {
-        this.loggedInUser = user;
       });
 
   watchArticleEditors = articleId =>

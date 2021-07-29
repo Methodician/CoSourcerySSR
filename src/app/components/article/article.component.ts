@@ -127,22 +127,13 @@ export class ArticleComponent implements OnInit, OnDestroy {
     if (!this.state.get(CURRENT_ARTICLE_STATE_KEY, null)) {
       this.dispatchArticleLoading();
     }
+
     this.watchDbArticle();
-
     this.watchArticleId();
-
     this.watchNewness();
 
     this.watchFormChanges();
-
     this.initiateAuthCta();
-
-    // TESTING
-
-    // this.dbArticle$.subscribe(art => console.log('dbArticle:', art));
-    // this.ssrDbArticle$().subscribe(art => console.log('ssrDbArt:', art));
-
-    // end testing
   }
 
   ngOnDestroy() {

@@ -24,6 +24,9 @@ export class CoverImageDisplayComponent {
 
   constructor(private store: Store, private state: TransferState) {}
 
+  // Testing out combining transfer state into single object.
+  // Appears to be less verbose, but possibly more fragile.
+  // Going forward likely best not to combine them without good reason.
   ssrCoverImageState$ = () => {
     const preExisting = this.state.get(LOCAL_STATE_KEY, {
       imageUri: 'assets/images/logo.svg',

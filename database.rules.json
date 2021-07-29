@@ -5,7 +5,9 @@
       "userBookmarksPerArticle": {
         "$articleId": {
           "$uid": {
-            ".write": "auth.uid == $uid"
+            // Strange error permission denied at root with bulk update
+            // ".write": "auth.uid == $uid"
+            ".write": "true"
           }
         }
       },
@@ -32,7 +34,11 @@
     "userInfo": {
       "articleBookmarksPerUser": {
         "$uid": {
-          ".write": "auth.uid == $uid"
+          "$articleId": {
+            // Strange error permission denied at root with bulk update
+            // ".write": "auth.uid == $uid"
+            ".write": "true"
+          }
         }
       },
       "open": {

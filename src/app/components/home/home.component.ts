@@ -1,9 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import {
-  TransferState,
-  makeStateKey,
-  StateKey,
-} from '@angular/platform-browser';
 
 import { ArticlePreviewI } from '@shared_models/article.models';
 import {
@@ -11,17 +6,33 @@ import {
   ITabList,
 } from '@components/home/filter-menu/filter-menu.component';
 
-import { ArticleService } from '@services/article.service';
 import { SeoService } from '@services/seo.service';
 
-import { Observable, Subject } from 'rxjs';
-import { map, tap, startWith, takeUntil } from 'rxjs/operators';
-import { AuthService } from '@services/auth.service';
+import { Store } from '@ngrx/store';
+import {
+  loadAllArticlePreviews,
+  loadBookmarkedArticlePreviews,
+  loadLatestArticlePreviews,
+} from '@store/browse-articles/browse-articles.actions';
+import {
+  allPreviews,
+  bookmarkedPreviews,
+  latestPreviews,
+} from '@store/browse-articles/browse-articles.selectors';
+import { isLoggedIn } from '@store/auth/auth.selectors';
+import { PlatformService } from '@services/platform.service';
+import {
+  makeStateKey,
+  StateKey,
+  TransferState,
+} from '@angular/platform-browser';
+import { Observable } from 'rxjs';
+import { first, startWith, tap } from 'rxjs/operators';
 
 const ALL_ARTICLES_KEY =
-  makeStateKey<Observable<ArticlePreviewI[]>>('allArticles');
+  makeStateKey<ReadonlyArray<ArticlePreviewI>>('allArticles');
 const LATEST_ARTICLES_KEY =
-  makeStateKey<Observable<ArticlePreviewI[]>>('latestArticles');
+  makeStateKey<ReadonlyArray<ArticlePreviewI>>('latestArticles');
 
 @Component({
   selector: 'cos-home',
@@ -31,92 +42,75 @@ const LATEST_ARTICLES_KEY =
 export class HomeComponent implements OnInit, OnDestroy {
   // TODO: Consider switch to static: false https://angular.io/guide/static-query-migration
   @ViewChild('filterMenu', { static: true }) filterMenu;
-  private unsubscribe: Subject<void> = new Subject();
 
   filterTabs = [
     { name: 'Latest', selected: true },
     { name: 'All', selected: false },
   ];
 
-  allArticles$: Observable<ArticlePreviewI[]>;
-  latestArticles$: Observable<ArticlePreviewI[]>;
-  bookmarkedArticles$: Observable<ArticlePreviewI[]>;
+  allArticles: ReadonlyArray<ArticlePreviewI>;
+  latestArticles: ReadonlyArray<ArticlePreviewI>;
+  bookmarkedArticles$: Observable<ReadonlyArray<ArticlePreviewI>>;
 
   constructor(
-    private articleSvc: ArticleService,
+    private store: Store,
     private seoSvc: SeoService,
-    private authSvc: AuthService,
+    private platformSvc: PlatformService,
     private state: TransferState,
-  ) {}
+  ) {
+    this.initiatePreviewLoading();
+    if (this.platformSvc.isBrowser && !this.haveAllPreviewsLoaded()) {
+      this.dispatchPreviewLoaders();
+    } else if (this.platformSvc.isServer) {
+      this.dispatchPreviewLoaders();
+    }
+  }
 
   ngOnInit() {
-    this.initializeArticles();
+    this.store.select(isLoggedIn).subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        this.store.dispatch(loadBookmarkedArticlePreviews());
+        this.bookmarkedArticles$ = this.store.select(bookmarkedPreviews);
+        this.addFilterTab({ name: 'Bookmarked', selected: false });
+      }
+    });
     this.seoSvc.generateTags({ canonicalUrl: 'https://cosourcery.com/home' });
-    this.watchAuthInfo();
   }
 
-  ngOnDestroy() {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
-    this.clearArticleKeys();
-  }
-
-  // AUTH STUFF
-  watchAuthInfo = () => {
-    this.authSvc.authInfo$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(({ uid }) => {
-        if (uid) {
-          this.watchBookmarkedArticles(uid);
-          this.addFilterTab({ name: 'Bookmarked', selected: false });
-        }
-      });
-  };
-  //end auth stuff
-
-  // ARTICLE STUFF
-  initializeArticles = () => {
-    this.latestArticles$ = this.ssrArticleCollection(
-      this.articleSvc.latestArticlesRef().valueChanges(),
-      LATEST_ARTICLES_KEY,
-    );
-
-    this.allArticles$ = this.ssrArticleCollection(
-      this.articleSvc.allArticlesRef().valueChanges(),
-      ALL_ARTICLES_KEY,
-    );
-  };
-
-  clearArticleKeys = () => {
-    this.state.set(ALL_ARTICLES_KEY, null);
-    this.state.set(LATEST_ARTICLES_KEY, null);
-  };
-
-  watchBookmarkedArticles = (uid: string) => {
-    this.bookmarkedArticles$ = this.articleSvc
-      .watchBookmarkedArticles(uid)
-      .pipe(
-        map(articles =>
-          articles.map(art => this.articleSvc.processArticleTimestamps(art)),
-        ),
-      );
-  };
+  ngOnDestroy() {}
 
   ssrArticleCollection = (
-    articles$: Observable<ArticlePreviewI[]>,
-    stateKey: StateKey<ArticlePreviewI[]>,
+    articles$: Observable<ReadonlyArray<ArticlePreviewI>>,
+    stateKey: StateKey<ReadonlyArray<ArticlePreviewI>>,
   ) => {
-    const preExisting$ = this.state.get(stateKey, null as any);
+    const preExisting = this.state.get(stateKey, []);
     return articles$.pipe(
-      map(articles =>
-        articles.map(art => this.articleSvc.processArticleTimestamps(art)),
-      ),
+      first(articles => articles.length !== 0),
       tap(articles => this.state.set(stateKey, articles)),
-      startWith(preExisting$),
+      startWith(preExisting),
     );
   };
 
-  //end article stuff
+  initiatePreviewLoading = () => {
+    this.ssrArticleCollection(
+      this.store.select(allPreviews),
+      ALL_ARTICLES_KEY,
+    ).subscribe(articles => (this.allArticles = articles));
+
+    this.ssrArticleCollection(
+      this.store.select(latestPreviews),
+      LATEST_ARTICLES_KEY,
+    ).subscribe(articles => (this.latestArticles = articles));
+  };
+
+  dispatchPreviewLoaders = () => {
+    this.store.dispatch(loadAllArticlePreviews());
+    this.store.dispatch(loadLatestArticlePreviews());
+  };
+
+  haveAllPreviewsLoaded = () =>
+    !!this.state.get(ALL_ARTICLES_KEY, null) &&
+    !!this.state.get(LATEST_ARTICLES_KEY, null);
 
   // HOME FILTER FUNCTIONALITY
   addFilterTab = (tab: ITabItem) => {

@@ -11,7 +11,16 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   @Input() linkTo: string;
-  @Input() articleData: ArticlePreviewI;
+  @Input() set articleData(data: ArticlePreviewI) {
+    // Hacky but works and it's performant
+    // It appears that Firestore dates transferred in NgRx/SSR get
+    // converted to a string along the way and this just converts it
+    // back to date if it happened, and does nothing if it's already date
+
+    this.article = { ...data, lastUpdated: new Date(data.lastUpdated) };
+  }
+
+  article: ArticlePreviewI;
   coverImageUrl = '';
   isArticleBookmarked$: Observable<boolean>;
   private unsubscribe: Subject<void> = new Subject();
@@ -28,7 +37,7 @@ export class ArticlePreviewCardComponent implements OnInit, OnDestroy {
   }
 
   watchCoverImageUrl = () => {
-    const { articleId, coverImageId } = this.articleData;
+    const { articleId, coverImageId } = this.article;
     if (!!coverImageId) {
       this.storageSvc
         .getImageUrl(`articleCoverThumbnails/${articleId}/${coverImageId}`)

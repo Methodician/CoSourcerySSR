@@ -5,18 +5,18 @@
         [src]="
           coverImageUrl !== '' ? coverImageUrl : '../../assets/images/logo.svg'
         "
-        [alt]="articleData.imageAlt ? articleData.imageAlt : 'Cover Image'"
+        [alt]="article.imageAlt ? article.imageAlt : 'Cover Image'"
       />
       <section class="title">
         <h2>
-          {{ articleData.title | truncateString: 38 }}
+          {{ article.title | truncateString: 38 }}
         </h2>
       </section>
       <section class="date-updated">
-        <p>Updated {{ articleData?.lastUpdated | timeElapsed }}</p>
+        <p>Updated {{ article?.lastUpdated | timeElapsed }}</p>
       </section>
     </section>
   </a>
 
-  <cos-preview-card-stats [articleData]="articleData"></cos-preview-card-stats>
+  <cos-preview-card-stats [articleData]="article"></cos-preview-card-stats>
 </main>

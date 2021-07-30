@@ -11,10 +11,20 @@ import { AngularFireUploadTask } from '@angular/fire/storage';
 // INTERNAL IMPORTS
 import { ArticleService } from '@services/article.service';
 import { PlatformService } from '@services/platform.service';
+import { Store } from '@ngrx/store';
+import { makeStateKey, TransferState } from '@angular/platform-browser';
+import {
+  currentArticleId,
+  dbArticleBody,
+} from '@store/article/article.selectors';
+import { first, startWith, tap } from 'rxjs/operators';
 
 //  Super-inspiring codepen: https://codepen.io/dnus/pen/OojaeN
 // Lots of quill libraries: https://github.com/quilljs/awesome-quill
 // Shared cursor display: https://github.com/reedsy/quill-cursors
+
+const BODY_KEY = makeStateKey<string>('articleBody');
+const ARTICLE_ID_KEY = makeStateKey<string>('currentArticleId');
 
 @Component({
   selector: 'cos-body',
@@ -23,14 +33,16 @@ import { PlatformService } from '@services/platform.service';
 })
 export class BodyComponent {
   @Input() isActive: boolean;
-  @Input() body: string;
-  @Input() articleId: string;
   @Input() isEditable = true;
 
   @Output() onCtrlToggle = new EventEmitter();
   @Output() onClickOut = new EventEmitter();
   @Output() onBodyChange = new EventEmitter<string>();
   @Output() onBodyImageAdded = new EventEmitter<string>();
+
+  body: string;
+  articleId: string;
+  hasEditingInitiated = false;
 
   isBrowser: boolean;
   // Quill browser-only stuff
@@ -45,8 +57,13 @@ export class BodyComponent {
 
   constructor(
     private articleSvc: ArticleService,
+    private store: Store,
+    private state: TransferState,
     platformSvc: PlatformService,
   ) {
+    this.ssrBody$().subscribe(body => (this.body = body));
+    this.ssrArticleId$().subscribe(id => (this.articleId = id));
+
     this.isBrowser = platformSvc.isBrowser;
     if (this.isBrowser) {
       import('quill/core/emitter').then(Emitter => {
@@ -86,11 +103,30 @@ export class BodyComponent {
     }
   }
 
+  ssrBody$ = () => {
+    const preExisting = this.state.get(BODY_KEY, null);
+
+    return this.store.select(dbArticleBody).pipe(
+      first(body => !!body),
+      tap(body => this.state.set(BODY_KEY, body)),
+      startWith(preExisting),
+    );
+  };
+
+  ssrArticleId$ = () => {
+    const preExisting = this.state.get(ARTICLE_ID_KEY, null);
+
+    return this.store.select(currentArticleId).pipe(
+      first(id => !!id),
+      tap(id => this.state.set(ARTICLE_ID_KEY, id)),
+      startWith(preExisting),
+    );
+  };
+
   onEditorCreated = editor => {
     this.quillEditor = editor;
     this.quillToolbar = editor.getModule('toolbar');
     this.quillToolbar.addHandler('image', this.onImageButtonClicked);
-    this.quillEditor.disable();
   };
 
   watchBodyImageFiles = () => {
@@ -132,7 +168,7 @@ export class BodyComponent {
 
   onImageButtonClicked = async () => {
     // ToDo: may migrate this to another file
-    // NOTE: much of the below comes paraphrased from Quill internals and uses
+    // !NOTE: much of the below comes paraphrased from Quill internals and uses
     // other Quill internals and frankly goes a bit over my head.
     // For further reference look into Quill repo base.js => search "image" and uploader.js
     if (!this.isBrowser) {
@@ -208,7 +244,10 @@ export class BodyComponent {
     fileInput.click();
   };
 
-  toggleCtrl = () => this.onCtrlToggle.emit();
+  toggleCtrl = () => {
+    this.hasEditingInitiated = true;
+    this.onCtrlToggle.emit();
+  };
 
   clickOut = () => this.onClickOut.emit();
 

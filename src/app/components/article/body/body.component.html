@@ -21,13 +21,18 @@
   <!-- <quill-editor
   *ngIf="isBrowser && articleId" -->
   <quill-view-html
-    *ngIf="!isBrowser"
+    *ngIf="!hasEditingInitiated"
     [content]="body"
     theme="bubble"
   ></quill-view-html>
 
+  <!--
+  Not clear we still need to watch if it's in the browser now that we
+  will never do the thing until editing is initiated, but maybe better
+  to keep the savety net in there in case future code changes?
+-->
   <quill-editor
-    *ngIf="!!quillModules && isBrowser"
+    *ngIf="!!quillModules && hasEditingInitiated && isBrowser"
     theme="bubble"
     [(ngModel)]="body"
     [modules]="quillModules"

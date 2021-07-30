@@ -1,1 +1,4 @@
-<img [src]="_imageUrl" [alt]="_imageAlt" />
+<img
+  [src]="(ssrCoverImageState$() | async).imageUri"
+  [alt]="(ssrCoverImageState$() | async).imageAlt"
+/>

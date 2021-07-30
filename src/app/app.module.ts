@@ -79,7 +79,20 @@ import { FieldEditButtonComponent } from './components/shared/field-edit-button/
 import { ProfileComponent } from './components/user/profile/profile.component';
 import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
 import { ArticleCtaDialogComponent } from './components/dialogs/article-cta-dialog/article-cta-dialog.component';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from './app.effects';
 // end components
+
+// STORE
+import { reducers, metaReducers } from './store';
+import { AuthEffects } from './store/auth/auth.effects';
+import { ArticleEffects } from './store/article/article.effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { BrowseArticlesEffects } from '@store/browse-articles/browse-articles.effects';
+
+// end store
 
 @NgModule({
   declarations: [
@@ -154,6 +167,20 @@ import { ArticleCtaDialogComponent } from './components/dialogs/article-cta-dial
     MatProgressBarModule,
     MatTooltipModule,
     QuillModule.forRoot(),
+    StoreModule.forRoot(reducers, {
+      metaReducers,
+    }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
+    EffectsModule.forRoot([AppEffects]),
+    EffectsModule.forFeature([
+      AuthEffects,
+      ArticleEffects,
+      BrowseArticlesEffects,
+    ]),
+    StoreRouterConnectingModule.forRoot(),
   ],
   // providers: [],
   providers: [

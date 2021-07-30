@@ -49,10 +49,7 @@
           [ngClass]="{ highlighted: (isBookmarked$ | async) }"
           svgIcon="bookmark"
           (click)="onBookmarkClicked()"
-          >{{
-            (isBookmarked$ | async) ? 'bookmark' : 'bookmark_border'
-          }}</mat-icon
-        >
+        ></mat-icon>
         <span
           class="mat-icon-btn__tooltip mat-icon-btn__tooltip_above"
           style="right: 0"

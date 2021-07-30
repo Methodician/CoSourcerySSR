@@ -52,6 +52,7 @@ export class ContributorsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.ssrAuthorId$().subscribe(id => (this.authorId = id));
+    // For some reason it still loads twice on page load
     this.watchEditors();
   }
 
@@ -64,10 +65,9 @@ export class ContributorsComponent implements OnInit, OnDestroy {
     const preExisting = this.state.get(EDITORS_KEY, {});
 
     return this.store.select(dbArticleEditors).pipe(
-      first(editors => editors !== {}),
+      first(editors => Object.keys(editors).length > 0),
       tap(editors => this.state.set(EDITORS_KEY, editors)),
       startWith(preExisting),
-      takeUntil(this.unsubscribe$),
     );
   };
 
@@ -78,7 +78,6 @@ export class ContributorsComponent implements OnInit, OnDestroy {
       first(id => !!id),
       tap(id => this.state.set(AUTHOR_ID_KEY, id)),
       startWith(preExisting),
-      takeUntil(this.unsubscribe$),
     );
   };
 
